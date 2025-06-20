@@ -1,6 +1,6 @@
 #!/bin/bash
 bash per_project_prediction.sh Flakicat "train"
-#bash per_project_prediction.sh Flakicat "BERT"
+bash per_project_prediction.sh Flakicat "BERT"
 #bash per_project_prediction.sh Flakicat "BERT" "deadcode_perturbation"
 #bash per_project_prediction.sh Flakicat "BERT" "printStatement_perturbation"
 #bash per_project_prediction.sh Flakicat "BERT" "variableDeclare_perturbation"
