@@ -1,0 +1,1387 @@
+../dataset/Java-WebSocket_test_methods.csv
+calling to Testing_bert_flaky_categorization.py
+*************data_name= Flakicat_Categorization-Data
+It is Flakicat
+FOLD= 0
+ NOW IN FOLD NUMBER 0
+      id  ...                                          full_code
+0      2  ...  @Test\n    public void testConstructor() {{\n ...
+1      3  ...  @Test\n    public void testExtends() {{\n     ...
+2      4  ...  @Test\n    public void testIsValid() {{\n     ...
+3      5  ...  @Test\n    public void testConstructor() {{\n ...
+4      6  ...  @Test\n    public void testCopyConstructor() {...
+..   ...  ...                                                ...
+340  344  ...  @Test\n    public void testTransferByteBufferB...
+341  345  ...  @Test\n    public void testTransferByteBufferC...
+342  346  ...  @Test\n    public void testTransferByteBufferC...
+343  347  ...  @Test\n    public void testTransferByteBufferC...
+344  349  ...  @Test\n\tpublic void testConstructor() throws ...
+
+[345 rows x 4 columns]
+../flaky-test-categorization/model_weights_on_Flakicat_dataset0_with_noisy_train_data.pt
+test_x= ['@Test\n    public void testConstructor() {{\n        TextFrame frame = new TextFrame();\n        assertEquals("Opcode must be equal", Opcode.TEXT , frame.getOpcode());\n        assertEquals("Fin must be set", true , frame.isFin());\n        assertEquals("TransferedMask must not be set", false , frame.getTransfereMasked());\n        assertEquals("Payload must be empty", 0 , frame.getPayloadData().capacity());\n        assertEquals("RSV1 must be false", false , frame.isRSV1());\n        assertEquals("RSV2 must be false", false , frame.isRSV2());\n        assertEquals("RSV3 must be false", false , frame.isRSV3());\n        try {\n            frame.isValid();\n        } catch (InvalidDataException e) {\n            fail("InvalidDataException should not be thrown");\n        }\n    }']
+preds_chunk= [[-4.9374886  -5.3519263  -5.2174973  -1.2747827  -0.36003113 -5.1991596 ]]
+pred_class= [4]
+test_x= ['@Test\n    public void testExtends() {{\n        TextFrame frame = new TextFrame();\n        assertEquals("Frame must extend dataframe", true, frame instanceof DataFrame);\n    }']
+preds_chunk= [[-7.2777715e+00 -8.0802784e+00 -7.6877818e+00 -7.4092422e+00
+  -2.3952622e-03 -8.0225849e+00]]
+pred_class= [4]
+test_x= ['@Test\n    public void testIsValid() {{\n        TextFrame frame = new TextFrame();\n        try {\n            frame.isValid();\n        } catch (InvalidDataException e) {\n            fail("InvalidDataException should not be thrown");\n        }\n    }']
+preds_chunk= [[-7.3171148e+00 -8.1634693e+00 -7.6790576e+00 -7.6550050e+00
+  -2.1983047e-03 -8.0764732e+00]]
+pred_class= [4]
+test_x= ['@Test\n    public void testConstructor() {{\n        PongFrame frame = new PongFrame();\n        assertEquals("Opcode must be equal", Opcode.PONG , frame.getOpcode());\n        assertEquals("Fin must be set", true , frame.isFin());\n        assertEquals("TransferedMask must not be set", false , frame.getTransfereMasked());\n        assertEquals("Payload must be empty", 0 , frame.getPayloadData().capacity());\n        assertEquals("RSV1 must be false", false , frame.isRSV1());\n        assertEquals("RSV2 must be false", false , frame.isRSV2());\n        assertEquals("RSV3 must be false", false , frame.isRSV3());\n        try {\n            frame.isValid();\n        } catch (InvalidDataException e) {\n            fail("InvalidDataException should not be thrown");\n        }\n    }']
+preds_chunk= [[-6.191803   -6.826385   -6.3877482  -4.398306   -0.01844516 -6.7550993 ]]
+pred_class= [4]
+test_x= ['@Test\n    public void testCopyConstructor() {{\n        PingFrame pingFrame = new PingFrame();\n        pingFrame.setPayload(ByteBuffer.allocate(100));\n        PongFrame pongFrame = new PongFrame(pingFrame);\n        assertEquals("Payload must be equal", pingFrame.getPayloadData() , pongFrame.getPayloadData());\n    }']
+preds_chunk= [[-7.1887159e+00 -7.8028264e+00 -7.7663903e+00 -7.4322686e+00
+  -2.4674467e-03 -8.1622562e+00]]
+pred_class= [4]
+test_x= ['@Test\n    public void testExtends() {{\n        PongFrame frame = new PongFrame();\n        assertEquals("Frame must extend dataframe", true, frame instanceof ControlFrame);\n    }']
+preds_chunk= [[-7.3364601e+00 -8.1541977e+00 -7.7263045e+00 -7.6575165e+00
+  -2.1396617e-03 -8.1635237e+00]]
+pred_class= [4]
+test_x= ['@Test\n    public void testIsValid() {{\n        PongFrame frame = new PongFrame();\n        try {\n            frame.isValid();\n        } catch (InvalidDataException e) {\n            fail("InvalidDataException should not be thrown");\n        }\n        frame.setFin(false);\n        try {\n            frame.isValid();\n            fail("InvalidDataException should be thrown");\n        } catch (InvalidDataException e) {\n           //Fine\n        }\n        frame.setFin(true);\n        frame.setRSV1(true);\n        try {\n            frame.isValid();\n            fail("InvalidDataException should be thrown");\n        } catch (InvalidDataException e) {\n            //Fine\n        }\n        frame.setRSV1(false);\n        frame.setRSV2(true);\n        try {\n            frame.isValid();\n            fail("InvalidDataException should be thrown");\n        } catch (InvalidDataException e) {\n            //Fine\n        }\n        frame.setRSV2(false);\n        frame.setRSV3(true);\n        try {\n            frame.isValid();\n            fail("InvalidDataException should be thrown");\n        } catch (InvalidDataException e) {\n            //Fine\n        }\n    }']
+preds_chunk= [[-3.397988   -5.4624343  -2.8064208  -2.825801   -0.18356834 -4.571808  ]]
+pred_class= [4]
+test_x= ['@Test\n    public void testConstructor() {{\n        PingFrame frame = new PingFrame();\n        assertEquals("Opcode must be equal", Opcode.PING , frame.getOpcode());\n        assertEquals("Fin must be set", true , frame.isFin());\n        assertEquals("TransferedMask must not be set", false , frame.getTransfereMasked());\n        assertEquals("Payload must be empty", 0 , frame.getPayloadData().capacity());\n        assertEquals("RSV1 must be false", false , frame.isRSV1());\n        assertEquals("RSV2 must be false", false , frame.isRSV2());\n        assertEquals("RSV3 must be false", false , frame.isRSV3());\n        try {\n            frame.isValid();\n        } catch (InvalidDataException e) {\n            fail("InvalidDataException should not be thrown");\n        }\n    }']
+preds_chunk= [[-6.249639   -6.905885   -6.4097176  -4.5960007  -0.01583865 -6.8653765 ]]
+pred_class= [4]
+test_x= ['@Test\n    public void testExtends() {{\n        PingFrame frame = new PingFrame();\n        assertEquals("Frame must extend dataframe", true, frame instanceof ControlFrame);\n    }']
+preds_chunk= [[-7.3260942e+00 -8.1509686e+00 -7.7182174e+00 -7.6926289e+00
+  -2.1419220e-03 -8.1383057e+00]]
+pred_class= [4]
+test_x= ['@Test\n    public void testIsValid() {{\n        PingFrame frame = new PingFrame();\n        try {\n            frame.isValid();\n        } catch (InvalidDataException e) {\n            fail("InvalidDataException should not be thrown");\n        }\n        frame.setFin(false);\n        try {\n            frame.isValid();\n            fail("InvalidDataException should be thrown");\n        } catch (InvalidDataException e) {\n           //Fine\n        }\n        frame.setFin(true);\n        frame.setRSV1(true);\n        try {\n            frame.isValid();\n            fail("InvalidDataException should be thrown");\n        } catch (InvalidDataException e) {\n            //Fine\n        }\n        frame.setRSV1(false);\n        frame.setRSV2(true);\n        try {\n            frame.isValid();\n            fail("InvalidDataException should be thrown");\n        } catch (InvalidDataException e) {\n            //Fine\n        }\n        frame.setRSV2(false);\n        frame.setRSV3(true);\n        try {\n            frame.isValid();\n            fail("InvalidDataException should be thrown");\n        } catch (InvalidDataException e) {\n            //Fine\n        }\n    }']
+preds_chunk= [[-3.4333277  -5.6816344  -2.9078736  -3.525422   -0.13558337 -4.951154  ]]
+pred_class= [4]
+test_x= ['@Test\n    public void testConstructor() {{\n        CloseFrame frame = new CloseFrame();\n        assertEquals("Opcode must be equal", Opcode.CLOSING, frame.getOpcode());\n        assertEquals("Fin must be set", true, frame.isFin());\n        assertEquals("TransferedMask must not be set", false, frame.getTransfereMasked());\n        assertEquals("Payload must be 2 (close code)", 2, frame.getPayloadData().capacity());\n        assertEquals("RSV1 must be false", false, frame.isRSV1());\n        assertEquals("RSV2 must be false", false, frame.isRSV2());\n        assertEquals("RSV3 must be false", false, frame.isRSV3());\n        try {\n            frame.isValid();\n        } catch (InvalidDataException e) {\n            fail("InvalidDataException should not be thrown");\n        }\n    }']
+preds_chunk= [[-6.426666   -7.087108   -6.625732   -4.96524    -0.01170305 -7.036649  ]]
+pred_class= [4]
+test_x= ['@Test\n    public void testExtends() {{\n        CloseFrame frame = new CloseFrame();\n        assertEquals("Frame must extend dataframe", true, frame instanceof ControlFrame);\n    }']
+preds_chunk= [[-7.3158979e+00 -8.1449127e+00 -7.7076545e+00 -7.7098966e+00
+  -2.1576239e-03 -8.1035089e+00]]
+pred_class= [4]
+test_x= ['@Test\n    public void testIsValid() {{\n        CloseFrame frame = new CloseFrame();\n        try {\n            frame.isValid();\n        } catch (InvalidDataException e) {\n            fail("InvalidDataException should not be thrown");\n        }\n        frame.setFin(false);\n        try {\n            frame.isValid();\n            fail("InvalidDataException should be thrown");\n        } catch (InvalidDataException e) {\n            //Fine\n        }\n        frame.setFin(true);\n        frame.setRSV1(true);\n        try {\n            frame.isValid();\n            fail("InvalidDataException should be thrown");\n        } catch (InvalidDataException e) {\n            //Fine\n        }\n        frame.setRSV1(false);\n        frame.setRSV2(true);\n        try {\n            frame.isValid();\n            fail("InvalidDataException should be thrown");\n        } catch (InvalidDataException e) {\n            //Fine\n        }\n        frame.setRSV2(false);\n        frame.setRSV3(true);\n        try {\n            frame.isValid();\n            fail("InvalidDataException should be thrown");\n        } catch (InvalidDataException e) {\n            //Fine\n        }\n        frame.setRSV3(false);\n        frame.setCode(CloseFrame.NORMAL);\n        try {\n            frame.isValid();\n        } catch (InvalidDataException e) {\n            fail("InvalidDataException should not be thrown");\n        }\n        frame.setCode(CloseFrame.GOING_AWAY);\n        try {\n            frame.isValid();\n        } catch (InvalidDataException e) {\n            fail("InvalidDataException should not be thrown");\n        }\n        frame.setCode(CloseFrame.PROTOCOL_ERROR);\n        try {\n            frame.isValid();\n        } catch (InvalidDataException e) {\n            fail("InvalidDataException should not be thrown");\n        }\n        frame.setCode(CloseFrame.REFUSE);\n        try {\n            frame.isValid();\n        } catch (InvalidDataException e) {\n            fail("InvalidDataException should not be thrown");\n        }\n        frame.setCode(CloseFrame.NOCODE);\n        try {\n            frame.isValid();\n            fail("InvalidDataException should be thrown");\n        } catch (InvalidDataException e) {\n            //fine\n        }\n        frame.setCode(CloseFrame.ABNORMAL_CLOSE);\n        try {\n            frame.isValid();\n            fail("InvalidDataException should be thrown");\n        } catch (InvalidDataException e) {\n            //fine\n        }\n        frame.setCode(CloseFrame.POLICY_VALIDATION);\n        try {\n            frame.isValid();\n        } catch (InvalidDataException e) {\n            fail("InvalidDataException should not be thrown");\n        }\n        frame.setCode(CloseFrame.TOOBIG);\n        try {\n            frame.isValid();\n        } catch (InvalidDataException e) {\n            fail("InvalidDataException should not be thrown");\n        }\n        frame.setCode(CloseFrame.EXTENSION);\n        try {\n            frame.isValid();\n        } catch (InvalidDataException e) {\n            fail("InvalidDataException should not be thrown");\n        }\n        frame.setCode(CloseFrame.UNEXPECTED_CONDITION);\n        try {\n            frame.isValid();\n        } catch (InvalidDataException e) {\n            fail("InvalidDataException should not be thrown");\n        }\n        frame.setCode(CloseFrame.SERVICE_RESTART);\n        try {\n            frame.isValid();\n        } catch (InvalidDataException e) {\n            fail("InvalidDataException should not be thrown");\n        }\n        frame.setCode(CloseFrame.TRY_AGAIN_LATER);\n        try {\n            frame.isValid();\n        } catch (InvalidDataException e) {\n            fail("InvalidDataException should not be thrown");\n        }\n        frame.setCode(CloseFrame.BAD_GATEWAY);\n        try {\n            frame.isValid();\n        } catch (InvalidDataException e) {\n            fail("InvalidDataException should not be thrown");\n        }\n        frame.setCode(CloseFrame.TLS_ERROR);\n        try {\n            frame.isValid();\n            fail("InvalidDataException should be thrown");\n        } catch (InvalidDataException e) {\n            //fine\n        }\n        frame.setCode(CloseFrame.NEVER_CONNECTED);\n        try {\n            frame.isValid();\n            fail("InvalidDataException should be thrown");\n        } catch (InvalidDataException e) {\n            //fine\n        }\n        frame.setCode(CloseFrame.BUGGYCLOSE);\n        try {\n            frame.isValid();\n            fail("InvalidDataException should be thrown");\n        } catch (InvalidDataException e) {\n            //fine\n        }\n        frame.setCode(CloseFrame.FLASHPOLICY);\n        try {\n            frame.isValid();\n            fail("InvalidDataException should be thrown");\n        } catch (InvalidDataException e) {\n            //fine\n        }\n        frame.setCode(CloseFrame.NOCODE);\n        try {\n            frame.isValid();\n            fail("InvalidDataException should be thrown");\n        } catch (InvalidDataException e) {\n            //fine\n        }\n        frame.setCode(CloseFrame.NO_UTF8);\n        frame.setReason(null);\n        try {\n            frame.isValid();\n            fail("InvalidDataException should be thrown");\n        } catch (InvalidDataException e) {\n            //fine\n        }\n        frame.setCode(CloseFrame.NOCODE);\n        frame.setReason("Close");\n        try {\n            frame.isValid();\n            fail("InvalidDataException should be thrown");\n        } catch (InvalidDataException e) {\n            //fine\n        }\n    }']
+preds_chunk= [[-6.2409205e+00 -7.5446744e+00 -6.5780416e+00 -6.3042979e+00
+  -6.3560242e-03 -7.3542452e+00]]
+pred_class= [4]
+test_x= ['@Test\n    public void testConstructor() {{\n        BinaryFrame frame = new BinaryFrame();\n        assertEquals("Opcode must be equal", Opcode.BINARY , frame.getOpcode());\n        assertEquals("Fin must be set", true , frame.isFin());\n        assertEquals("TransferedMask must not be set", false , frame.getTransfereMasked());\n        assertEquals("Payload must be empty", 0 , frame.getPayloadData().capacity());\n        assertEquals("RSV1 must be false", false , frame.isRSV1());\n        assertEquals("RSV2 must be false", false , frame.isRSV2());\n        assertEquals("RSV3 must be false", false , frame.isRSV3());\n        try {\n            frame.isValid();\n        } catch (InvalidDataException e) {\n            fail("InvalidDataException should not be thrown");\n        }\n    }']
+preds_chunk= [[-5.174353   -5.6635437  -5.4365892  -2.031697   -0.16055565 -5.590714  ]]
+pred_class= [4]
+test_x= ['@Test\n    public void testExtends() {{\n        BinaryFrame frame = new BinaryFrame();\n        assertEquals("Frame must extend dataframe", true, frame instanceof DataFrame);\n    }']
+preds_chunk= [[-7.2957048e+00 -8.1128998e+00 -7.7000384e+00 -7.5129786e+00
+  -2.3090388e-03 -8.0175428e+00]]
+pred_class= [4]
+test_x= ['@Test\n    public void testIsValid() {{\n        BinaryFrame frame = new BinaryFrame();\n        try {\n            frame.isValid();\n        } catch (InvalidDataException e) {\n            fail("InvalidDataException should not be thrown");\n        }\n    }']
+preds_chunk= [[-7.3065996e+00 -8.1545582e+00 -7.6742649e+00 -7.6267581e+00
+  -2.2399353e-03 -8.0250616e+00]]
+pred_class= [4]
+test_x= ['@Test\n    public void testDefaultValues() {{\n        FramedataImpl1 binary = FramedataImpl1.get(Opcode.BINARY);\n        assertEquals("Opcode must be equal", Opcode.BINARY, binary.getOpcode());\n        assertEquals("Fin must be set", true, binary.isFin());\n        assertEquals("TransferedMask must not be set", false, binary.getTransfereMasked());\n        assertEquals("Payload must be empty", 0, binary.getPayloadData().capacity());\n        assertEquals("RSV1 must be false", false, binary.isRSV1());\n        assertEquals("RSV2 must be false", false, binary.isRSV2());\n        assertEquals("RSV3 must be false", false, binary.isRSV3());\n    }']
+preds_chunk= [[-5.821947   -6.0349994  -6.255854   -0.02862909 -3.9961548  -5.9667788 ]]
+pred_class= [3]
+test_x= ['@Test\n    public void testGet() {{\n        FramedataImpl1 binary = FramedataImpl1.get(Opcode.BINARY);\n        assertEquals("Frame must be binary", true, binary instanceof BinaryFrame);\n        FramedataImpl1 text = FramedataImpl1.get(Opcode.TEXT);\n        assertEquals("Frame must be text", true, text instanceof TextFrame);\n        FramedataImpl1 closing = FramedataImpl1.get(Opcode.CLOSING);\n        assertEquals("Frame must be closing", true, closing instanceof CloseFrame);\n        FramedataImpl1 continuous = FramedataImpl1.get(Opcode.CONTINUOUS);\n        assertEquals("Frame must be continuous", true, continuous instanceof ContinuousFrame);\n        FramedataImpl1 ping = FramedataImpl1.get(Opcode.PING);\n        assertEquals("Frame must be ping", true, ping instanceof PingFrame);\n        FramedataImpl1 pong = FramedataImpl1.get(Opcode.PONG);\n        assertEquals("Frame must be pong", true, pong instanceof PongFrame);\n        try {\n            FramedataImpl1.get(null);\n            fail("IllegalArgumentException should be thrown");\n        } catch (IllegalArgumentException e) {\n            //Fine\n        }\n    }']
+preds_chunk= [[-7.2332120e+00 -8.1477289e+00 -7.5738358e+00 -7.4982629e+00
+  -2.4146468e-03 -8.0092812e+00]]
+pred_class= [4]
+test_x= ['@Test\n    public void testSetters() {{\n        FramedataImpl1 frame = FramedataImpl1.get(Opcode.BINARY);\n        frame.setFin(false);\n        assertEquals("Fin must not be set", false, frame.isFin());\n        frame.setTransferemasked(true);\n        assertEquals("TransferedMask must be set", true, frame.getTransfereMasked());\n        ByteBuffer buffer = ByteBuffer.allocate(100);\n        frame.setPayload(buffer);\n        assertEquals("Payload must be of size 100", 100, frame.getPayloadData().capacity());\n        frame.setRSV1(true);\n        assertEquals("RSV1 must be true", true, frame.isRSV1());\n        frame.setRSV2(true);\n        assertEquals("RSV2 must be true", true, frame.isRSV2());\n        frame.setRSV3(true);\n        assertEquals("RSV3 must be true", true, frame.isRSV3());\n    }']
+preds_chunk= [[-7.1160216e+00 -8.0354424e+00 -7.5570374e+00 -7.3186874e+00
+  -2.6204793e-03 -8.1255865e+00]]
+pred_class= [4]
+test_x= ['@Test\n    public void testAppend() {{\n        FramedataImpl1 frame0 = FramedataImpl1.get(Opcode.BINARY);\n        frame0.setFin(false);\n        frame0.setPayload(ByteBuffer.wrap("first".getBytes()));\n        FramedataImpl1 frame1 = FramedataImpl1.get(Opcode.BINARY);\n        frame1.setPayload(ByteBuffer.wrap("second".getBytes()));\n        frame0.append(frame1);\n        assertEquals("Fin must be set", true, frame0.isFin());\n        assertArrayEquals("Payload must be equal", "firstsecond".getBytes(), frame0.getPayloadData().array());\n    }']
+preds_chunk= [[-4.762383   -5.1214027  -5.2866397  -0.63076913 -0.8145169  -5.2226877 ]]
+pred_class= [3]
+test_x= ['@Test\n    public void testConstructor() {{\n        ContinuousFrame frame = new ContinuousFrame();\n        assertEquals("Opcode must be equal", Opcode.CONTINUOUS , frame.getOpcode());\n        assertEquals("Fin must be set", true , frame.isFin());\n        assertEquals("TransferedMask must not be set", false , frame.getTransfereMasked());\n        assertEquals("Payload must be empty", 0 , frame.getPayloadData().capacity());\n        assertEquals("RSV1 must be false", false , frame.isRSV1());\n        assertEquals("RSV2 must be false", false , frame.isRSV2());\n        assertEquals("RSV3 must be false", false , frame.isRSV3());\n        try {\n            frame.isValid();\n        } catch (InvalidDataException e) {\n            fail("InvalidDataException should not be thrown");\n        }\n    }']
+preds_chunk= [[-6.4539075  -6.555859   -6.760862   -0.01199002 -5.1155257  -6.3417306 ]]
+pred_class= [3]
+test_x= ['@Test\n    public void testExtends() {{\n        ContinuousFrame frame = new ContinuousFrame();\n        assertEquals("Frame must extend dataframe", true, frame instanceof DataFrame);\n    }']
+preds_chunk= [[-7.0798168e+00 -7.8363099e+00 -7.4955120e+00 -6.7639894e+00
+  -3.4263970e-03 -7.6556339e+00]]
+pred_class= [4]
+test_x= ['@Test\n    public void testIsValid() {{\n        ContinuousFrame frame = new ContinuousFrame();\n        try {\n            frame.isValid();\n        } catch (InvalidDataException e) {\n            fail("InvalidDataException should not be thrown");\n        }\n    }']
+preds_chunk= [[-7.1314940e+00 -7.9416776e+00 -7.5089579e+00 -6.9767170e+00
+  -3.1122365e-03 -7.6613612e+00]]
+pred_class= [4]
+test_x= ['@Test\n\tpublic void test1_1_1() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "1.1.1" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.1423912e+00 -7.2695560e+00 -7.2876401e+00 -3.8372471e-03
+  -7.3394933e+00 -6.8984509e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test1_1_2() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "1.1.2" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0822544e+00 -7.2225976e+00 -7.1405330e+00 -4.1488060e-03
+  -7.2681885e+00 -6.8301091e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test1_1_3() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "1.1.3" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.1225214e+00 -7.2551403e+00 -7.2424707e+00 -3.9445939e-03
+  -7.2968726e+00 -6.8778324e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test1_1_4() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "1.1.4" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0844173e+00 -7.2274017e+00 -7.1555624e+00 -4.1350345e-03
+  -7.2516751e+00 -6.8377781e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test1_1_5() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "1.1.5" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0750117e+00 -7.2214923e+00 -7.1401820e+00 -4.1824016e-03
+  -7.2284064e+00 -6.8320084e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test1_1_6() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "1.1.6" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 30 );\n\t}']
+preds_chunk= [[-6.9347425e+00 -7.1153445e+00 -6.8144121e+00 -4.9566962e-03
+  -7.1001682e+00 -6.6961713e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test1_1_7() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "1.1.7" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 20 );\n\t}']
+preds_chunk= [[-7.0792637e+00 -7.2256851e+00 -7.1618986e+00 -4.1607958e-03
+  -7.2081118e+00 -6.8438320e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test1_1_8() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "1.1.8" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 30 );\n\t}']
+preds_chunk= [[-6.9422894e+00 -7.1211009e+00 -6.8297048e+00 -4.9056881e-03
+  -7.1174679e+00 -6.7026157e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test1_2_1() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "1.2.1" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.1275020e+00 -7.2581286e+00 -7.2472711e+00 -3.9124149e-03
+  -7.3274093e+00 -6.8799162e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test1_2_2() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "1.2.2" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0843954e+00 -7.2233982e+00 -7.1410236e+00 -4.1362219e-03
+  -7.2832546e+00 -6.8295746e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test1_2_3() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "1.2.3" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.1150370e+00 -7.2488613e+00 -7.2179170e+00 -3.9827088e-03
+  -7.3001771e+00 -6.8663793e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test1_2_4() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "1.2.4" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 20 );\n\t}']
+preds_chunk= [[-7.0876532e+00 -7.2303934e+00 -7.1646652e+00 -4.1160397e-03
+  -7.2546158e+00 -6.8423538e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test1_2_5() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "1.2.5" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0632687e+00 -7.2127485e+00 -7.1061258e+00 -4.2489967e-03
+  -7.2205157e+00 -6.8165793e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test1_2_6() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "1.2.6" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 70 );\n\t}']
+preds_chunk= [[-7.1114149e+00 -7.2506075e+00 -7.2260146e+00 -4.0157167e-03
+  -7.2419038e+00 -6.8696494e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test1_2_7() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "1.2.7" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 70 );\n\t}']
+preds_chunk= [[-7.1139827e+00 -7.2517920e+00 -7.2279134e+00 -4.0112049e-03
+  -7.2450275e+00 -6.8677330e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test1_2_8() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "1.2.8" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 60 );\n\t}']
+preds_chunk= [[-5.7374725  -6.107284   -4.193719   -0.02739168 -6.042522   -5.495597  ]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test2_1() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "2.1" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0600853e+00 -7.2062464e+00 -7.0832286e+00 -4.2827083e-03
+  -7.2309976e+00 -6.8033652e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test2_2() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "2.2" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0540953e+00 -7.2059116e+00 -7.0806251e+00 -4.3139257e-03
+  -7.1995435e+00 -6.8029814e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test2_3() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "2.3" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0662670e+00 -7.2134223e+00 -7.1081729e+00 -4.2469790e-03
+  -7.2180219e+00 -6.8158083e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test2_4() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "2.4" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0262084e+00 -7.1873913e+00 -7.0198474e+00 -4.4684564e-03
+  -7.1534829e+00 -6.7784910e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test2_5() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "2.5" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0121021e+00 -7.1762915e+00 -6.9946232e+00 -4.5528323e-03
+  -7.1164546e+00 -6.7691379e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test2_6() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "2.6" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 30 );\n\t}']
+preds_chunk= [[-6.8168254e+00 -7.0259624e+00 -6.5458755e+00 -5.7821870e-03
+  -6.9576550e+00 -6.5752697e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test2_7() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "2.7" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0174403e+00 -7.1823397e+00 -7.0145025e+00 -4.5357440e-03
+  -7.0909834e+00 -6.7783556e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test2_8() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "2.8" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0434813e+00 -7.2024493e+00 -7.0750842e+00 -4.3750522e-03
+  -7.1377444e+00 -6.8059492e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test2_9() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "2.9" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0371084e+00 -7.1952658e+00 -7.0503497e+00 -4.4137440e-03
+  -7.1482930e+00 -6.7927771e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test2_10() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "2.10" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 60 );\n\t}']
+preds_chunk= [[-5.995197   -6.3596463  -4.7687716  -0.01817759 -6.1486654  -5.7554197 ]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test2_11() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "2.11" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 50 );\n\t}']
+preds_chunk= [[-6.9580894e+00 -7.1407042e+00 -6.9135947e+00 -4.9017738e-03
+  -6.9518013e+00 -6.7290759e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test3_1() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "3.1" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0754628e+00 -7.2201777e+00 -7.1324644e+00 -4.1926107e-03
+  -7.2319198e+00 -6.8264451e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test3_2() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "3.2" );\n\t\tassertEquals( "NON-STRICT", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0315413e+00 -7.1903982e+00 -7.0645556e+00 -4.3586730e-03
+  -7.1805687e+00 -6.8163266e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test3_3() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "3.3" );\n\t\tassertEquals( "NON-STRICT", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0800972e+00 -7.2272520e+00 -7.1849251e+00 -4.0995376e-03
+  -7.2289257e+00 -6.8687963e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test3_4() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "3.4" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 20 );\n\t}']
+preds_chunk= [[-6.9855156e+00 -7.1556211e+00 -6.9284725e+00 -4.6606958e-03
+  -7.1479959e+00 -6.7436466e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test3_5() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "3.5" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0235109e+00 -7.1850414e+00 -7.0240979e+00 -4.4766450e-03
+  -7.1376891e+00 -6.7825561e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test3_6() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "3.6" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0322227e+00 -7.1937585e+00 -7.0545344e+00 -4.4262060e-03
+  -7.1259327e+00 -6.7991104e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test3_7() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "3.7" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0332756e+00 -7.1931038e+00 -7.0499740e+00 -4.4284607e-03
+  -7.1324763e+00 -6.7956395e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test4_1_1() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "4.1.1" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.1256394e+00 -7.2570758e+00 -7.2482529e+00 -3.9274953e-03
+  -7.3063674e+00 -6.8803592e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test4_1_2() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "4.1.2" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0765276e+00 -7.2196856e+00 -7.1314692e+00 -4.1790777e-03
+  -7.2502995e+00 -6.8270125e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test4_1_3() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "4.1.3" );\n\t\tassertEquals( "NON-STRICT", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0352407e+00 -7.1794229e+00 -7.0383286e+00 -4.3502459e-03
+  -7.2672911e+00 -6.7918754e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test4_1_4() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "4.1.4" );\n\t\tassertEquals( "NON-STRICT", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0163374e+00 -7.1672845e+00 -6.9975743e+00 -4.4482807e-03
+  -7.2450767e+00 -6.7749524e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test4_1_5() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "4.1.5" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0790920e+00 -7.2228656e+00 -7.1428647e+00 -4.1650697e-03
+  -7.2443590e+00 -6.8312922e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test4_2_1() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "4.2.1" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.1189880e+00 -7.2528839e+00 -7.2307739e+00 -3.9641857e-03
+  -7.2948036e+00 -6.8727150e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test4_2_2() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "4.2.2" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.1024308e+00 -7.2421198e+00 -7.1975474e+00 -4.0457551e-03
+  -7.2659883e+00 -6.8576961e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test4_2_3() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "4.2.3" );\n\t\tassertEquals( "NON-STRICT", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0355687e+00 -7.1810231e+00 -7.0390348e+00 -4.3468042e-03
+  -7.2669935e+00 -6.7932358e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test4_2_4() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "4.2.4" );\n\t\tassertEquals( "NON-STRICT", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0194235e+00 -7.1722760e+00 -7.0067382e+00 -4.4304784e-03
+  -7.2416935e+00 -6.7793884e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test4_2_5() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "4.2.5" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 15 );\n\t}']
+preds_chunk= [[-7.0942621e+00 -7.2354698e+00 -7.1805329e+00 -4.1055921e-03
+  -7.2292452e+00 -6.8490076e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test5_1() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "5.1" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0445552e+00 -7.1969519e+00 -7.0602632e+00 -4.3552313e-03
+  -7.1989832e+00 -6.7954922e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test5_2() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "5.2" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0178928e+00 -7.1797600e+00 -7.0032177e+00 -4.5014480e-03
+  -7.1552486e+00 -6.7732220e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test5_3() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "5.3" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0413404e+00 -7.1956902e+00 -7.0584321e+00 -4.3719662e-03
+  -7.1823564e+00 -6.7965240e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test5_4() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "5.4" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0001416e+00 -7.1642356e+00 -6.9502497e+00 -4.5970948e-03
+  -7.1678505e+00 -6.7493300e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test5_5() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "5.5" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 20 );\n\t}']
+preds_chunk= [[-6.9622989e+00 -7.1403656e+00 -6.8955626e+00 -4.8009362e-03
+  -7.0757146e+00 -6.7318287e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test5_6() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "5.6" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 60 );\n\t}']
+preds_chunk= [[-5.889102   -6.2407055  -4.5315046  -0.02130375 -6.180817   -5.6472344 ]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test5_7() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "5.7" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 60 );\n\t}']
+preds_chunk= [[-5.862388   -6.2284474  -4.47821    -0.02223397 -6.1094627  -5.627863  ]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test5_8() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "5.8" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 20 );\n\t}']
+preds_chunk= [[-6.9470258e+00 -7.1299806e+00 -6.8580112e+00 -4.8994012e-03
+  -7.0521212e+00 -6.7182932e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test5_9() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "5.9" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0222106e+00 -7.1837077e+00 -7.0159650e+00 -4.4751023e-03
+  -7.1561685e+00 -6.7794938e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test5_10() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "5.10" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-6.9373178e+00 -7.1265101e+00 -6.8731294e+00 -5.0116153e-03
+  -6.9372187e+00 -6.7101851e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test5_11() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "5.11" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 20 );\n\t}']
+preds_chunk= [[-6.907896e+00 -7.101136e+00 -6.780938e+00 -5.190943e-03 -6.949045e+00
+  -6.677686e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test5_12() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "5.12" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-6.9691062e+00 -7.1438417e+00 -6.9025159e+00 -4.8368829e-03
+  -7.0199790e+00 -6.7289214e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test5_13() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "5.13" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0275869e+00 -7.1841731e+00 -7.0228119e+00 -4.4831722e-03
+  -7.1336541e+00 -6.7780633e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test5_14() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "5.14" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-6.9888673e+00 -7.1582947e+00 -6.9400358e+00 -4.7112415e-03
+  -7.0658746e+00 -6.7441921e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test5_15() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "5.15" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-6.9759102e+00 -7.1478429e+00 -6.9187498e+00 -4.7769709e-03
+  -7.0498419e+00 -6.7352357e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test5_16() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "5.16" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-6.9764810e+00 -7.1532264e+00 -6.9444804e+00 -4.7890721e-03
+  -6.9872823e+00 -6.7472177e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test5_17() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "5.17" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0167212e+00 -7.1769938e+00 -7.0086579e+00 -4.5457124e-03
+  -7.0971694e+00 -6.7739439e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test5_18() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "5.18" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0124979e+00 -7.1763182e+00 -6.9979310e+00 -4.5567486e-03
+  -7.1063428e+00 -6.7699680e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test5_19() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "5.19" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 1100 );\n\t}']
+preds_chunk= [[-6.8450384e+00 -7.0597410e+00 -6.6951656e+00 -5.6209839e-03
+  -6.7964544e+00 -6.6249075e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test5_20() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "5.20" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 1100 );\n\t}']
+preds_chunk= [[-6.8412280e+00 -7.0599365e+00 -6.6988029e+00 -5.6354459e-03
+  -6.7806778e+00 -6.6270638e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_1_1() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.1.1" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.1146498e+00 -7.2503891e+00 -7.2307916e+00 -3.9816401e-03
+  -7.2738757e+00 -6.8748746e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_1_2() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.1.2" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0688653e+00 -7.2162313e+00 -7.1208563e+00 -4.2197951e-03
+  -7.2209888e+00 -6.8253241e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_1_3() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.1.3" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.1076722e+00 -7.2456021e+00 -7.2165565e+00 -4.0177349e-03
+  -7.2600904e+00 -6.8683338e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_2_1() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.2.1" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.1097569e+00 -7.2474685e+00 -7.2175212e+00 -4.0085926e-03
+  -7.2662125e+00 -6.8694286e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_2_2() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.2.2" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0886722e+00 -7.2337580e+00 -7.1757827e+00 -4.1086790e-03
+  -7.2342105e+00 -6.8518085e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_2_3() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.2.3" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.1059480e+00 -7.2461777e+00 -7.2139363e+00 -4.0218905e-03
+  -7.2575297e+00 -6.8689876e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_2_4() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.2.4" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0643048e+00 -7.2160935e+00 -7.1163797e+00 -4.2393818e-03
+  -7.2079625e+00 -6.8231440e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_3_1() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.3.1" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.1248760e+00 -7.2595816e+00 -7.2587018e+00 -3.9312947e-03
+  -7.2757535e+00 -6.8887572e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_3_2() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.3.2" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0908237e+00 -7.2357492e+00 -7.1822672e+00 -4.0972820e-03
+  -7.2328968e+00 -6.8557076e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_4_1() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.4.1" );\n\t\tassertEquals( "NON-STRICT", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 2100 );\n\t}']
+preds_chunk= [[-6.8011732e+00 -7.0090013e+00 -6.5346198e+00 -5.7645268e-03
+  -7.0406933e+00 -6.5684686e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_4_2() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.4.2" );\n\t\tassertEquals( "NON-STRICT", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 2100 );\n\t}']
+preds_chunk= [[-6.7204723e+00 -6.9487762e+00 -6.3625460e+00 -6.3887169e-03
+  -6.9466825e+00 -6.4918456e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_4_3() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.4.3" );\n\t\tassertEquals( "NON-STRICT", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 2100 );\n\t}']
+preds_chunk= [[-6.7216296e+00 -6.9467473e+00 -6.3641014e+00 -6.3631311e-03
+  -6.9743423e+00 -6.4898195e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_4_4() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.4.4" );\n\t\tassertEquals( "NON-STRICT", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 2100 );\n\t}']
+preds_chunk= [[-6.6613712e+00 -6.9011569e+00 -6.2367120e+00 -6.8763755e-03
+  -6.9094300e+00 -6.4301143e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_5_1() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.5.1" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.1030064e+00 -7.2423325e+00 -7.2068343e+00 -4.0348321e-03
+  -7.2571697e+00 -6.8668413e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_5_2() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.5.2" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0681510e+00 -7.2179594e+00 -7.1287346e+00 -4.2124353e-03
+  -7.2089586e+00 -6.8338447e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_5_3() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.5.3" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0917459e+00 -7.2349024e+00 -7.1849647e+00 -4.0871906e-03
+  -7.2395616e+00 -6.8586168e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_5_4() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.5.4" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0482612e+00 -7.2027221e+00 -7.0765023e+00 -4.3181987e-03
+  -7.1995173e+00 -6.8090458e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_5_5() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.5.5" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0721221e+00 -7.2209134e+00 -7.1400523e+00 -4.1831140e-03
+  -7.2219505e+00 -6.8384171e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_6_1() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.6.1" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.1094213e+00 -7.2486796e+00 -7.2294855e+00 -4.0076426e-03
+  -7.2440939e+00 -6.8763733e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_6_2() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.6.2" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0786939e+00 -7.2275796e+00 -7.1621442e+00 -4.1621020e-03
+  -7.1992993e+00 -6.8478026e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_6_3() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.6.3" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0975523e+00 -7.2411370e+00 -7.2074037e+00 -4.0613082e-03
+  -7.2250571e+00 -6.8682485e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_6_4() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.6.4" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0470953e+00 -7.2045593e+00 -7.0874333e+00 -4.3298309e-03
+  -7.1644864e+00 -6.8140903e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_6_5() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.6.5" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0690641e+00 -7.2204947e+00 -7.1403847e+00 -4.2041256e-03
+  -7.1970286e+00 -6.8385868e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_6_6() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.6.6" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0564246e+00 -7.2138104e+00 -7.1274009e+00 -4.2758235e-03
+  -7.1455374e+00 -6.8332787e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_6_7() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.6.7" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0649385e+00 -7.2174730e+00 -7.1297417e+00 -4.2338027e-03
+  -7.1831927e+00 -6.8340697e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_6_8() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.6.8" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0567245e+00 -7.2144556e+00 -7.1242685e+00 -4.2848447e-03
+  -7.1374969e+00 -6.8325987e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_6_9() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.6.9" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0841336e+00 -7.2321916e+00 -7.1795154e+00 -4.1317106e-03
+  -7.1989002e+00 -6.8565521e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_6_10() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.6.10" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0332875e+00 -7.1974978e+00 -7.0928249e+00 -4.4327336e-03
+  -7.0586915e+00 -6.8111687e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_6_11() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.6.11" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0363765e+00 -7.1994190e+00 -7.0814314e+00 -4.4129132e-03
+  -7.0884542e+00 -6.8110147e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_7_1() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.7.1" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0988989e+00 -7.2415161e+00 -7.2039418e+00 -4.0607150e-03
+  -7.2316771e+00 -6.8654175e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_7_2() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.7.2" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0694671e+00 -7.2207232e+00 -7.1363468e+00 -4.2140973e-03
+  -7.1900702e+00 -6.8367586e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_7_3() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.7.3" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0904775e+00 -7.2355804e+00 -7.1863446e+00 -4.0984689e-03
+  -7.2222652e+00 -6.8592458e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_7_4() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.7.4" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0518727e+00 -7.2078629e+00 -7.0936871e+00 -4.3051420e-03
+  -7.1765261e+00 -6.8173389e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_8_1() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.8.1" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0904994e+00 -7.2371778e+00 -7.1908479e+00 -4.1052359e-03
+  -7.2044168e+00 -6.8610988e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_8_2() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.8.2" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0669575e+00 -7.2220683e+00 -7.1439452e+00 -4.2267991e-03
+  -7.1599898e+00 -6.8418832e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_9_1() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.9.1" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.1124015e+00 -7.2503223e+00 -7.2351747e+00 -3.9952947e-03
+  -7.2451577e+00 -6.8800783e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_9_2() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.9.2" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0939288e+00 -7.2384963e+00 -7.1953654e+00 -4.0849345e-03
+  -7.2174530e+00 -6.8642716e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_9_3() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.9.3" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.1100717e+00 -7.2492862e+00 -7.2320952e+00 -4.0006377e-03
+  -7.2442060e+00 -6.8803372e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_9_4() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.9.4" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0818310e+00 -7.2290006e+00 -7.1650963e+00 -4.1448879e-03
+  -7.2120438e+00 -6.8493762e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_10_1() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.10.1" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0482168e+00 -7.2048774e+00 -7.0936937e+00 -4.3564178e-03
+  -7.1287608e+00 -6.8097305e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_10_2() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.10.2" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0286021e+00 -7.1926131e+00 -7.0571237e+00 -4.4714231e-03
+  -7.0790195e+00 -6.7950234e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_10_3() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.10.3" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0564795e+00 -7.2114768e+00 -7.1151218e+00 -4.3098899e-03
+  -7.1352968e+00 -6.8202257e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_11_1() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.11.1" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0849991e+00 -7.2318683e+00 -7.1768045e+00 -4.1466691e-03
+  -7.1876078e+00 -6.8520517e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_11_2() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.11.2" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0532041e+00 -7.2108159e+00 -7.1089568e+00 -4.3195044e-03
+  -7.1296468e+00 -6.8231597e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_11_3() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.11.3" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0785594e+00 -7.2276692e+00 -7.1646085e+00 -4.1765850e-03
+  -7.1777787e+00 -6.8477154e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_11_4() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.11.4" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0303750e+00 -7.1922851e+00 -7.0473142e+00 -4.4424655e-03
+  -7.1212473e+00 -6.7960687e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_11_5() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.11.5" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0448956e+00 -7.2043953e+00 -7.0901465e+00 -4.3552313e-03
+  -7.1293502e+00 -6.8160548e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_12_1() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.12.1" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0734644e+00 -7.2219186e+00 -7.1455379e+00 -4.2053130e-03
+  -7.1849303e+00 -6.8377233e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_12_2() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.12.2" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0385547e+00 -7.1984968e+00 -7.0710125e+00 -4.3991460e-03
+  -7.1197090e+00 -6.8069735e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_12_3() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.12.3" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0652657e+00 -7.2171073e+00 -7.1325688e+00 -4.2449608e-03
+  -7.1659813e+00 -6.8338928e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_12_4() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.12.4" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0241609e+00 -7.1870570e+00 -7.0322938e+00 -4.4779503e-03
+  -7.1147776e+00 -6.7893586e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_12_5() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.12.5" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0333738e+00 -7.1946945e+00 -7.0594878e+00 -4.4221706e-03
+  -7.1192098e+00 -6.8022423e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_12_6() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.12.6" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0296874e+00 -7.1938882e+00 -7.0616183e+00 -4.4416348e-03
+  -7.0957232e+00 -6.8038983e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_12_7() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.12.7" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0271292e+00 -7.1901927e+00 -7.0447030e+00 -4.4584870e-03
+  -7.1089749e+00 -6.7967119e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_12_8() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.12.8" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0260673e+00 -7.1915936e+00 -7.0520205e+00 -4.4743898e-03
+  -7.0783153e+00 -6.7995639e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_13_1() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.13.1" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.1289411e+00 -7.2610097e+00 -7.2659483e+00 -3.9236955e-03
+  -7.2714953e+00 -6.8898540e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_13_2() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.13.2" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.1040244e+00 -7.2443600e+00 -7.2121220e+00 -4.0445677e-03
+  -7.2336473e+00 -6.8676534e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_13_3() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.13.3" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.1202898e+00 -7.2550530e+00 -7.2487702e+00 -3.9626420e-03
+  -7.2587461e+00 -6.8834953e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_13_4() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.13.4" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0788717e+00 -7.2251339e+00 -7.1506171e+00 -4.1731424e-03
+  -7.2115164e+00 -6.8388891e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_13_5() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.13.5" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0903335e+00 -7.2342882e+00 -7.1828661e+00 -4.1091540e-03
+  -7.2192173e+00 -6.8549094e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_14_1() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.14.1" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.1058164e+00 -7.2466025e+00 -7.2200160e+00 -4.0468238e-03
+  -7.2156520e+00 -6.8694963e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_14_2() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.14.2" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0793657e+00 -7.2295852e+00 -7.1670766e+00 -4.1810959e-03
+  -7.1670232e+00 -6.8475332e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_14_3() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.14.3" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0979228e+00 -7.2416534e+00 -7.2061701e+00 -4.0835100e-03
+  -7.2009854e+00 -6.8643427e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_14_4() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.14.4" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0602484e+00 -7.2144313e+00 -7.1169262e+00 -4.2818771e-03
+  -7.1564016e+00 -6.8242664e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_14_5() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.14.5" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0654202e+00 -7.2189503e+00 -7.1341133e+00 -4.2522019e-03
+  -7.1541080e+00 -6.8332186e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_14_6() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.14.6" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0564728e+00 -7.2148476e+00 -7.1285567e+00 -4.3088216e-03
+  -7.1076441e+00 -6.8294544e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_14_7() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.14.7" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0501986e+00 -7.2084928e+00 -7.1015406e+00 -4.3414626e-03
+  -7.1208959e+00 -6.8191061e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_14_8() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.14.8" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0655513e+00 -7.2211199e+00 -7.1428437e+00 -4.2578997e-03
+  -7.1300406e+00 -6.8375258e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_14_9() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.14.9" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0818758e+00 -7.2314739e+00 -7.1746097e+00 -4.1686310e-03
+  -7.1667891e+00 -6.8507557e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_14_10() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.14.10" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0387535e+00 -7.2010813e+00 -7.1018443e+00 -4.4258498e-03
+  -7.0497808e+00 -6.8107100e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_15_1() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.15.1" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0977020e+00 -7.2407269e+00 -7.2058864e+00 -4.0746056e-03
+  -7.2139602e+00 -6.8645167e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_16_1() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.16.1" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0734143e+00 -7.2282562e+00 -7.1768012e+00 -4.2107734e-03
+  -7.1225533e+00 -6.8512969e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_16_2() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.16.2" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0388274e+00 -7.2051764e+00 -7.1178732e+00 -4.4021131e-03
+  -7.0421491e+00 -6.8235612e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_16_3() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.16.3" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0653968e+00 -7.2232366e+00 -7.1650424e+00 -4.2508962e-03
+  -7.1044469e+00 -6.8460512e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_17_1() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.17.1" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.1237197e+00 -7.2559094e+00 -7.2489953e+00 -3.9552804e-03
+  -7.2663665e+00 -6.8819623e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_17_2() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.17.2" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.1065402e+00 -7.2451530e+00 -7.2134199e+00 -4.0411246e-03
+  -7.2336040e+00 -6.8674917e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_17_3() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.17.3" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.1221218e+00 -7.2554235e+00 -7.2487197e+00 -3.9635920e-03
+  -7.2563238e+00 -6.8825188e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_17_4() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.17.4" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0940938e+00 -7.2345953e+00 -7.1813874e+00 -4.1054734e-03
+  -7.2260985e+00 -6.8514400e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_17_5() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.17.5" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0984178e+00 -7.2390561e+00 -7.1970510e+00 -4.0794732e-03
+  -7.2234235e+00 -6.8602624e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_18_1() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.18.1" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.1174445e+00 -7.2563076e+00 -7.2544336e+00 -3.9709536e-03
+  -7.2347889e+00 -6.8894005e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_18_2() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.18.2" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.1054416e+00 -7.2491713e+00 -7.2297335e+00 -4.0321015e-03
+  -7.2098989e+00 -6.8795447e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_18_3() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.18.3" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.1211252e+00 -7.2587748e+00 -7.2631545e+00 -3.9525493e-03
+  -7.2398562e+00 -6.8931837e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_18_4() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.18.4" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0952239e+00 -7.2407393e+00 -7.2022166e+00 -4.0812544e-03
+  -7.2092409e+00 -6.8661709e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_18_5() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.18.5" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0899882e+00 -7.2371635e+00 -7.1935253e+00 -4.1022683e-03
+  -7.2027264e+00 -6.8637061e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_19_1() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.19.1" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0880785e+00 -7.2340045e+00 -7.1905913e+00 -4.1232817e-03
+  -7.1887083e+00 -6.8594856e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_19_2() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.19.2" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0710092e+00 -7.2239470e+00 -7.1571450e+00 -4.2168275e-03
+  -7.1488509e+00 -6.8450894e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_19_3() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.19.3" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0887237e+00 -7.2347217e+00 -7.1926942e+00 -4.1193636e-03
+  -7.1883893e+00 -6.8609853e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_19_4() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.19.4" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0514660e+00 -7.2081299e+00 -7.1058483e+00 -4.3184361e-03
+  -7.1403251e+00 -6.8218899e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_19_5() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.19.5" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0600777e+00 -7.2147360e+00 -7.1299968e+00 -4.2675147e-03
+  -7.1484036e+00 -6.8333969e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_20_1() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.20.1" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0707154e+00 -7.2236156e+00 -7.1589823e+00 -4.2085182e-03
+  -7.1580544e+00 -6.8452492e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_20_2() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.20.2" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0471621e+00 -7.2090015e+00 -7.1150427e+00 -4.3381397e-03
+  -7.1036520e+00 -6.8270440e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_20_3() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.20.3" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0708528e+00 -7.2252021e+00 -7.1651735e+00 -4.2053130e-03
+  -7.1488986e+00 -6.8492637e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_20_4() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.20.4" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0218954e+00 -7.1895647e+00 -7.0490179e+00 -4.4792560e-03
+  -7.0845394e+00 -6.7975836e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_20_5() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.20.5" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0394578e+00 -7.2022738e+00 -7.0902386e+00 -4.3771886e-03
+  -7.1102791e+00 -6.8159041e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_20_6() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.20.6" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0268083e+00 -7.1953945e+00 -7.0893426e+00 -4.4536213e-03
+  -7.0439787e+00 -6.8130803e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_20_7() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.20.7" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0295529e+00 -7.1949377e+00 -7.0656085e+00 -4.4454322e-03
+  -7.0862956e+00 -6.8039398e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_21_1() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.21.1" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.1161189e+00 -7.2558479e+00 -7.2561917e+00 -3.9774841e-03
+  -7.2247214e+00 -6.8903966e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_21_2() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.21.2" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0960741e+00 -7.2429652e+00 -7.2133217e+00 -4.0768613e-03
+  -7.1919127e+00 -6.8727927e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_21_3() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.21.3" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.1104856e+00 -7.2522426e+00 -7.2455783e+00 -4.0014689e-03
+  -7.2168322e+00 -6.8869495e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_21_4() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.21.4" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0750651e+00 -7.2276754e+00 -7.1648479e+00 -4.1846572e-03
+  -7.1668463e+00 -6.8506417e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_21_5() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.21.5" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0819225e+00 -7.2330751e+00 -7.1856437e+00 -4.1420390e-03
+  -7.1742916e+00 -6.8612285e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_21_6() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.21.6" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0697856e+00 -7.2265472e+00 -7.1734877e+00 -4.2082807e-03
+  -7.1290193e+00 -6.8552828e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_21_7() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.21.7" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0668602e+00 -7.2220984e+00 -7.1499090e+00 -4.2283423e-03
+  -7.1485763e+00 -6.8445153e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_21_8() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.21.8" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0812063e+00 -7.2344089e+00 -7.1906295e+00 -4.1550975e-03
+  -7.1488290e+00 -6.8637252e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_22_1() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.22.1" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.1165662e+00 -7.2549820e+00 -7.2478628e+00 -3.9924448e-03
+  -7.2230268e+00 -6.8830962e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_22_2() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.22.2" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0846834e+00 -7.2345905e+00 -7.1825838e+00 -4.1497555e-03
+  -7.1706691e+00 -6.8554931e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_22_3() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.22.3" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.1092553e+00 -7.2502894e+00 -7.2310796e+00 -4.0236716e-03
+  -7.2186065e+00 -6.8766680e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_22_4() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.22.4" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0599818e+00 -7.2164559e+00 -7.1245642e+00 -4.2785536e-03
+  -7.1440339e+00 -6.8293104e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_22_5() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.22.5" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0835238e+00 -7.2324548e+00 -7.1766639e+00 -4.1518924e-03
+  -7.1799531e+00 -6.8534265e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_22_6() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.22.6" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0525723e+00 -7.2130246e+00 -7.1219873e+00 -4.3211663e-03
+  -7.1051197e+00 -6.8292284e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_22_7() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.22.7" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0726328e+00 -7.2248330e+00 -7.1496487e+00 -4.2125541e-03
+  -7.1653128e+00 -6.8406868e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_22_8() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.22.8" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0739417e+00 -7.2283692e+00 -7.1675315e+00 -4.2149280e-03
+  -7.1290870e+00 -6.8486776e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_22_9() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.22.9" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0930076e+00 -7.2397599e+00 -7.1989007e+00 -4.1129529e-03
+  -7.1801767e+00 -6.8616972e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_22_10() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.22.10" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0441585e+00 -7.2045450e+00 -7.1232510e+00 -4.4043679e-03
+  -7.0375085e+00 -6.8174295e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_22_11() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.22.11" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0712399e+00 -7.2246761e+00 -7.1524258e+00 -4.2302413e-03
+  -7.1421628e+00 -6.8402953e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_22_12() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.22.12" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0439553e+00 -7.2038813e+00 -7.0952578e+00 -4.3987897e-03
+  -7.0783486e+00 -6.8119574e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_22_13() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.22.13" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0825329e+00 -7.2281775e+00 -7.1592488e+00 -4.1833515e-03
+  -7.1795783e+00 -6.8405247e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_22_14() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.22.14" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0596027e+00 -7.2157493e+00 -7.1261892e+00 -4.3104836e-03
+  -7.1096187e+00 -6.8250012e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_22_15() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.22.15" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0874166e+00 -7.2340436e+00 -7.1814733e+00 -4.1515362e-03
+  -7.1737041e+00 -6.8506713e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_22_16() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.22.16" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0577674e+00 -7.2158828e+00 -7.1396012e+00 -4.3263887e-03
+  -7.0739183e+00 -6.8293672e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_22_17() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.22.17" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.1037502e+00 -7.2442079e+00 -7.2159271e+00 -4.0696193e-03
+  -7.1974468e+00 -6.8667927e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_22_18() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.22.18" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0937696e+00 -7.2399783e+00 -7.1995296e+00 -4.1193636e-03
+  -7.1737442e+00 -6.8590350e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_22_19() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.22.19" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0561113e+00 -7.2126541e+00 -7.1217232e+00 -4.3238960e-03
+  -7.1050057e+00 -6.8244390e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_22_20() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.22.20" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0396075e+00 -7.2028060e+00 -7.1050024e+00 -4.4209841e-03
+  -7.0451946e+00 -6.8145308e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_22_21() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.22.21" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0809178e+00 -7.2307911e+00 -7.1731749e+00 -4.1710055e-03
+  -7.1654143e+00 -6.8517590e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_22_22() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.22.22" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0663009e+00 -7.2212253e+00 -7.1418180e+00 -4.2555253e-03
+  -7.1353879e+00 -6.8359208e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_22_23() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.22.23" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0637116e+00 -7.2200923e+00 -7.1378479e+00 -4.2746365e-03
+  -7.1237288e+00 -6.8326850e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_22_24() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.22.24" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0160389e+00 -7.1864209e+00 -7.0560493e+00 -4.5415591e-03
+  -7.0155020e+00 -6.7969847e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_22_25() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.22.25" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0254726e+00 -7.1939101e+00 -7.0699811e+00 -4.4667944e-03
+  -7.0596881e+00 -6.8057079e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_22_26() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.22.26" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0664725e+00 -7.2236409e+00 -7.1589689e+00 -4.2406875e-03
+  -7.1219683e+00 -6.8454685e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_22_27() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.22.27" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0526414e+00 -7.2123508e+00 -7.1243577e+00 -4.3278132e-03
+  -7.0958400e+00 -6.8287878e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_22_28() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.22.28" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0185056e+00 -7.1866636e+00 -7.0475035e+00 -4.5276745e-03
+  -7.0419068e+00 -6.7930369e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_22_29() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.22.29" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0642080e+00 -7.2192788e+00 -7.1427655e+00 -4.2640720e-03
+  -7.1278729e+00 -6.8358135e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_22_30() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.22.30" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0529523e+00 -7.2124071e+00 -7.1256623e+00 -4.3276944e-03
+  -7.0970392e+00 -6.8268027e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_22_31() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.22.31" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0482783e+00 -7.2094545e+00 -7.1170568e+00 -4.3523824e-03
+  -7.0868778e+00 -6.8239675e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_22_32() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.22.32" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0170064e+00 -7.1883521e+00 -7.0648398e+00 -4.5314720e-03
+  -7.0124621e+00 -6.7996492e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_22_33() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.22.33" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0627551e+00 -7.2205143e+00 -7.1557097e+00 -4.2783162e-03
+  -7.0924506e+00 -6.8404341e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_22_34() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.22.34" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0456953e+00 -7.2076740e+00 -7.1070690e+00 -4.3534506e-03
+  -7.1014261e+00 -6.8227544e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_23_1() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.23.1" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.1117492e+00 -7.2514048e+00 -7.2397752e+00 -4.0051495e-03
+  -7.2248054e+00 -6.8813519e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_23_2() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.23.2" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0887613e+00 -7.2368250e+00 -7.1918473e+00 -4.1218568e-03
+  -7.1843824e+00 -6.8605614e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_23_3() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.23.3" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.1040483e+00 -7.2467942e+00 -7.2245507e+00 -4.0431432e-03
+  -7.2108655e+00 -6.8745594e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_23_4() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.23.4" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0663733e+00 -7.2195988e+00 -7.1356707e+00 -4.2403312e-03
+  -7.1649342e+00 -6.8340435e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_23_5() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.23.5" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0794353e+00 -7.2296114e+00 -7.1711416e+00 -4.1651884e-03
+  -7.1774268e+00 -6.8519220e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_23_6() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.23.6" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0577550e+00 -7.2168207e+00 -7.1405659e+00 -4.2892369e-03
+  -7.1072669e+00 -6.8365593e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test6_23_7() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "6.23.7" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0739698e+00 -7.2259035e+00 -7.1571817e+00 -4.2003272e-03
+  -7.1655416e+00 -6.8446774e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test7_1_1() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "7.1.1" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.1077924e+00 -7.2448974e+00 -7.2138419e+00 -4.0201098e-03
+  -7.2612996e+00 -6.8675056e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test7_1_2() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "7.1.2" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0674729e+00 -7.2154069e+00 -7.1175981e+00 -4.2315470e-03
+  -7.2120004e+00 -6.8246732e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test7_1_3() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "7.1.3" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.1008701e+00 -7.2406216e+00 -7.2007122e+00 -4.0543037e-03
+  -7.2480054e+00 -6.8616705e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test7_1_4() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "7.1.4" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0688972e+00 -7.2170668e+00 -7.1229563e+00 -4.2221695e-03
+  -7.2152891e+00 -6.8247523e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test7_1_5() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "7.1.5" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0678334e+00 -7.2183456e+00 -7.1313119e+00 -4.2241872e-03
+  -7.1942029e+00 -6.8311696e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test7_1_6() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "7.1.6" );\n\t\tassertEquals( "INFORMATIONAL", testResult.get( "behavior" ) );\n\t\tassertEquals( "INFORMATIONAL", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 50 );\n\t}']
+preds_chunk= [[-6.8893695e+00 -7.0694776e+00 -6.6925650e+00 -5.2668387e-03
+  -7.0751104e+00 -6.6470981e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test7_3_1() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "7.3.1" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.1215353e+00 -7.2567711e+00 -7.2489061e+00 -3.9493432e-03
+  -7.2719507e+00 -6.8850412e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test7_3_2() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "7.3.2" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0903711e+00 -7.2348604e+00 -7.1783795e+00 -4.1028615e-03
+  -7.2326775e+00 -6.8544350e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test7_3_3() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "7.3.3" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.1191182e+00 -7.2560534e+00 -7.2467942e+00 -3.9555179e-03
+  -7.2689762e+00 -6.8849335e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test7_3_4() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "7.3.4" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0801840e+00 -7.2269135e+00 -7.1523905e+00 -4.1517736e-03
+  -7.2322531e+00 -6.8411355e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test7_3_5() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "7.3.5" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0878696e+00 -7.2345700e+00 -7.1808362e+00 -4.1108159e-03
+  -7.2192736e+00 -6.8564830e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test7_3_6() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "7.3.6" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0875053e+00 -7.2336159e+00 -7.1785650e+00 -4.1123591e-03
+  -7.2214584e+00 -6.8560929e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test7_5_1() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "7.5.1" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0958538e+00 -7.2373643e+00 -7.1915550e+00 -4.0755556e-03
+  -7.2384648e+00 -6.8606787e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test7_7_1() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "7.7.1" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0954976e+00 -7.2390823e+00 -7.1976857e+00 -4.0887338e-03
+  -7.2102141e+00 -6.8625212e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test7_7_2() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "7.7.2" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0715990e+00 -7.2229214e+00 -7.1444888e+00 -4.2170649e-03
+  -7.1689186e+00 -6.8397684e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test7_7_3() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "7.7.3" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0872498e+00 -7.2338619e+00 -7.1822124e+00 -4.1264868e-03
+  -7.1972451e+00 -6.8571157e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test7_7_4() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "7.7.4" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0543051e+00 -7.2099233e+00 -7.1009288e+00 -4.3043112e-03
+  -7.1611733e+00 -6.8200116e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test7_7_5() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "7.7.5" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0581059e+00 -7.2146606e+00 -7.1229596e+00 -4.2809276e-03
+  -7.1437445e+00 -6.8313417e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test7_7_6() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "7.7.6" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0526066e+00 -7.2090149e+00 -7.1027622e+00 -4.3117893e-03
+  -7.1486874e+00 -6.8227673e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test7_7_7() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "7.7.7" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0640683e+00 -7.2202144e+00 -7.1411638e+00 -4.2498279e-03
+  -7.1415544e+00 -6.8395691e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test7_7_8() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "7.7.8" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0561781e+00 -7.2128263e+00 -7.1095862e+00 -4.2939847e-03
+  -7.1520486e+00 -6.8259993e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test7_7_9() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "7.7.9" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0650506e+00 -7.2195654e+00 -7.1365275e+00 -4.2453171e-03
+  -7.1541400e+00 -6.8375769e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test7_7_10() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "7.7.10" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0014830e+00 -7.1732235e+00 -7.0298748e+00 -4.6456265e-03
+  -6.9758568e+00 -6.7781768e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test7_7_11() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "7.7.11" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0246778e+00 -7.1909428e+00 -7.0565777e+00 -4.4925474e-03
+  -7.0547037e+00 -6.7995324e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test7_7_12() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "7.7.12" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0243974e+00 -7.1895847e+00 -7.0583897e+00 -4.5050085e-03
+  -7.0416651e+00 -6.7981958e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test7_7_13() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "7.7.13" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0671744e+00 -7.2179742e+00 -7.1351709e+00 -4.2594429e-03
+  -7.1438794e+00 -6.8324223e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test7_9_1() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "7.9.1" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.1111002e+00 -7.2487879e+00 -7.2286005e+00 -4.0043183e-03
+  -7.2462273e+00 -6.8772945e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test7_9_2() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "7.9.2" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0957594e+00 -7.2393475e+00 -7.1962719e+00 -4.0787612e-03
+  -7.2215991e+00 -6.8646016e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test7_9_3() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "7.9.3" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.1075315e+00 -7.2471380e+00 -7.2237902e+00 -4.0157167e-03
+  -7.2416906e+00 -6.8768177e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test7_9_4() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "7.9.4" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0813513e+00 -7.2281914e+00 -7.1612177e+00 -4.1493992e-03
+  -7.2138829e+00 -6.8477416e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test7_9_5() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "7.9.5" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0857406e+00 -7.2327981e+00 -7.1790438e+00 -4.1255374e-03
+  -7.2034664e+00 -6.8578563e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test7_9_7() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "7.9.7" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0887485e+00 -7.2357726e+00 -7.1867156e+00 -4.1156835e-03
+  -7.1988273e+00 -6.8603826e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test7_9_8() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "7.9.8" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0788379e+00 -7.2276702e+00 -7.1562972e+00 -4.1632890e-03
+  -7.2046103e+00 -6.8470550e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test7_9_9() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "7.9.9" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0865707e+00 -7.2336497e+00 -7.1804123e+00 -4.1209073e-03
+  -7.2059050e+00 -6.8583159e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test7_9_10() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "7.9.10" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0430179e+00 -7.2031422e+00 -7.0931139e+00 -4.3800371e-03
+  -7.1011868e+00 -6.8144670e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test7_9_11() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "7.9.11" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.071994e+00 -7.223175e+00 -7.148137e+00 -4.216946e-03 -7.162590e+00
+  -6.841289e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test7_13_1() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "7.13.1" );\n\t\tassertEquals( "INFORMATIONAL", testResult.get( "behavior" ) );\n\t\tassertEquals( "INFORMATIONAL", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-6.9807053e+00 -7.1383457e+00 -6.8906064e+00 -4.7161062e-03
+  -7.1649466e+00 -6.7331538e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test7_13_2() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "7.13.2" );\n\t\tassertEquals( "INFORMATIONAL", testResult.get( "behavior" ) );\n\t\tassertEquals( "INFORMATIONAL", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-6.9406147e+00 -7.1091523e+00 -6.8009977e+00 -4.9564587e-03
+  -7.1166587e+00 -6.6968346e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test9_1_1() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "9.1.1" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.1055841e+00 -7.2414041e+00 -7.2068868e+00 -4.0330514e-03
+  -7.2649779e+00 -6.8618155e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test9_1_2() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "9.1.2" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 20 );\n\t}']
+preds_chunk= [[-7.0715113e+00 -7.2168741e+00 -7.1340017e+00 -4.2029386e-03
+  -7.2174807e+00 -6.8309088e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test9_1_3() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "9.1.3" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 70 );\n\t}']
+preds_chunk= [[-7.1315775e+00 -7.2615929e+00 -7.2701373e+00 -3.9144335e-03
+  -7.2777867e+00 -6.8892803e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test9_1_4() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "9.1.4" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 375 );\n\t}']
+preds_chunk= [[-6.8291969e+00 -7.0336742e+00 -6.5656037e+00 -5.7169977e-03
+  -6.9753790e+00 -6.5751166e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test9_1_5() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "9.1.5" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 750 );\n\t}']
+preds_chunk= [[-6.9280553e+00 -7.1209564e+00 -6.8408852e+00 -5.0132764e-03
+  -6.9943056e+00 -6.7035465e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test9_1_6() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "9.1.6" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 1000 );\n\t}']
+preds_chunk= [[-6.6770697  -6.914604   -6.234757   -0.00695203 -6.821009   -6.4225373 ]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test9_2_1() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "9.2.1" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.1086369e+00 -7.2448616e+00 -7.2108641e+00 -4.0215342e-03
+  -7.2665482e+00 -6.8641143e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test9_2_2() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "9.2.2" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 20 );\n\t}']
+preds_chunk= [[-7.0954452e+00 -7.2370462e+00 -7.1933069e+00 -4.0792357e-03
+  -7.2357516e+00 -6.8584146e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test9_2_3() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "9.2.3" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 70 );\n\t}']
+preds_chunk= [[-7.1381249e+00 -7.2681508e+00 -7.2834244e+00 -3.8817783e-03
+  -7.2871819e+00 -6.8963733e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test9_2_4() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "9.2.4" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 250 );\n\t}']
+preds_chunk= [[-7.0019331e+00 -7.1765852e+00 -7.0104432e+00 -4.5664790e-03
+  -7.0795975e+00 -6.7792478e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test9_2_5() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "9.2.5" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 350 );\n\t}']
+preds_chunk= [[-7.0395532e+00 -7.2037120e+00 -7.0866337e+00 -4.3406319e-03
+  -7.1593671e+00 -6.8150921e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test9_2_6() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "9.2.6" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 800 );\n\t}']
+preds_chunk= [[-6.9214344e+00 -7.1223836e+00 -6.8431296e+00 -5.0457758e-03
+  -6.9601927e+00 -6.7055502e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test9_3_1() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "9.3.1" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 2000 );\n\t}']
+preds_chunk= [[-6.9141173e+00 -7.1012130e+00 -6.7694068e+00 -5.0843228e-03
+  -7.0848160e+00 -6.6706147e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test9_3_2() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "9.3.2" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 600 );\n\t}']
+preds_chunk= [[-6.430315   -6.7360997  -5.745502   -0.00943972 -6.582784   -6.207165  ]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test9_3_3() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "9.3.3" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 300 );\n\t}']
+preds_chunk= [[-6.9514966e+00 -7.1377244e+00 -6.8852067e+00 -4.8163589e-03
+  -7.0881438e+00 -6.7294722e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test9_3_4() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "9.3.4" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 250 );\n\t}']
+preds_chunk= [[-7.0126019e+00 -7.1838145e+00 -7.0341530e+00 -4.4969385e-03
+  -7.1028008e+00 -6.7912340e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test9_3_5() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "9.3.5" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 200 );\n\t}']
+preds_chunk= [[-6.7747560e+00 -6.9959021e+00 -6.4648886e+00 -6.0893488e-03
+  -6.9036074e+00 -6.5350590e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test9_3_6() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "9.3.6" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 175 );\n\t}']
+preds_chunk= [[-7.0939565e+00 -7.2404351e+00 -7.2042723e+00 -4.0841037e-03
+  -7.2070146e+00 -6.8647742e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test9_3_7() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "9.3.7" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 175 );\n\t}']
+preds_chunk= [[-7.0936265e+00 -7.2402840e+00 -7.2000952e+00 -4.0913457e-03
+  -7.2071829e+00 -6.8611717e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test9_3_8() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "9.3.8" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 160 );\n\t}']
+preds_chunk= [[-7.0420523e+00 -7.2037158e+00 -7.0814180e+00 -4.3555871e-03
+  -7.1462312e+00 -6.8128147e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test9_3_9() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "9.3.9" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 160 );\n\t}']
+preds_chunk= [[-7.0598989e+00 -7.2169905e+00 -7.1285529e+00 -4.2539826e-03
+  -7.1654620e+00 -6.8332372e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test9_4_1() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "9.4.1" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 2300 );\n\t}']
+preds_chunk= [[-6.02621    -6.3376064  -4.797596   -0.01760745 -6.2875223  -5.7567873 ]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test9_4_2() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "9.4.2" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 700 );\n\t}']
+preds_chunk= [[-6.9137487e+00 -7.1077323e+00 -6.7874041e+00 -5.0916765e-03
+  -7.0232792e+00 -6.6868486e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test9_4_3() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "9.4.3" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 350 );\n\t}']
+preds_chunk= [[-7.0531526e+00 -7.2110858e+00 -7.1136680e+00 -4.2564753e-03
+  -7.1995978e+00 -6.8274107e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test9_4_4() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "9.4.4" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 175 );\n\t}']
+preds_chunk= [[-7.0914593e+00 -7.2374678e+00 -7.1882248e+00 -4.0960945e-03
+  -7.2272501e+00 -6.8547382e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test9_4_5() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "9.4.5" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 150 );\n\t}']
+preds_chunk= [[-7.0897584e+00 -7.2390184e+00 -7.1946883e+00 -4.0854095e-03
+  -7.2268085e+00 -6.8607435e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test9_4_6() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "9.4.6" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 100 );\n\t}']
+preds_chunk= [[-6.9918294e+00 -7.1646676e+00 -6.9562931e+00 -4.6243868e-03
+  -7.1195126e+00 -6.7600832e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test9_4_7() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "9.4.7" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 125 );\n\t}']
+preds_chunk= [[-7.0869422e+00 -7.2330613e+00 -7.1685104e+00 -4.1356282e-03
+  -7.2163372e+00 -6.8458166e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test9_4_8() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "9.4.8" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 125 );\n\t}']
+preds_chunk= [[-7.0930009e+00 -7.2375822e+00 -7.1804166e+00 -4.1029803e-03
+  -7.2277493e+00 -6.8521399e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test9_4_9() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "9.4.9" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 125 );\n\t}']
+preds_chunk= [[-7.1079192e+00 -7.2485986e+00 -7.2174444e+00 -4.0272335e-03
+  -7.2425942e+00 -6.8682919e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test9_5_1() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "9.5.1" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 3200 );\n\t}']
+preds_chunk= [[-6.9440680e+00 -7.1228614e+00 -6.8403807e+00 -4.9258545e-03
+  -7.0818038e+00 -6.6982856e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test9_5_2() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "9.5.2" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 1300 );\n\t}']
+preds_chunk= [[-6.9972677e+00 -7.1738725e+00 -7.0179672e+00 -4.5668352e-03
+  -7.0635448e+00 -6.7905493e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test9_5_3() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "9.5.3" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 700 );\n\t}']
+preds_chunk= [[-6.9307966e+00 -7.1203098e+00 -6.8304982e+00 -4.9773357e-03
+  -7.0370817e+00 -6.7087111e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test9_5_4() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "9.5.4" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 450 );\n\t}']
+preds_chunk= [[-6.9835591e+00 -7.1588049e+00 -6.9391303e+00 -4.6564243e-03
+  -7.1328793e+00 -6.7481732e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test9_5_5() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "9.5.5" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 250 );\n\t}']
+preds_chunk= [[-6.9832301e+00 -7.1643295e+00 -6.9845548e+00 -4.6661538e-03
+  -7.0313478e+00 -6.7727919e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test9_5_6() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "9.5.6" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 150 );\n\t}']
+preds_chunk= [[-7.0758872e+00 -7.2285805e+00 -7.1667171e+00 -4.1550975e-03
+  -7.2006965e+00 -6.8515444e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test9_6_1() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "9.6.1" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 3000 );\n\t}']
+preds_chunk= [[-7.0119939e+00 -7.1738868e+00 -7.0015411e+00 -4.5096367e-03
+  -7.1580858e+00 -6.7740350e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test9_6_2() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "9.6.2" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 1500 );\n\t}']
+preds_chunk= [[-6.8066454e+00 -7.0331273e+00 -6.5756707e+00 -5.8057723e-03
+  -6.8792877e+00 -6.5873981e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test9_6_3() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "9.6.3" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 750 );\n\t}']
+preds_chunk= [[-6.9716539e+00 -7.1530027e+00 -6.9421129e+00 -4.7342591e-03
+  -7.0488729e+00 -6.7526741e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test9_6_4() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "9.6.4" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 450 );\n\t}']
+preds_chunk= [[-6.9904475e+00 -7.1640105e+00 -6.9607477e+00 -4.6171485e-03
+  -7.1275811e+00 -6.7585740e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test9_6_5() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "9.6.5" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 250 );\n\t}']
+preds_chunk= [[-6.9849830e+00 -7.1657176e+00 -6.9960217e+00 -4.6522710e-03
+  -7.0261183e+00 -6.7773991e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test9_6_6() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "9.6.6" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 200 );\n\t}']
+preds_chunk= [[-6.7151003e+00 -6.9492593e+00 -6.3432226e+00 -6.5766796e-03
+  -6.8182192e+00 -6.4818263e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test9_7_1() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "9.7.1" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 500 );\n\t}']
+preds_chunk= [[-6.7569652e+00 -6.9876814e+00 -6.4460769e+00 -6.2125660e-03
+  -6.8457246e+00 -6.5315776e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test9_7_2() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "9.7.2" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 400 );\n\t}']
+preds_chunk= [[-6.9902143e+00 -7.1625996e+00 -6.9649878e+00 -4.6468130e-03
+  -7.0816851e+00 -6.7632899e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test9_7_3() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "9.7.3" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 400 );\n\t}']
+preds_chunk= [[-7.0138497e+00 -7.1799016e+00 -7.0222187e+00 -4.4989558e-03
+  -7.1198530e+00 -6.7880845e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test9_7_4() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "9.7.4" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 400 );\n\t}']
+preds_chunk= [[-6.9748554e+00 -7.1506338e+00 -6.9261618e+00 -4.7299876e-03
+  -7.0795135e+00 -6.7461247e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test9_7_5() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "9.7.5" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 550 );\n\t}']
+preds_chunk= [[-6.9832969e+00 -7.1681304e+00 -6.9917345e+00 -4.6773073e-03
+  -7.0081992e+00 -6.7727489e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test9_7_6() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "9.7.6" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 850 );\n\t}']
+preds_chunk= [[-6.9106555e+00 -7.1115131e+00 -6.8084354e+00 -5.1554833e-03
+  -6.9300032e+00 -6.6869230e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test9_8_1() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "9.8.1" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 300 );\n\t}']
+preds_chunk= [[-6.8915834e+00 -7.0933385e+00 -6.7540793e+00 -5.1984140e-03
+  -7.0037699e+00 -6.6738958e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test9_8_2() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "9.8.2" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 320 );\n\t}']
+preds_chunk= [[-6.9982042e+00 -7.1713853e+00 -6.9869843e+00 -4.6005356e-03
+  -7.0812421e+00 -6.7735701e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test9_8_3() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "9.8.3" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 400 );\n\t}']
+preds_chunk= [[-7.0126944e+00 -7.1793737e+00 -7.0206280e+00 -4.4965823e-03
+  -7.1259933e+00 -6.7883635e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test9_8_4() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "9.8.4" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 400 );\n\t}']
+preds_chunk= [[-6.9729505e+00 -7.1498351e+00 -6.9241910e+00 -4.7288015e-03
+  -7.0848627e+00 -6.7470832e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test9_8_5() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "9.8.5" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 470 );\n\t}']
+preds_chunk= [[-7.0074186e+00 -7.1755338e+00 -6.9958076e+00 -4.5822617e-03
+  -7.0852804e+00 -6.7693443e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test9_8_6() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "9.8.6" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 770 );\n\t}']
+preds_chunk= [[-6.9418821e+00 -7.1393828e+00 -6.9001970e+00 -4.9291761e-03
+  -6.9503284e+00 -6.7325850e+00]]
+pred_class= [3]
+test_x= ['@Test\n\tpublic void test10_1_1() {{\n\t\tJSONObject testResult = jsonObject.getJSONObject( "10.1.1" );\n\t\tassertEquals( "OK", testResult.get( "behavior" ) );\n\t\tassertEquals( "OK", testResult.get( "behaviorClose" ) );\n\t\tAssume.assumeTrue("Duration: " + testResult.getInt( "duration" ), testResult.getInt( "duration" ) < 10 );\n\t}']
+preds_chunk= [[-7.0949321e+00 -7.2345080e+00 -7.1803441e+00 -4.0958570e-03
+  -7.2509146e+00 -6.8438711e+00]]
+pred_class= [3]
+test_x= ['@Test(timeout=2000)\n\tpublic void testIssue() throws Exception {\n\t\tfinal int port = SocketUtil.getAvailablePort();\n\t\tWebSocketServer server = new WebSocketServer( new InetSocketAddress( port ) ) {{\n\t\t\t@Override\n\t\t\tpublic void onOpen(WebSocket conn, ClientHandshake handshake ) {\n\t\t\t}\n\n\t\t\t@Override\n\t\t\tpublic void onClose( WebSocket conn, int code, String reason, boolean remote ) {\n\t\t\t}\n\n\t\t\t@Override\n\t\t\tpublic void onMessage( WebSocket conn, String message ) {\n\n\t\t\t}\n\n\t\t\t@Override\n\t\t\tpublic void onError( WebSocket conn, Exception ex ) {\n\n\t\t\t}\n\n\t\t\t@Override\n\t\t\tpublic void onStart() {\n\t\t\t\ttry {\n\t\t\t\t\tfor (int i = 0; i < 10; i++) {\n\t\t\t\t\t\tTestWebSocket tw = new TestWebSocket(port);\n\t\t\t\t\t\ttw.connect();\n\t\t\t\t\t}\n\t\t\t\t} catch (Exception e) {\n\t\t\t\t\tAssert.fail("Exception during connect!");\n\t\t\t\t}\n\t\t\t}\n\t\t}']
+preds_chunk= [[-7.8552346e+00 -8.0269976e+00 -7.7585478e+00 -7.8429332e+00
+  -8.1480017e+00 -1.8248587e-03]]
+pred_class= [5]
+test_x= ['@Test\n\tpublic void testIssue() throws Exception {\n\t\tint port = SocketUtil.getAvailablePort();\n\t\tWebSocketClient webSocket = new WebSocketClient( new URI( "ws://localhost:" + port ) ) {{\n\t\t\t@Override\n\t\t\tpublic void onOpen( ServerHandshake handshakedata ) {\n\n\t\t\t}\n\n\t\t\t@Override\n\t\t\tpublic void onMessage( String message ) {\n\n\t\t\t}\n\n\t\t\t@Override\n\t\t\tpublic void onClose( int code, String reason, boolean remote ) {\n\t\t\t\twasOpenClient = isOpen();\n\t\t\t\tcountDownLatch.countDown();\n\t\t\t}\n\n\t\t\t@Override\n\t\t\tpublic void onError( Exception ex ) {\n\n\t\t\t}\n\t\t}']
+preds_chunk= [[-0.0094507 -5.585006  -7.034589  -7.7066073 -5.5437174 -7.7997904]]
+pred_class= [0]
+test_x= ['@Test(timeout =  2000)\n\tpublic void testIssue() throws Exception {\n\t\tSystem.setErr( new TestPrintStream( System.err ) );\n\t\tint port = SocketUtil.getAvailablePort();\n\t\tWebSocketServer server0 = new WebSocketServer( new InetSocketAddress( port ) ) {{\n\t\t\t@Override\n\t\t\tpublic void onOpen( WebSocket conn, ClientHandshake handshake ) {\n\t\t\t\tfail( "There should be no onOpen" );\n\t\t\t}\n\n\t\t\t@Override\n\t\t\tpublic void onClose( WebSocket conn, int code, String reason, boolean remote ) {\n\t\t\t\tfail( "There should be no onClose" );\n\t\t\t}\n\n\t\t\t@Override\n\t\t\tpublic void onMessage( WebSocket conn, String message ) {\n\t\t\t\tfail( "There should be no onMessage" );\n\t\t\t}\n\n\t\t\t@Override\n\t\t\tpublic void onError( WebSocket conn, Exception ex ) {\n\t\t\t\tfail( "There should be no onError!" );\n\t\t\t}\n\n\t\t\t@Override\n\t\t\tpublic void onStart() {\n\t\t\t\tcountServerDownLatch.countDown();\n\t\t\t}\n\t\t}']
+preds_chunk= [[-4.757339   -6.168303   -5.9934416  -6.5050592  -6.4796543  -0.01634131]]
+pred_class= [5]
+test_x= ['@Test(timeout = 2000)\n    public void testIssue() throws Exception {\n        int port = SocketUtil.getAvailablePort();\n        final WebSocketClient webSocket = new WebSocketClient(new URI("ws://localhost:" + port)) {{\n            @Override\n            public void onOpen(ServerHandshake handshakedata) {\n                try {\n                    this.reconnect();\n                    Assert.fail("Exception should be thrown");\n                } catch (IllegalStateException e) {\n                    //\n                }\n            }\n\n            @Override\n            public void onMessage(String message) {\n                try {\n                    this.reconnect();\n                    Assert.fail("Exception should be thrown");\n                } catch (IllegalStateException e) {\n                    send("hi");\n                }\n            }\n\n            @Override\n            public void onClose(int code, String reason, boolean remote) {\n                try {\n                    this.reconnect();\n                    Assert.fail("Exception should be thrown");\n                } catch (IllegalStateException e) {\n                    //\n                }\n            }\n\n            @Override\n            public void onError(Exception ex) {\n                try {\n                    this.reconnect();\n                    Assert.fail("Exception should be thrown");\n                } catch (IllegalStateException e) {\n                    //\n                }\n            }\n        }']
+preds_chunk= [[-4.1790752  -5.8770933  -5.6837606  -6.32396    -5.667008   -0.02713206]]
+pred_class= [5]
+test_x= ['@Test\n\tpublic void testServer() throws Exception {\n\t\tMap<Long, Thread> mapBefore = ThreadCheck.getThreadMap();\n\t\tint port = SocketUtil.getAvailablePort();\n\t\tWebSocketServer server = new WebSocketServer( new InetSocketAddress( port ) ) {{\n\t\t\t@Override\n\t\t\tpublic void onOpen( WebSocket conn, ClientHandshake handshake ) {\n\t\t\t}\n\n\t\t\t@Override\n\t\t\tpublic void onClose( WebSocket conn, int code, String reason, boolean remote ) {\n\n\t\t\t}\n\n\t\t\t@Override\n\t\t\tpublic void onMessage( WebSocket conn, String message ) {\n\n\t\t\t}\n\n\t\t\t@Override\n\t\t\tpublic void onError( WebSocket conn, Exception ex ) {\n\n\t\t\t}\n\n\t\t\t@Override\n\t\t\tpublic void onStart() {\n\t\t\t\tcountServerDownLatch.countDown();\n\t\t\t}\n\t\t}']
+preds_chunk= [[-2.8788098e-03 -6.5611296e+00 -7.5994749e+00 -8.5414410e+00
+  -7.5420475e+00 -8.3590765e+00]]
+pred_class= [0]
+test_x= ['@Test\n\tpublic void testClient() throws Exception {\n\t\tint port = SocketUtil.getAvailablePort();\n\t\tWebSocketClient client = new WebSocketClient( new URI( "ws://localhost:" + port ) ) {{\n\t\t\t@Override\n\t\t\tpublic void onOpen( ServerHandshake handshakedata ) {\n\n\t\t\t}\n\n\t\t\t@Override\n\t\t\tpublic void onMessage( String message ) {\n\n\t\t\t}\n\n\t\t\t@Override\n\t\t\tpublic void onClose( int code, String reason, boolean remote ) {\n\t\t\t}\n\n\t\t\t@Override\n\t\t\tpublic void onError( Exception ex ) {\n\n\t\t\t}\n\t\t}']
+preds_chunk= [[-6.9698539e+00 -7.8054786e+00 -7.7687707e+00 -7.5827765e+00
+  -2.5437875e-03 -8.2493858e+00]]
+pred_class= [4]
+test_x= ['@Test\n\tpublic void testIssue() throws Exception {\n\t\tSystem.setErr( new TestPrintStream( System.err ) );\n\t\tint port = SocketUtil.getAvailablePort();\n\t\tWebSocketClient webSocket = new WebSocketClient( new URI( "ws://localhost:" + port ) ) {{\n\t\t\t@Override\n\t\t\tpublic void onOpen( ServerHandshake handshakedata ) {\n\n\t\t\t}\n\n\t\t\t@Override\n\t\t\tpublic void onMessage( String message ) {\n\n\t\t\t}\n\n\t\t\t@Override\n\t\t\tpublic void onClose( int code, String reason, boolean remote ) {\n\t\t\t\tcountDownLatch.countDown();\n\t\t\t}\n\n\t\t\t@Override\n\t\t\tpublic void onError( Exception ex ) {\n\n\t\t\t}\n\t\t}']
+preds_chunk= [[-4.4753393e-03 -6.0116377e+00 -7.4598298e+00 -8.2406874e+00
+  -7.0237117e+00 -8.1619816e+00]]
+pred_class= [0]
+test_x= ['@Test\n\tpublic void testIssue() throws Exception {\n\t\tint port = SocketUtil.getAvailablePort();\n\t\tWebSocketClient webSocket0 = new WebSocketClient( new URI( "ws://localhost:" + port ) ) {{\n\t\t\t@Override\n\t\t\tpublic void onOpen( ServerHandshake handshakedata ) {\n\n\t\t\t}\n\n\t\t\t@Override\n\t\t\tpublic void onMessage( String message ) {\n\n\t\t\t}\n\n\t\t\t@Override\n\t\t\tpublic void onClose( int code, String reason, boolean remote ) {\n\t\t\t\tcountDownLatch0.countDown();\n\t\t\t}\n\n\t\t\t@Override\n\t\t\tpublic void onError( Exception ex ) {\n\n\t\t\t}\n\t\t}']
+preds_chunk= [[-4.998169   -6.4798985  -7.0554924  -7.02624    -0.01053192 -7.725237  ]]
+pred_class= [4]
+test_x= ['@Test\n\tpublic void testDefaultValue() throws URISyntaxException {\n\t\tWebSocketClient client = new WebSocketClient(new URI( "ws://localhost")) {{\n\t\t\t@Override\n\t\t\tpublic void onOpen( ServerHandshake handshakedata ) {\n\n\t\t\t}\n\n\t\t\t@Override\n\t\t\tpublic void onMessage( String message ) {\n\n\t\t\t}\n\n\t\t\t@Override\n\t\t\tpublic void onClose( int code, String reason, boolean remote ) {\n\n\t\t\t}\n\n\t\t\t@Override\n\t\t\tpublic void onError( Exception ex ) {\n\n\t\t\t}\n\t\t}']
+preds_chunk= [[-7.1190701e+00 -7.9295712e+00 -7.7549057e+00 -7.5629721e+00
+  -2.3792074e-03 -8.2589540e+00]]
+pred_class= [4]
+test_x= ['@Test\n\tpublic void testSetter() throws URISyntaxException {\n\t\tWebSocketClient client = new WebSocketClient(new URI( "ws://localhost")) {{\n\t\t\t@Override\n\t\t\tpublic void onOpen( ServerHandshake handshakedata ) {\n\n\t\t\t}\n\n\t\t\t@Override\n\t\t\tpublic void onMessage( String message ) {\n\n\t\t\t}\n\n\t\t\t@Override\n\t\t\tpublic void onClose( int code, String reason, boolean remote ) {\n\n\t\t\t}\n\n\t\t\t@Override\n\t\t\tpublic void onError( Exception ex ) {\n\n\t\t\t}\n\t\t}']
+preds_chunk= [[-7.1113091e+00 -7.9253573e+00 -7.7531490e+00 -7.5629544e+00
+  -2.3868186e-03 -8.2627802e+00]]
+pred_class= [4]
+test_x= ['@Test\n\tpublic void testConstructor() throws Exception {\n\t\ttry {\n\t\t\tDraft_6455 draft_6455 = new Draft_6455( null, null );\n\t\t\tfail( "IllegalArgumentException expected" );\n\t\t} catch ( IllegalArgumentException e ) {{\n\t\t\t//Fine\n\t\t}']
+preds_chunk= [[-6.9439249e+00 -7.6240311e+00 -7.3801699e+00 -6.5010891e+00
+  -3.9795027e-03 -7.8409724e+00]]
+pred_class= [4]
+test_x= ['@Test\n    public void testEmptyByteBufferCapacity() {{\n        ByteBuffer byteBuffer = ByteBufferUtils.getEmptyByteBuffer();\n        assertEquals("capacity must be 0", 0, byteBuffer.capacity());\n    }']
+preds_chunk= [[-6.6380210e+00 -7.4487453e+00 -7.0200090e+00 -7.0894752e+00
+  -5.5071781e-03 -6.2804470e+00]]
+pred_class= [4]
+test_x= ['@Test\n    public void testEmptyByteBufferNewObject() {{\n        ByteBuffer byteBuffer0 = ByteBufferUtils.getEmptyByteBuffer();\n        ByteBuffer byteBuffer1 = ByteBufferUtils.getEmptyByteBuffer();\n        assertTrue("Allocated new object", byteBuffer0 != byteBuffer1);\n    }']
+preds_chunk= [[-7.1910186e+00 -7.8450794e+00 -7.7051086e+00 -7.5670877e+00
+  -2.4856406e-03 -7.9026713e+00]]
+pred_class= [4]
+test_x= ['@Test\n    public void testTransferByteBufferSmallToEmpty() {{\n        ByteBuffer small = ByteBuffer.wrap(smallArray);\n        ByteBuffer empty = ByteBufferUtils.getEmptyByteBuffer();\n        ByteBufferUtils.transferByteBuffer(small, empty);\n        assertArrayEquals("Small bytebuffer should not change", smallArray, small.array());\n        assertEquals("Capacity of the empty bytebuffer should still be 0", 0, empty.capacity());\n    }']
+preds_chunk= [[-0.01370297 -4.858291   -6.510296   -7.263143   -6.348626   -6.2618546 ]]
+pred_class= [0]
+test_x= ['@Test\n    public void testTransferByteBufferSmallToBig() {{\n        ByteBuffer small = ByteBuffer.wrap(smallArray);\n        ByteBuffer big = ByteBuffer.wrap(bigArray);\n        ByteBufferUtils.transferByteBuffer(small, big);\n        assertArrayEquals("Small bytebuffer should not change", smallArray, small.array());\n        assertEquals("Big bytebuffer not same to source 0", smallArray[0], big.get(0));\n        assertEquals("Big bytebuffer not same to source 1", smallArray[1], big.get(1));\n        assertEquals("Big bytebuffer not same to source 2", smallArray[2], big.get(2));\n        assertEquals("Big bytebuffer not same to source 3", smallArray[3], big.get(3));\n        assertEquals("Big bytebuffer not same to source 4", smallArray[4], big.get(4));\n        assertEquals("Big bytebuffer not same to source 5", bigArray[5], big.get(5));\n        assertEquals("Big bytebuffer not same to source 6", bigArray[6], big.get(6));\n        assertEquals("Big bytebuffer not same to source 7", bigArray[7], big.get(7));\n        assertEquals("Big bytebuffer not same to source 8", bigArray[8], big.get(8));\n    }']
+preds_chunk= [[-6.4563856e+00 -6.9246583e+00 -7.3258500e+00 -4.9695070e-03
+  -7.3181577e+00 -6.8290992e+00]]
+pred_class= [3]
+test_x= ['@Test\n    public void testTransferByteBufferBigToSmall() {{\n        ByteBuffer small = ByteBuffer.wrap(smallArray);\n        ByteBuffer big = ByteBuffer.wrap(bigArray);\n        ByteBufferUtils.transferByteBuffer(big, small);\n        assertArrayEquals("Big bytebuffer should not change", bigArray, big.array());\n        assertEquals("Small bytebuffer not same to source 0", bigArray[0], small.get(0));\n        assertEquals("Small bytebuffer not same to source 1", bigArray[1], small.get(1));\n        assertEquals("Small bytebuffer not same to source 2", bigArray[2], small.get(2));\n        assertEquals("Small bytebuffer not same to source 3", bigArray[3], small.get(3));\n        assertEquals("Small bytebuffer not same to source 4", bigArray[4], small.get(4));\n    }']
+preds_chunk= [[-7.1539497e+00 -7.2150025e+00 -7.7642260e+00 -3.3561829e-03
+  -7.5126257e+00 -7.0557132e+00]]
+pred_class= [3]
+test_x= ['@Test\n    public void testTransferByteBufferCheckNullDest() {{\n        ByteBuffer source = ByteBuffer.wrap(smallArray);\n        try {\n            ByteBufferUtils.transferByteBuffer(source, null);\n            fail("IllegalArgumentException should be thrown");\n        } catch (IllegalArgumentException e) {\n            //Fine\n        }\n    }']
+preds_chunk= [[-5.188333   -5.7593794  -7.014811   -6.8748336  -0.01130061 -7.4686146 ]]
+pred_class= [4]
+test_x= ['@Test\n    public void testTransferByteBufferCheckNullSource() {{\n        ByteBuffer dest = ByteBuffer.wrap(smallArray);\n        try {\n            ByteBufferUtils.transferByteBuffer(null, dest);\n            fail("IllegalArgumentException should be thrown");\n        } catch (IllegalArgumentException e) {\n            //Fine\n        }\n    }']
+preds_chunk= [[-4.0165377 -4.581007  -6.423592  -6.320951  -0.0331763 -6.957698 ]]
+pred_class= [4]
+test_x= ['@Test\n    public void testTransferByteBufferCheckNullBoth() {{\n        try {\n            ByteBufferUtils.transferByteBuffer(null, null);\n            fail("IllegalArgumentException should be thrown");\n        } catch (IllegalArgumentException e) {\n            //Fine\n        }\n    }']
+preds_chunk= [[-6.4618397e+00 -6.9987783e+00 -7.5369329e+00 -7.3684673e+00
+  -4.1115284e-03 -7.6749592e+00]]
+pred_class= [4]
+test_x= ['@Test\n\tpublic void testConstructor() throws Exception {\n\t\tProtocol protocol0 = new Protocol( "" );\n\t\ttry {\n\t\t\tProtocol protocol1 = new Protocol( null );\n\t\t\tfail( "IllegalArgumentException expected" );\n\t\t} catch ( IllegalArgumentException e ) {{\n\t\t\t//Fine\n\t\t}']
+preds_chunk= [[-6.070605   -6.601936   -6.636886   -4.4386725  -0.01797025 -6.888465  ]]
+pred_class= [4]
+SHANTO preds= [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0]
+***************=========********

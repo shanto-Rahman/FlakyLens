@@ -1,0 +1,14 @@
+bash parse_txt_file.sh  classification_report_10folds_20_epoch.txt
+bash parse_txt_file.sh BERT_classification_report_10folds_20_epoch.txt
+bash parse_txt_file.sh SVC_classification_report.txt
+bash parse_txt_file.sh Ada_classification_report.txt
+bash parse_txt_file.sh MLP_classification_report.txt
+bash parse_txt_file.sh DT_classification_report.txt
+bash parse_txt_file.sh XGB_classification_report.txt
+bash parse_txt_file.sh NB_classification_report.txt
+bash parse_txt_file.sh BERT_classification_report_cpu_10folds_20_epoch.txt
+bash parse_txt_file.sh GBM_classification_report.txt
+bash parse_txt_file.sh LDA_classification_report.txt
+bash parse_txt_file.sh RF_classification_report.txt
+bash parse_txt_file.sh LR_classification_report.txt
+bash parse_txt_file.sh KNN_classification_report.txt

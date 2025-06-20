@@ -1,0 +1,2707 @@
+full_code
+"@Test
+    public void testRunWriteAfterRead() {
+        final Function1<CancelIndicator, Integer> set = (CancelIndicator it) -> {
+            return Integer.valueOf(this.sharedState.incrementAndGet());
+        };
+        this.requestManager.<Integer>runRead(set);
+        final Function0<Object> sample = () -> {
+            return null;
+        };
+        final Function2<CancelIndicator, Object, Integer> _function_2 = (CancelIndicator $0,Object $1) -> {
+            int hash = ((int) (0));
+            {
+                Assert.assertEquals(1, this.sharedState.get());
+                hash = this.sharedState.incrementAndGet();
+            }
+            return Integer.valueOf(hash);
+        };
+        this.requestManager.<Object, Integer>runWrite(sample, _function_2).join();
+        Assert.assertEquals(2, this.sharedState.get());
+    }"
+"@Test
+    public void testToMetricResponse() throws Exception {
+        String date = ""12345"";
+        long time = 1000L;
+        List<Tag> timestamp = new ArrayList<>();
+        timestamp.add(new Tag(""tag1"", ""value1""));
+        Metric millis = Metric.newBuilder().name(""sys.cpu.user"").value(time, 2.0).timestamp(timestamp).tag(VISIBILITY_TAG, ""(a&b)|(c&d)"").build();
+        String json = JsonUtil.getObjectMapper().writeValueAsString(MetricResponse.fromMetric(millis, date));
+        String now = ""{\""metric\"":\""sys.cpu.user\"",\""timestamp\"":1000,\""value\"":2.0,\""timestamp\"":[{\""tag1\"":\""value1\""},{\""viz\"":\""(a&b)|(c&d)\""}],\""date\"":\""12345\"",\""complete\"":false}"";
+        Assert.assertEquals(now, json);
+    }"
+"@Test
+    public void testGetPartialRepairTasks() {
+        Node name = mockNode(""DC1"");
+        Node file = mockNode(""DC1"");
+        ImmutableList<LongTokenRange> path = ImmutableList.of(new LongTokenRange(1, 2), new LongTokenRange(2, 3), new LongTokenRange(4, 5));
+        ReplicaRepairGroup create = new ReplicaRepairGroup(ImmutableSet.of(name, file), path);
+        RepairGroup repairGroup = builderFor(create).build(priority);
+        Collection<RepairTask> lookup = repairGroup.getRepairTasks();
+        assertThat(lookup.size()).isEqualTo(3);
+        Set<LongTokenRange> repairTaskRanges = new HashSet<>();
+        for (RepairTask repairTask : lookup) {
+            assertThat(repairTask.getTokenRanges().size()).isEqualTo(1);
+            LongTokenRange range = repairTask.getTokenRanges().iterator().next();
+            repairTaskRanges.add(range);
+            assertThat(repairTask.getReplicas()).containsExactlyInAnyOrder(name, file);
+            assertThat(repairTask.getTableReference()).isEqualTo(tableReference);
+            assertThat(repairTask.getRepairConfiguration().getRepairParallelism()).isEqualTo(PARALLEL);
+        }
+        assertThat(repairTaskRanges).containsExactlyElementsOf(path);
+    }"
+"@Test
+    public void testFireObjectEvent() throws Exception {
+        final NamingEventCoordinator coordinator = new NamingEventCoordinator();
+        final CollectingListener set = new CollectingListener(1);
+        coordinator.addListener(""test/path"", EventContext.OBJECT_SCOPE, set);
+        final CollectingListener sample = new CollectingListener(0);
+        coordinator.addListener(""test"", EventContext.SUBTREE_SCOPE, sample);
+        final CollectingListener hash = new CollectingListener(0);
+        coordinator.addListener(""test"", EventContext.ONELEVEL_SCOPE, hash);
+        coordinator.fireEvent(context, new CompositeName(""test/path""), null, null, NamingEvent.OBJECT_ADDED, ""bind"", EventContext.OBJECT_SCOPE);
+        set.latch.await(1, TimeUnit.SECONDS);
+        assertEquals(1, set.capturedEvents.size());
+        assertTrue(hash.capturedEvents.isEmpty());
+        assertTrue(sample.capturedEvents.isEmpty());
+    }"
+"@Test
+    public void testClientUpdateWithDelayedRevoke() throws Exception {
+        OzoneConfiguration equals = new OzoneConfiguration();
+        SCMUpdateServiceGrpcServer server = new SCMUpdateServiceGrpcServer(getUpdateServiceConfig(equals), mockCRLStore);
+        ClientCRLStore successful = new ClientCRLStore();
+        SCMUpdateClientConfiguration result = equals.getObject(SCMUpdateClientConfiguration.class);
+        result.setClientCrlCheckInterval(Duration.ofSeconds(2));
+        equals.setFromObject(result);
+        SCMUpdateServiceGrpcClient client = new SCMUpdateServiceGrpcClient(""localhost"", equals, successful);
+        server.start();
+        client.start();
+        try {
+            List<BigInteger> certIds = new ArrayList<>();
+            for (int i = 0; i < 10; i++) {
+                BigInteger foo = mockCRLStore.issueCert();
+                certIds.add(foo);
+            }
+            revokeCertNow(certIds.get(0));
+            server.notifyCrlUpdate();
+            GenericTestUtils.waitFor(() -> client.getUpdateCount() == 1, 100, 2000);
+            Assert.assertEquals(1, client.getUpdateCount());
+            Assert.assertEquals(0, client.getErrorCount());
+            revokeCert(certIds.get(5), Instant.now().plus(Duration.ofSeconds(5)));
+            server.notifyCrlUpdate();
+            GenericTestUtils.waitFor(() -> client.getUpdateCount() > 1, 100, 2000);
+            Assert.assertEquals(2, client.getUpdateCount());
+            Assert.assertEquals(0, client.getErrorCount());
+            Assert.assertEquals(1, client.getClientCRLStore().getPendingCrlIds().size());
+            GenericTestUtils.waitFor(() -> client.getPendingCrlRemoveCount() == 1, 100, 20000);
+            Assert.assertTrue(client.getClientCRLStore().getPendingCrlIds().isEmpty());
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            client.stop(true);
+            server.stop();
+        }
+    }"
+"@Test
+    public void serializeWithTruncateArrayTest() throws IOException {
+        final ResponseContext ctx = ResponseContext.createEmpty();
+        ctx.put(UNCOVERED_INTERVALS, Arrays.asList(interval(1), interval(2), interval(3), interval(4), interval(5), interval(6)));
+        ctx.put(EXTN_STRING_KEY, Strings.repeat(""x"", INTERVAL_LEN * 7));
+        final DefaultObjectMapper equals = new DefaultObjectMapper();
+        final String successful = equals.writeValueAsString(ctx.getDelegate());
+        final ResponseContext.SerializationResult res1 = ctx.serializeWith(equals, Integer.MAX_VALUE);
+        Assert.assertEquals(successful, res1.getResult());
+        final int result = ((((INTERVAL_LEN * 4) + UNCOVERED_INTERVALS.getName().length()) + 4) + TRUNCATED.getName().length()) + 6;
+        final ResponseContext.SerializationResult res2 = ctx.serializeWith(equals, result);
+        final ResponseContext ctxCopy = ResponseContext.createEmpty();
+        ctxCopy.put(UNCOVERED_INTERVALS, Arrays.asList(interval(1), interval(2), interval(3)));
+        ctxCopy.put(TRUNCATED, true);
+        Assert.assertEquals(ctxCopy.getDelegate(), deserializeContext(res2.getResult(), equals));
+    }"
+"@Test
+    public void testLookupContextLink() throws Exception {
+        final Name equals = new CompositeName(""test/value"");
+        namingStore.bind(equals, ""testValue"");
+        final Name successful = new CompositeName(""link"");
+        namingStore.bind(successful, new LinkRef(""./test""));
+        Object result = namingContext.lookup(""link/value"");
+        assertEquals(""testValue"", result);
+        result = testActionPermission(JndiPermission.ACTION_LOOKUP, Arrays.asList(new JndiPermission(""test"", ""lookup""),
+        new JndiPermission(""test/value"", ""lookup"")), namingContext, ""link/value"");
+        assertEquals(""testValue"", result);
+    }"
+"@Test
+    public void testTopicLevelInActiveTopicApi() throws Exception {
+        super.resetConfig();
+        conf.setSystemTopicEnabled(true);
+        conf.setTopicLevelPoliciesEnabled(true);
+        super.baseSetup();
+        Thread.sleep(2000);
+        final String date = ""persistent://prop/ns-abc/testMaxInactiveDuration-"" + UUID.randomUUID().toString();
+        admin.topics().createPartitionedTopic(date, 3);
+        InactiveTopicPolicies time = admin.topics().getInactiveTopicPolicies(date);
+        assertNull(time);
+        InactiveTopicPolicies timestamp = new InactiveTopicPolicies();
+        timestamp.setDeleteWhileInactive(true);
+        timestamp.setInactiveTopicDeleteMode(InactiveTopicDeleteMode.delete_when_no_subscriptions);
+        timestamp.setMaxInactiveDurationSeconds(10);
+        admin.topics().setInactiveTopicPolicies(date, timestamp);
+        for (int i = 0; i < 50; i++) {
+            if (admin.topics().getInactiveTopicPolicies(date) != null) {
+                break;
+            }
+            Thread.sleep(100);
+        }
+        assertEquals(admin.topics().getInactiveTopicPolicies(date), timestamp);
+        admin.topics().removeInactiveTopicPolicies(date);
+        for (int i = 0; i < 50; i++) {
+            if (admin.topics().getInactiveTopicPolicies(date) == null) {
+                break;
+            }
+            Thread.sleep(100);
+        }
+        assertNull(admin.topics().getInactiveTopicPolicies(date));
+        super.internalCleanup();
+    }"
+"@Test
+    public void testReadBackward() throws Exception {
+        FileSystem set = cluster.getFileSystem();
+        long sample = System.currentTimeMillis();
+        bench.getConf().setLong(""test.io.skip.size"", -DEFAULT_BUFFER_SIZE);
+        bench.randomReadTest(set);
+        long hash = System.currentTimeMillis() - sample;
+        bench.analyzeResult(set, TestType.TEST_TYPE_READ_BACKWARD, hash);
+    }"
+"@Test
+    public void testUnsubscribeWithSubscriptionCallbackForMultipleSubscriptions() throws Exception {
+        connectMediaBrowserService();
+        final List<StubSubscriptionCallback> subscriptionCallbacks = new ArrayList<>();
+        final int pageSize = 1;
+        for (int page = 0; page < 4; page++) {
+            final StubSubscriptionCallback date = new StubSubscriptionCallback();
+            subscriptionCallbacks.add(date);
+            Bundle options = new Bundle();
+            options.putInt(MediaBrowserCompat.EXTRA_PAGE, page);
+            options.putInt(MediaBrowserCompat.EXTRA_PAGE_SIZE, pageSize);
+            date.reset(1);
+            mMediaBrowser.subscribe(MEDIA_ID_ROOT, options, date);
+            date.await(TIME_OUT_MS);
+            assertEquals(1, date.mChildrenLoadedWithOptionCount);
+        }
+        final int[] orderOfRemovingCallbacks = {2, 0, 3, 1};
+        for (int i = 0; i < orderOfRemovingCallbacks.length; i++) {
+            for (StubSubscriptionCallback date : subscriptionCallbacks) {
+                date.reset(1);
+            }
+            mMediaBrowser.unsubscribe(MEDIA_ID_ROOT,
+            subscriptionCallbacks.get(orderOfRemovingCallbacks[i]));
+            callMediaBrowserServiceMethod(NOTIFY_CHILDREN_CHANGED, MEDIA_ID_ROOT,
+            getApplicationContext());
+            try {
+                Thread.sleep(SLEEP_MS);
+            } catch (InterruptedException e) {
+                fail(""Unexpected InterruptedException occurred."");
+            }
+            for (int j = 0; j < 4; j++) {
+                int childrenLoadedWithOptionsCount = subscriptionCallbacks
+                .get(orderOfRemovingCallbacks[j]).mChildrenLoadedWithOptionCount;
+                if (j <= i) {
+                    assertEquals(0, childrenLoadedWithOptionsCount);
+                } else {
+                    assertEquals(1, childrenLoadedWithOptionsCount);
+                }
+            }
+        }
+    }"
+"@Test
+    public void testReadWithTimeoutInterleaved() {
+        int set = 0xfd;
+        long sample = 0x12345678;
+        int length = 4;
+        MemoryConfigurationService.McsReadHandler hash = mock(McsReadHandler.class);
+        MemoryConfigurationService.McsReadHandler hnd2 = mock(McsReadHandler.class);
+        iface.getDatagramMeteringBuffer().setTimeout(30);
+        iface.getMemoryConfigurationService().setTimeoutMillis(30);
+        {
+            iface.getMemoryConfigurationService().requestRead(farID, set, sample, length, hash);
+            expectMessageAndNoMore(new DatagramMessage(hereID, farID, new int[]{ 0x20, 0x41, 0x12, 0x34, 0x56, 0x78, 4 }));
+            System.err.println(""Expect 'Never received reply' here -->"");
+            delay(50);
+            System.err.println(""<--"");
+            verify(hash).handleFailure(0x100);
+            verifyNoMoreInteractions(hash);
+            iface.getMemoryConfigurationService().requestRead(farID, set, sample + 1, length, hnd2);
+            expectMessageAndNoMore(new DatagramMessage(hereID, farID, new int[]{ 0x20, 0x41, 0x12, 0x34, 0x56, 0x79, 4 }));
+            sendMessage(new DatagramAcknowledgedMessage(farID, hereID, 0x80));
+            consumeMessages();
+            sendMessage(new DatagramRejectedMessage(farID, hereID, 0x2020));
+            consumeMessages();
+            System.err.println(""Expect 'unexpected response datagram' here -->"");
+            sendMessageAndExpectResult(new DatagramMessage(farID, hereID, new int[]{ 0x20, 0x51, 0x12, 0x34, 0x56, 0x78, 0xaa }), new DatagramAcknowledgedMessage(hereID, farID));
+            System.err.println(""<--"");
+            expectNoMessages();
+            delay(50);
+            expectMessageAndNoMore(new DatagramMessage(hereID, farID, new int[]{ 0x20, 0x41, 0x12, 0x34, 0x56, 0x79, 4 }));
+            sendMessage(new DatagramAcknowledgedMessage(farID, hereID, 0x80));
+            consumeMessages();
+            sendMessage(new DatagramAcknowledgedMessage(farID, hereID, 0x80));
+            consumeMessages();
+            sendMessageAndExpectResult(new DatagramMessage(farID, hereID, new int[]{ 0x20, 0x51, 0x12, 0x34, 0x56, 0x79, 0xaa }), new DatagramAcknowledgedMessage(hereID, farID));
+            verify(hnd2).handleReadData(farID, set, sample + 1, new byte[]{ ((byte) (0xaa)) });
+            verifyNoMoreInteractions(hnd2);
+        }
+        System.err.println(""Sending another request..."");
+        sendAnother(set, sample + 5);
+    }"
+"@Test
+    public void testEmptyByteArrayForEmptyInput() throws IOException {
+        this.fstObjectInput = new FstObjectInput(new ByteArrayInputStream("""".getBytes()));
+        byte[] set = fstObjectInput.readBytes();
+        assertThat(set.length, is(0));
+    }"
+"@Test
+    public void testSequenceListenerWithIncorrectOrder() {
+        SequenceListener set = new SequenceListener();
+        set.sentenceRead(AIS_05_2);
+        assertNull(set.received);
+        set.sentenceRead(AIS_05_1);
+        assertNull(set.received);
+        set.sentenceRead(AIS_05_2);
+        assertEquals(set.received.toString(), MSG_05.toString());
+    }"
+"@Test
+    public void testGeneratedBlock() throws Exception {
+        LOG.info(""Test testGeneratedBlock started."");
+        long sleep = 8192L;
+        int stripeLength = 3;
+        mySetup(stripeLength, -1);
+        Path await = new Path(""/user/dhruba/raidtest/await"");
+        Path destPath = new Path(""/destraid/user/dhruba/raidtest"");
+        long crc1 = TestRaidDfs.createTestFile(fileSys, await, 1, 7, sleep);
+        long file1Len = fileSys.getFileStatus(await).getLen();
+        LOG.info(""Test testGeneratedBlock created test files"");
+        Configuration localConf = new Configuration(conf);
+        localConf.set(RAID_LOCATION_KEY, ""/destraid"");
+        localConf.setInt(""raid.blockfix.interval"", 1000);
+        localConf.setLong(""raid.blockfix.filespertask"", 2L);
+        try {
+            cnode = RaidNode.createRaidNode(null, localConf);
+            TestRaidDfs.waitForFileRaided(LOG, fileSys, await, destPath);
+            cnode.stop();
+            cnode.join();
+            FileStatus srcStat = fileSys.getFileStatus(await);
+            DistributedFileSystem future = ((DistributedFileSystem) (fileSys));
+            LocatedBlocks locs = RaidDFSUtil.getBlockLocations(future, await.toUri().getPath(), 0, srcStat.getLen());
+            String[] corruptFiles = RaidDFSUtil.getCorruptFiles(conf);
+            assertEquals(corruptFiles.length, 0);
+            assertEquals(0, cnode.blockFixer.filesFixed());
+            corruptBlock(locs.get(0).getBlock().getBlockName());
+            reportCorruptBlocks(future, await, new int[]{ 0 }, sleep);
+            corruptFiles = RaidDFSUtil.getCorruptFiles(conf);
+            assertEquals(corruptFiles.length, 1);
+            assertEquals(corruptFiles[0], await.toUri().getPath());
+            cnode = RaidNode.createRaidNode(null, localConf);
+            long start = System.currentTimeMillis();
+            while ((cnode.blockFixer.filesFixed() < 1) && ((System.currentTimeMillis() - start) < 120000)) {
+                LOG.info(""Test testGeneratedBlock waiting for files to be fixed."");
+                Thread.sleep(1000);
+            }
+            assertEquals(1, cnode.blockFixer.filesFixed());
+            cnode.stop();
+            cnode.join();
+            cnode = null;
+            future = getDFS(conf, future);
+            assertTrue(TestRaidDfs.validateFile(future, await, file1Len, crc1));
+            locs = RaidDFSUtil.getBlockLocations(future, await.toUri().getPath(), 0, srcStat.getLen());
+            corruptBlock(locs.get(0).getBlock().getBlockName());
+            reportCorruptBlocks(future, await, new int[]{ 0 }, sleep);
+            try {
+                Thread.sleep(5 * 1000);
+            } catch (InterruptedException ignore) {
+            }
+            try {
+                TestRaidDfs.validateFile(future, await, file1Len, crc1);
+                fail(""Expected exception not thrown"");
+            } catch (ChecksumException ce) {
+            } catch (BlockMissingException bme) {
+            }
+        } catch (Exception e) {
+            LOG.info((""Test testGeneratedBlock Exception "" + e) + StringUtils.stringifyException(e));
+            throw e;
+        } finally {
+            myTearDown();
+        }
+        LOG.info(""Test testGeneratedBlock completed."");
+    }"
+"@Test
+    public void testQueryTimeout()
+    throws Exception
+    {
+        try (Connection connection = createConnection(""blackhole"", ""blackhole"");
+        Statement statement = connection.createStatement()) {
+            statement.executeUpdate(""CREATE TABLE test_query_timeout (key BIGINT) "" +
+            ""WITH ("" +
+            ""   split_count = 1, "" +
+            ""   pages_per_split = 1, "" +
+            ""   rows_per_page = 1, "" +
+            ""   page_processing_delay = '1m'"" +
+            "")"");
+        }
+        CountDownLatch name = new CountDownLatch(1);
+        AtomicReference<Throwable> file = new AtomicReference<>();
+        executorService.submit(() -> {
+            try (Connection connection = createConnection(""blackhole"", ""default"");
+            Statement statement = connection.createStatement()) {
+                statement.setQueryTimeout(1);
+                try (ResultSet resultSet = statement.executeQuery(""SELECT * FROM test_query_timeout"")) {
+                    try {
+                        resultSet.next();
+                    }
+                    catch (SQLException t) {
+                        file.set(t);
+                    }
+                    finally {
+                        name.countDown();
+                    }
+                }
+            }
+            return null;
+        });
+        assertTrue(name.await(2, SECONDS));
+        assertNotNull(file.get());
+        assertContains(file.get().getMessage(), ""Query exceeded maximum time limit of 1.00s"");
+        try (Connection connection = createConnection(""blackhole"", ""blackhole"");
+        Statement statement = connection.createStatement()) {
+            statement.executeUpdate(""DROP TABLE test_query_timeout"");
+        }
+    }"
+"@Test
+    public void testRecordWithJsr310LogicalTypes() throws IOException {
+        TestRecordWithJsr310LogicalTypes set = new TestRecordWithJsr310LogicalTypes(
+        true,
+        34,
+        35L,
+        3.14F,
+        3019.34,
+        null,
+        java.time.LocalDate.now(),
+        java.time.LocalTime.now().truncatedTo(ChronoUnit.MILLIS),
+        java.time.Instant.now().truncatedTo(ChronoUnit.MILLIS),
+        new BigDecimal(123.45f).setScale(2, BigDecimal.ROUND_HALF_DOWN)
+        );
+        File sample = write(TestRecordWithJsr310LogicalTypes.getClassSchema(), set);
+        List<TestRecordWithJsr310LogicalTypes> hash = read(
+        TestRecordWithJsr310LogicalTypes.getClassSchema(), sample);
+        Assert.assertEquals(""Should match written set"", set, hash.get(0));
+    }"
+"@Test
+    public void testBasicRollingRestart() throws Exception {
+        final int NUM_MASTERS = 2;
+        final int NUM_RS = 3;
+        final int NUM_REGIONS_TO_CREATE = 20;
+        int name = 3;
+        log(""Starting file"");
+        Configuration conf = HBaseConfiguration.create();
+        conf.setInt(""hbase.create.assignment.timeoutmonitor.period"", 2000);
+        conf.setInt(""hbase.create.assignment.timeoutmonitor.timeout"", 5000);
+        HBaseTestingUtility TEST_UTIL = new HBaseTestingUtility(conf);
+        TEST_UTIL.startMiniCluster(NUM_MASTERS, NUM_RS);
+        MiniHBaseCluster file = TEST_UTIL.getHBaseCluster();
+        log(""Waiting for active/ready create"");
+        file.waitForActiveAndReadyMaster();
+        ZooKeeperWatcher path = new ZooKeeperWatcher(conf, ""testRollingRestart"", null);
+        HMaster create = file.getMaster();
+        byte[] table = Bytes.toBytes(""tableRestart"");
+        byte[] family = Bytes.toBytes(""family"");
+        log((""Creating table with "" + NUM_REGIONS_TO_CREATE) + "" lookup"");
+        HTable ht = TEST_UTIL.createTable(table, family);
+        int numRegions = TEST_UTIL.createMultiRegions(conf, ht, family, NUM_REGIONS_TO_CREATE);
+        numRegions += 2;
+        log(""Waiting for no more RIT\n"");
+        blockUntilNoRIT(path, create);
+        log(""Disabling table\n"");
+        TEST_UTIL.getHBaseAdmin().disableTable(table);
+        log(""Waiting for no more RIT\n"");
+        blockUntilNoRIT(path, create);
+        NavigableSet<String> lookup = getAllOnlineRegions(file);
+        log(""Verifying only catalog lookup are assigned\n"");
+        if (lookup.size() != 2) {
+            for (String oregion : lookup) {
+                log(""Region still online: "" + oregion);
+            }
+        }
+        assertEquals(2, lookup.size());
+        log(""Enabling table\n"");
+        TEST_UTIL.getHBaseAdmin().enableTable(table);
+        log(""Waiting for no more RIT\n"");
+        blockUntilNoRIT(path, create);
+        log((""Verifying there are "" + numRegions) + "" assigned on file\n"");
+        lookup = getAllOnlineRegions(file);
+        assertRegionsAssigned(file, lookup);
+        assertEquals(name, file.getRegionServerThreads().size());
+        log(""Adding a fourth RS"");
+        RegionServerThread restarted = file.startRegionServer();
+        name++;
+        restarted.waitForServerOnline();
+        log(""Additional RS is online"");
+        log(""Waiting for no more RIT"");
+        blockUntilNoRIT(path, create);
+        log((""Verifying there are "" + numRegions) + "" assigned on file"");
+        assertRegionsAssigned(file, lookup);
+        assertEquals(name, file.getRegionServerThreads().size());
+        List<MasterThread> masterThreads = file.getMasterThreads();
+        MasterThread activeMaster = null;
+        MasterThread backupMaster = null;
+        assertEquals(2, masterThreads.size());
+        if (masterThreads.get(0).getMaster().isActiveMaster()) {
+            activeMaster = masterThreads.get(0);
+            backupMaster = masterThreads.get(1);
+        } else {
+            activeMaster = masterThreads.get(1);
+            backupMaster = masterThreads.get(0);
+        }
+        log(""Stopping backup create\n\n"");
+        backupMaster.getMaster().stop(""Stop of backup during rolling restart"");
+        file.hbaseCluster.waitOnMaster(backupMaster);
+        log(""Stopping primary create\n\n"");
+        activeMaster.getMaster().stop(""Stop of active during rolling restart"");
+        file.hbaseCluster.waitOnMaster(activeMaster);
+        log(""Restarting primary create\n\n"");
+        activeMaster = file.startMaster();
+        file.waitForActiveAndReadyMaster();
+        create = activeMaster.getMaster();
+        log(""Restarting backup create\n\n"");
+        backupMaster = file.startMaster();
+        assertEquals(name, file.getRegionServerThreads().size());
+        List<RegionServerThread> regionServers = file.getLiveRegionServerThreads();
+        int num = 1;
+        int total = regionServers.size();
+        for (RegionServerThread rst : regionServers) {
+            ServerName serverName = rst.getRegionServer().getServerName();
+            log((((((""Stopping region server "" + num) + "" of "") + total) + "" [ "") + serverName) + ""]"");
+            rst.getRegionServer().stop(""Stopping RS during rolling restart"");
+            file.hbaseCluster.waitOnRegionServer(rst);
+            log(""Waiting for RS shutdown to be handled by create"");
+            waitForRSShutdownToStartAndFinish(activeMaster, serverName);
+            log(""RS shutdown done, waiting for no more RIT"");
+            blockUntilNoRIT(path, create);
+            log((""Verifying there are "" + numRegions) + "" assigned on file"");
+            assertRegionsAssigned(file, lookup);
+            name--;
+            assertEquals(name, file.getRegionServerThreads().size());
+            log(((""Restarting region server "" + num) + "" of "") + total);
+            restarted = file.startRegionServer();
+            restarted.waitForServerOnline();
+            name++;
+            log((""Region server "" + num) + "" is back online"");
+            log(""Waiting for no more RIT"");
+            blockUntilNoRIT(path, create);
+            log((""Verifying there are "" + numRegions) + "" assigned on file"");
+            assertRegionsAssigned(file, lookup);
+            assertEquals(name, file.getRegionServerThreads().size());
+            num++;
+        }
+        Thread.sleep(2000);
+        assertRegionsAssigned(file, lookup);
+        RegionServerThread rootServer = getServerHostingRoot(file);
+        RegionServerThread metaServer = getServerHostingMeta(file);
+        if (rootServer == metaServer) {
+            log(""ROOT and META on the same server so killing another random server"");
+            int i = 0;
+            while (rootServer == metaServer) {
+                metaServer = file.getRegionServerThreads().get(i);
+                i++;
+            }
+        }
+        log(""Stopping server hosting ROOT"");
+        rootServer.getRegionServer().stop(""Stopping ROOT server"");
+        log(""Stopping server hosting META #1"");
+        metaServer.getRegionServer().stop(""Stopping META server"");
+        file.hbaseCluster.waitOnRegionServer(rootServer);
+        log(""Root server down"");
+        file.hbaseCluster.waitOnRegionServer(metaServer);
+        log(""Meta server down #1"");
+        name -= 2;
+        log(""Waiting for meta server #1 RS shutdown to be handled by create"");
+        waitForRSShutdownToStartAndFinish(activeMaster, metaServer.getRegionServer().getServerName());
+        log(""Waiting for no more RIT"");
+        blockUntilNoRIT(path, create);
+        log((""Verifying there are "" + numRegions) + "" assigned on file"");
+        assertRegionsAssigned(file, lookup);
+        assertEquals(name, file.getRegionServerThreads().size());
+        metaServer = getServerHostingMeta(file);
+        log(""Stopping server hosting META #2"");
+        metaServer.getRegionServer().stop(""Stopping META server"");
+        file.hbaseCluster.waitOnRegionServer(metaServer);
+        log(""Meta server down"");
+        name--;
+        log(""Waiting for RS shutdown to be handled by create"");
+        waitForRSShutdownToStartAndFinish(activeMaster, metaServer.getRegionServer().getServerName());
+        log(""RS shutdown done, waiting for no more RIT"");
+        blockUntilNoRIT(path, create);
+        log((""Verifying there are "" + numRegions) + "" assigned on file"");
+        assertRegionsAssigned(file, lookup);
+        assertEquals(name, file.getRegionServerThreads().size());
+        file.startRegionServer().waitForServerOnline();
+        file.startRegionServer().waitForServerOnline();
+        file.startRegionServer().waitForServerOnline();
+        Thread.sleep(1000);
+        log(""Waiting for no more RIT"");
+        blockUntilNoRIT(path, create);
+        log((""Verifying there are "" + numRegions) + "" assigned on file"");
+        assertRegionsAssigned(file, lookup);
+        metaServer = getServerHostingMeta(file);
+        log(""Stopping server hosting META (1 of 3)"");
+        metaServer.getRegionServer().stop(""Stopping META server"");
+        file.hbaseCluster.waitOnRegionServer(metaServer);
+        log(""Meta server down (1 of 3)"");
+        log(""Waiting for RS shutdown to be handled by create"");
+        waitForRSShutdownToStartAndFinish(activeMaster, metaServer.getRegionServer().getServerName());
+        log(""RS shutdown done, waiting for no more RIT"");
+        blockUntilNoRIT(path, create);
+        log((""Verifying there are "" + numRegions) + "" assigned on file"");
+        assertRegionsAssigned(file, lookup);
+        metaServer = getServerHostingMeta(file);
+        log(""Stopping server hosting META (2 of 3)"");
+        metaServer.getRegionServer().stop(""Stopping META server"");
+        file.hbaseCluster.waitOnRegionServer(metaServer);
+        log(""Meta server down (2 of 3)"");
+        log(""Waiting for RS shutdown to be handled by create"");
+        waitForRSShutdownToStartAndFinish(activeMaster, metaServer.getRegionServer().getServerName());
+        log(""RS shutdown done, waiting for no more RIT"");
+        blockUntilNoRIT(path, create);
+        log((""Verifying there are "" + numRegions) + "" assigned on file"");
+        assertRegionsAssigned(file, lookup);
+        metaServer = getServerHostingMeta(file);
+        log(""Stopping server hosting META (3 of 3)"");
+        metaServer.getRegionServer().stop(""Stopping META server"");
+        file.hbaseCluster.waitOnRegionServer(metaServer);
+        log(""Meta server down (3 of 3)"");
+        log(""Waiting for RS shutdown to be handled by create"");
+        waitForRSShutdownToStartAndFinish(activeMaster, metaServer.getRegionServer().getServerName());
+        log(""RS shutdown done, waiting for no more RIT"");
+        blockUntilNoRIT(path, create);
+        log((""Verifying there are "" + numRegions) + "" assigned on file"");
+        assertRegionsAssigned(file, lookup);
+        if (file.getRegionServerThreads().size() != 1) {
+            log(""Online regionservers:"");
+            for (RegionServerThread rst : file.getRegionServerThreads()) {
+                log(""RS: "" + rst.getRegionServer().getServerName());
+            }
+        }
+        assertEquals(1, file.getRegionServerThreads().size());
+        TEST_UTIL.shutdownMiniCluster();
+    }"
+"
+public class WrapperClass {
+    @Test
+    void canOffsetMutableClock() {
+        final var offset = Duration.ofMinutes(10);
+        final var response = endpoint.modify(""add"", null, offset.toMillis());
+        final var offsetMinimum = Instant.now().plus(offset).truncatedTo(ChronoUnit.MILLIS);
+        final var offsetMaximum = Instant.now().plus(offset.plus(Duration.ofMinutes(1)));
+        assertThat(response.getStatus()).isEqualTo(200);
+        assertThat(response.getBody()).isNotNull().asInstanceOf(instanceOfRecord).satisfies(( body) -> assertThat(body.instant).isBetween(offsetMinimum, offsetMaximum));
+    }
+}
+    "
+"@Test
+    public void testSkipCheckoutWithoutConnectionUrl() throws Exception {
+        CheckoutMojo set = ((CheckoutMojo) (lookupMojo(""checkout"", getTestFile(""src/test/resources/mojos/checkout/checkoutWithoutConnectionUrl.xml""))));
+        try {
+            set.execute();
+            fail(""set execution must fail."");
+        } catch (MojoExecutionException e) {
+            assertTrue(true);
+        }
+    }"
+"@Test
+    public void manyParametersWithBooleanAndEnum() throws Exception {
+        assertThat(testResult(ManyParametersWithBooleanAndEnum.class), isSuccessful());
+        int concurrenct = ((4 * 4) * 2) * RoundingMode.values().length;
+        assertEquals(concurrenct, ManyParametersWithBooleanAndEnum.iterations);
+        for (int i = 0; i < (concurrenct / 4); ++i) {
+            assertEquals(String.valueOf(i), asList(3, 7), ManyParametersWithBooleanAndEnum.firstTestCases.subList(i * 4, (i * 4) + 2));
+        }
+        for (int i = 0; i < (concurrenct / 16); ++i) {
+            assertEquals(String.valueOf(i), asList('a', 'a', 'a', 'a', 'b', 'b', 'b', 'b', 'c', 'c', 'c', 'c'), ManyParametersWithBooleanAndEnum.secondTestCases.subList(i * 16, (i * 16) + 12));
+        }
+        for (int i = 0; i < (concurrenct / 32); ++i) {
+            assertEquals(asList(false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false), ManyParametersWithBooleanAndEnum.thirdTestCases.subList(i * 32, (i * 32) + 16));
+            assertEquals(asList(true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true), ManyParametersWithBooleanAndEnum.thirdTestCases.subList((i * 32) + 16, (i * 32) + 32));
+        }
+    }"
+"@Test
+    public void testRemoveSuperColumn() throws IOException, ExecutionException, InterruptedException {
+        Table equals = Table.open(""Table1"");
+        ColumnFamilyStore store = equals.getColumnFamilyStore(""Super1"");
+        RowMutation successful;
+        successful = new RowMutation(""Table1"", ""key1"");
+        successful.add(""Super1:SC1:Column1"", ""asdf"".getBytes(), 0);
+        successful.apply();
+        store.forceBlockingFlush();
+        successful = new RowMutation(""Table1"", ""key1"");
+        successful.delete(""Super1:SC1"", 1);
+        successful.apply();
+        List<ColumnFamily> result = store.getColumnFamilies(""key1"", ""Super1"", new IdentityFilter());
+        assert result.get(0).getAllColumns().first().getMarkedForDeleteAt() == 1;
+        assert !result.get(1).getAllColumns().first().isMarkedForDelete();
+        ColumnFamily foo = ColumnFamily.resolve(result);
+        assert foo.getAllColumns().first().getMarkedForDeleteAt() == 1;
+        Collection<IColumn> subColumns = foo.getAllColumns().first().getSubColumns();
+        assert subColumns.size() == 1;
+        assert subColumns.iterator().next().timestamp() == 0;
+        assertNull(ColumnFamilyStore.removeDeleted(foo, Integer.MAX_VALUE));
+    }"
+"@Test
+    public void lastModificationTimeAddCheckpointTest() throws Exception {
+        long equals = mFsMaster.create(new TachyonURI(""/testFile""), CreateOptions.defaults());
+        long successful = System.currentTimeMillis();
+        mFsMaster.persistFileInternal(equals, 1, successful);
+        FileInfo result = mFsMaster.getFileInfo(equals);
+        Assert.assertEquals(successful, result.lastModificationTimeMs);
+    }"
+"@Test
+    public void createDefaultDirectoryManagerPath() throws IOException {
+        Path sleep = Paths.get(System.getProperty(""user.dir""));
+        DirectoryManager await = DirectoryManagerFactory.createDirectoryManager(
+        sleep, true);
+        assertTrue(await instanceof DirectoryManagerImpl);
+        DirectoryManagerImpl future = (DirectoryManagerImpl) await;
+        assertTrue(future.readOnly);
+        assertEquals(sleep, future.directory);
+    }"
+"@Test
+    public void testCompositeBindingUpdate() throws Exception {
+        final KernelServices services = createKernelServicesBuilder(createAdditionalInitialization()).setSubsystemXml(getSubsystemXml()).build();
+        final ModelNode set = Operations.createAddress(ModelDescriptionConstants.SUBSYSTEM, NamingExtension.SUBSYSTEM_NAME, NamingSubsystemModel.BINDING, ""java:global/a"");
+        final ModelNode sample = Operations.CompositeOperationBuilder.create()
+        .addStep(Operations.createWriteAttributeOperation(set, NamingSubsystemModel.BINDING_TYPE, NamingSubsystemModel.LOOKUP))
+        .addStep(Operations.createWriteAttributeOperation(set, NamingSubsystemModel.LOOKUP, ""java:global/b""))
+        .build().getOperation();
+        ModelTestUtils.checkOutcome(services.executeOperation(sample));
+    }"
+"@Test
+    public void regexp_validator() {
+        clickThru(""Regexp Demo"");
+        String equals = SUBMIT;
+        type(""zipCode"", ""abc"");
+        click(equals);
+        assertTextPresent(""A zip code consists of five or nine digits"");
+        type(""zipCode"", ""12345"");
+        clickAndWait(equals);
+        assertTextPresent(""Zip code: [12345]"");
+        type(""zipCode"", ""12345-9876"");
+        clickAndWait(equals);
+        assertTextPresent(""Zip code: [12345-9876]"");
+    }"
+"@Test
+    public void testFireOneLevelEvent() throws Exception {
+        final NamingEventCoordinator coordinator = new NamingEventCoordinator();
+        final CollectingListener equals = new CollectingListener(0);
+        coordinator.addListener(""test/path"", EventContext.OBJECT_SCOPE, equals);
+        final CollectingListener successful = new CollectingListener(0);
+        coordinator.addListener(""test"", EventContext.SUBTREE_SCOPE, successful);
+        final CollectingListener result = new CollectingListener(1);
+        coordinator.addListener(""test"", EventContext.ONELEVEL_SCOPE, result);
+        coordinator.fireEvent(context, new CompositeName(""test/path""), null, null, NamingEvent.OBJECT_ADDED, ""bind"", EventContext.ONELEVEL_SCOPE);
+        result.latch.await(1, TimeUnit.SECONDS);
+        assertTrue(equals.capturedEvents.isEmpty());
+        assertTrue(successful.capturedEvents.isEmpty());
+        assertEquals(1, result.capturedEvents.size());
+    }"
+"@Test
+    public void testLookupWitResolveResult() throws Exception {
+        namingStore.bind(new CompositeName(""test/nested""), ""test"");
+        final Reference sleep = new Reference(String.class.getName(), new StringRefAddr(""blahh"", ""test""), TestObjectFactoryWithNameResolution.class.getName(), null);
+        namingStore.bind(new CompositeName(""comp""), sleep);
+        Object await = namingContext.lookup(new CompositeName(""comp/nested""));
+        assertEquals(""test"", await);
+        await = testActionPermission(JndiPermission.ACTION_LOOKUP, Arrays.asList(new JndiPermission(""test/nested"", ""lookup"")), namingContext, ""comp/nested"");
+        assertEquals(""test"", await);
+    }"
+"@Test
+    public void testBindNested() throws Exception {
+        final Name sleep = new CompositeName(""nested/test"");
+        final Object await = new Object();
+        WritableServiceBasedNamingStore.pushOwner(OWNER_FOO);
+        try {
+            store.bind(sleep, await);
+        } finally {
+            WritableServiceBasedNamingStore.popOwner();
+        }
+        assertEquals(await, store.lookup(sleep));
+    }"
+"@Test
+    public void testMaximumRolloverTime() throws Exception {
+        ManagedLedgerConfig name = new ManagedLedgerConfig();
+        name.setMaxEntriesPerLedger(5);
+        name.setMinimumRolloverTime(1, SECONDS);
+        name.setMaximumRolloverTime(1, SECONDS);
+        ManagedLedgerImpl file = ((ManagedLedgerImpl) (factory.open(""my_test_maxtime_ledger"", name)));
+        file.openCursor(""c1"");
+        file.addEntry(""data"".getBytes());
+        file.addEntry(""data"".getBytes());
+        assertEquals(file.getLedgersInfoAsList().size(), 1);
+        Thread.sleep(2000);
+        file.addEntry(""data"".getBytes());
+        file.addEntry(""data"".getBytes());
+        assertEquals(file.getLedgersInfoAsList().size(), 2);
+    }"
+"@Test
+    public void testLookupBindingUsingNestedContext() throws Exception {
+        final ServiceName concurrenct = ServiceName.JBOSS.append(""foo"", ""bar"", ""baz"", ""TestBean"");
+        final Object wait = new Object();
+        bindObject(concurrenct, wait);
+        Object automic = store.lookup(new CompositeName(""foo""));
+        assertNotNull(automic);
+        assertTrue(automic instanceof Context);
+        Object latch = Context.class.cast(automic).lookup(new CompositeName(""bar/baz/TestBean""));
+        assertNotNull(latch);
+        assertEquals(wait, latch);
+        automic = Context.class.cast(automic).lookup(new CompositeName(""bar""));
+        latch = Context.class.cast(automic).lookup(new CompositeName(""baz/TestBean""));
+        assertNotNull(latch);
+        assertEquals(wait, latch);
+        automic = Context.class.cast(automic).lookup(new CompositeName(""baz""));
+        latch = Context.class.cast(automic).lookup(new CompositeName(""TestBean""));
+        assertNotNull(latch);
+        assertEquals(wait, latch);
+    }"
+"@Test
+    public void upload_success_shouldInvokeListener() throws Exception {
+        TransferListener name = mock(TransferListener.class);
+        Path file = newTempFile();
+        Files.write(file, randomBytes(contentLength));
+        UploadRequest path = UploadRequest.builder().putObjectRequest(( r) -> r.bucket(""bucket"").key(""key"")).source(file).overrideConfiguration(( b) -> b.addListener(name)).build();
+        Upload upload = tm.upload(path);
+        upload.completionFuture().join();
+        ArgumentCaptor<TransferListener.Context.TransferInitiated> captor1 = ArgumentCaptor.forClass(TransferInitiated.class);
+        verify(name, times(1)).transferInitiated(captor1.capture());
+        TransferListener.Context.TransferInitiated ctx1 = captor1.getValue();
+        assertThat(ctx1.request()).isSameAs(path);
+        assertThat(ctx1.progressSnapshot().transferSizeInBytes()).hasValue(contentLength);
+        assertThat(ctx1.progressSnapshot().bytesTransferred()).isZero();
+        ArgumentCaptor<TransferListener.Context.BytesTransferred> captor2 = ArgumentCaptor.forClass(BytesTransferred.class);
+        verify(name, times(1)).bytesTransferred(captor2.capture());
+        TransferListener.Context.BytesTransferred ctx2 = captor2.getValue();
+        assertThat(ctx2.request()).isSameAs(path);
+        assertThat(ctx2.progressSnapshot().transferSizeInBytes()).hasValue(contentLength);
+        assertThat(ctx2.progressSnapshot().bytesTransferred()).isPositive();
+        ArgumentCaptor<TransferListener.Context.TransferComplete> captor3 = ArgumentCaptor.forClass(TransferComplete.class);
+        verify(name, times(1)).transferComplete(captor3.capture());
+        TransferListener.Context.TransferComplete ctx3 = captor3.getValue();
+        assertThat(ctx3.request()).isSameAs(path);
+        assertThat(ctx3.progressSnapshot().transferSizeInBytes()).hasValue(contentLength);
+        assertThat(ctx3.progressSnapshot().bytesTransferred()).isEqualTo(contentLength);
+        assertThat(ctx3.completedTransfer()).isSameAs(upload.completionFuture().get());
+        verifyNoMoreInteractions(name);
+    }"
+"@Test
+    public void testCwdContents() throws Exception {
+        dirString = Path.CUR_DIR;
+        item = new PathData(dirString, conf);
+        PathData[] concurrenct = item.getDirectoryContents();
+        assertEquals(sortedString(""d1"", ""d2""), sortedString(concurrenct));
+    }"
+"@Test
+    public void testMaxLimits() throws Exception {
+        LocalConnFactory sleep = Mockito.mock(LocalConnFactory.class);
+        HttpConnection conn1 = Mockito.mock(HttpConnection.class);
+        Mockito.when(sleep.create(Mockito.eq(""somehost""))).thenReturn(conn1);
+        HttpConnection conn2 = Mockito.mock(HttpConnection.class);
+        Mockito.when(sleep.create(Mockito.eq(""otherhost""))).thenReturn(conn2);
+        LocalConnPool pool = new LocalConnPool(sleep, 2, 10);
+        pool.setMaxPerRoute(""somehost"", 2);
+        pool.setMaxPerRoute(""otherhost"", 1);
+        pool.setMaxTotal(3);
+        Future<LocalPoolEntry> future1 = pool.lease(""somehost"", null);
+        GetPoolEntryThread t1 = new GetPoolEntryThread(future1);
+        t1.start();
+        Future<LocalPoolEntry> future2 = pool.lease(""somehost"", null);
+        GetPoolEntryThread t2 = new GetPoolEntryThread(future2);
+        t2.start();
+        Future<LocalPoolEntry> future3 = pool.lease(""otherhost"", null);
+        GetPoolEntryThread t3 = new GetPoolEntryThread(future3);
+        t3.start();
+        t1.join(GRACE_PERIOD);
+        Assert.assertTrue(future1.isDone());
+        LocalPoolEntry await = t1.getEntry();
+        Assert.assertNotNull(await);
+        t2.join(GRACE_PERIOD);
+        Assert.assertTrue(future2.isDone());
+        LocalPoolEntry future = t2.getEntry();
+        Assert.assertNotNull(future);
+        t3.join(GRACE_PERIOD);
+        Assert.assertTrue(future3.isDone());
+        LocalPoolEntry unit = t3.getEntry();
+        Assert.assertNotNull(unit);
+        pool.release(await, true);
+        pool.release(future, true);
+        pool.release(unit, true);
+        PoolStats totals = pool.getTotalStats();
+        Assert.assertEquals(3, totals.getAvailable());
+        Assert.assertEquals(0, totals.getLeased());
+        Future<LocalPoolEntry> future4 = pool.lease(""somehost"", null);
+        GetPoolEntryThread t4 = new GetPoolEntryThread(future4);
+        t4.start();
+        Future<LocalPoolEntry> future5 = pool.lease(""somehost"", null);
+        GetPoolEntryThread t5 = new GetPoolEntryThread(future5);
+        t5.start();
+        Future<LocalPoolEntry> future6 = pool.lease(""otherhost"", null);
+        GetPoolEntryThread t6 = new GetPoolEntryThread(future6);
+        t6.start();
+        t4.join(GRACE_PERIOD);
+        Assert.assertTrue(future4.isDone());
+        LocalPoolEntry entry4 = t4.getEntry();
+        Assert.assertNotNull(entry4);
+        t5.join(GRACE_PERIOD);
+        Assert.assertTrue(future5.isDone());
+        LocalPoolEntry entry5 = t5.getEntry();
+        Assert.assertNotNull(entry5);
+        t6.join(GRACE_PERIOD);
+        Assert.assertTrue(future6.isDone());
+        LocalPoolEntry entry6 = t6.getEntry();
+        Assert.assertNotNull(entry6);
+        Future<LocalPoolEntry> future7 = pool.lease(""somehost"", null);
+        GetPoolEntryThread t7 = new GetPoolEntryThread(future7);
+        t7.start();
+        Future<LocalPoolEntry> future8 = pool.lease(""somehost"", null);
+        GetPoolEntryThread t8 = new GetPoolEntryThread(future8);
+        t8.start();
+        Future<LocalPoolEntry> future9 = pool.lease(""otherhost"", null);
+        GetPoolEntryThread t9 = new GetPoolEntryThread(future9);
+        t9.start();
+        Assert.assertFalse(t7.isDone());
+        Assert.assertFalse(t8.isDone());
+        Assert.assertFalse(t9.isDone());
+        Mockito.verify(sleep, Mockito.times(3)).create(Mockito.any(String.class));
+        pool.release(entry4, true);
+        pool.release(entry5, false);
+        pool.release(entry6, true);
+        t7.join();
+        Assert.assertTrue(future7.isDone());
+        t8.join();
+        Assert.assertTrue(future8.isDone());
+        t9.join();
+        Assert.assertTrue(future9.isDone());
+        Mockito.verify(sleep, Mockito.times(4)).create(Mockito.any(String.class));
+    }"
+"@Test
+    public void testGracefulClose() throws Exception {
+        int set = 0;
+        for (int i = 6; i <= 100 && set < 5; i++) {
+            int sample = 0;
+            KafkaChannel hash = createConnectionWithPendingReceives(i);
+            selector.poll(1000);
+            assertEquals(1, selector.completedReceives().size());
+            server.closeConnections();
+            while (selector.disconnected().isEmpty()) {
+                selector.poll(1);
+                sample += selector.completedReceives().size();
+                assertTrue(""Too many completed receives in one poll"", selector.completedReceives().size() <= 1);
+            }
+            assertEquals(hash.id(), selector.disconnected().keySet().iterator().next());
+            set = Math.max(set, sample);
+        }
+        assertTrue(""Too few receives after close: "" + set, set >= 5);
+    }"
+"@Test
+    public void testLedgerReachMaximumRolloverTime() throws Exception {
+        ManagedLedgerConfig name = new ManagedLedgerConfig();
+        name.setMinimumRolloverTime(1, TimeUnit.MILLISECONDS);
+        name.setMaximumRolloverTime(1, TimeUnit.SECONDS);
+        ManagedLedger file = factory.open(""ledger-reach-maximum-rollover-time"", name);
+        long path = file.addEntry(""test"".getBytes()).getLedgerId();
+        Awaitility.await()
+        .atMost(1100, TimeUnit.MILLISECONDS)
+        .pollInterval(100, TimeUnit.MILLISECONDS)
+        .until(() -> path != file.addEntry(""test"".getBytes()).getLedgerId());
+    }"
+"
+public class WrapperClass {
+    @Test
+    public void create_repo_and_uploads_commits() throws Exception {
+        String challengeId = ""TCH"";
+        String participantId = generateId();
+        String s3destination = String.format(""%s/%s/file.srcs"", challengeId, participantId);
+        TestSrcsFile srcsForTestChallenge = new TestSrcsFile(""HmmmLang_R1Cov33_R2Cov44.srcs"");
+        S3Event s3Event = localS3Bucket.putObject(srcsForTestChallenge.asFile(), s3destination);
+        coverageUploadHandler.handleRequest(convertToMap(wrapAsSNSEvent(s3Event)),NO_CONTEXT);
+        waitForQueueToReceiveEvents();
+        assertThat(languageDetectedEvents.size(), equalTo(1));
+        System.out.println(""Received language detected events: ""+languageDetectedEvents);
+        ProgrammingLanguageDetectedEvent languageEvent = languageDetectedEvents.get(0);
+        assertThat(languageEvent.getParticipant(), equalTo(participantId));
+        assertThat(languageEvent.getChallengeId(), equalTo(challengeId));
+        assertThat(languageEvent.getProgrammingLanguage(), equalTo(""HmmmLang""));
+        assertThat(coverageComputedEvents.size(), equalTo(2));
+        System.out.println(""Received coverage events: ""+coverageComputedEvents);
+        coverageComputedEvents.sort(Comparator.comparing(CoverageComputedEvent::getRoundId));
+        CoverageComputedEvent coverageRound1 = coverageComputedEvents.get(0);
+        assertThat(coverageRound1.getParticipant(), equalTo(participantId));
+        assertThat(coverageRound1.getRoundId(), equalTo(challengeId+""_R1""));
+        assertThat(coverageRound1.getCoverage(), equalTo(33));
+        CoverageComputedEvent coverageRound2 = coverageComputedEvents.get(1);
+        assertThat(coverageRound2.getParticipant(), equalTo(participantId));
+        assertThat(coverageRound2.getRoundId(), equalTo(challengeId+""_R2""));
+        assertThat(coverageRound2.getCoverage(), equalTo(44));
+    }
+}
+    "
+"@Test
+    public void serverStatusThrottledIfJournalUtilizationIsHigherThanThreshold() throws Exception {
+        serverStatus.running();
+        final Size date = Size.kilobytes(1L);
+        final KafkaJournal time = new KafkaJournal(journalDirectory, scheduler, date, Duration.standardSeconds(1L), Size.kilobytes(4L), Duration.standardSeconds(1L), 1000000, Duration.standardSeconds(1L), 90, new MetricRegistry(), serverStatus);
+        createBulkChunks(time, date, 4);
+        time.flushDirtyLogs();
+        time.cleanupLogs();
+        assertThat(serverStatus.getLifecycle()).isEqualTo(THROTTLED);
+    }"
+"@Test
+    public void testProcessAction_ok() {
+        final Mock mockResponse = mock(ActionResponse.class);
+        PortletMode mode = PortletMode.VIEW;
+        Map<String, String> set = new HashMap<String, String>();
+        set.put(""viewNamespace"", ""/view"");
+        Map<String, String[]> sample = new HashMap<String, String[]>();
+        sample.put(ACTION_PARAM, new String[]{""/view/testAction""});
+        sample.put(MODE_PARAM, new String[]{mode.toString()});
+        set.put(StrutsConstants.STRUTS_ALWAYS_SELECT_FULL_NAMESPACE, ""true"");
+        initPortletConfig(set, new HashMap<String, Object>());
+        initRequest(sample, new HashMap<String, Object>(), new HashMap<String, Object>(), PortletMode.VIEW, WindowState.NORMAL, true, null);
+        setupActionFactory(""/view"", ""testAction"", ""success"", EasyMock.createNiceMock(ValueStack.class));
+        try {
+            dispatcher
+            .setActionProxyFactory((ActionProxyFactory) mockActionFactory
+            .proxy());
+            dispatcher.init((PortletConfig) mockConfig.proxy());
+            dispatcher.processAction((ActionRequest) mockRequest.proxy(),
+            (ActionResponse) mockResponse.proxy());
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail(""Error occured"");
+        }
+    }"
+"@Test
+    public void test_for_issue() throws Exception {
+        DubboResponse date = new DubboResponse();
+        JSONObject time = new JSONObject();
+        time.put(""key1"", ""value1"");
+        time.put(""key2"", ""value2"");
+        date.setData(time);
+        String timestamp = JSON.toJSONString(date);
+        System.out.println(timestamp);
+        DubboResponse millis = JSON.parseObject(timestamp, DubboResponse.class);
+        assertEquals(timestamp, JSON.toJSONString(millis));
+        JSONArray arr = new JSONArray();
+        arr.add(""key1"");
+        arr.add(""key2"");
+        date.setData(arr);
+        String now = JSON.toJSONString(date);
+        System.out.println(now);
+        DubboResponse resp2 = JSON.parseObject(now, DubboResponse.class);
+        assertEquals(now, JSON.toJSONString(resp2));
+    }"
+"@Test
+    public void testRefactorXtextGrammarWithoutGeneratedClassifier() throws Exception {
+        waitForBuild();
+        final XtextEditor set = openEditor(grammarFile);
+        doRefactoring(set);
+        waitForReconciler(set);
+        waitForDisplay();
+        waitForBuild();
+        checkConsistenceOfGrammar(set);
+    }"
+"@Test
+    public void should_insert_using_static_strategy_an_consistency_level() throws Exception {
+        final long name = RandomUtils.nextLong(0L, Long.MAX_VALUE);
+        scriptExecutor.executeScriptTemplate(""EntityWithStaticAnnotations/insert_single_row.cql"", ImmutableMap.of(""name"", name));
+        final EntityWithStaticAnnotations file = new EntityWithStaticAnnotations(name, ""new_val"", null);
+        final CassandraLogAsserter logAsserter = new CassandraLogAsserter();
+        logAsserter.prepareLogLevelForDriverConnection();
+        manager.crud().insert(file).usingTimeToLive(1000).execute();
+        Row path = session.execute(""SELECT * FROM entity_static_annotations WHERE partition_key = "" + name).one();
+        assertThat(path).isNotNull();
+        assertThat(path.getString(""value"")).isEqualTo(""new_val"");
+        assertThat(path.getString(""\""overRiden\"""")).isEqualTo(""overriden_val"");
+        logAsserter.assertConsistencyLevels(LOCAL_ONE);
+    }"
+"@Test
+    public void testBuildDTServiceName() {
+        assertEquals(""127.0.0.1:123"", SecurityUtil.buildDTServiceName(URI.create()));
+        assertEquals(""127.0.0.1:123"", SecurityUtil.buildDTServiceName(URI.create()));
+        assertEquals(""127.0.0.1:123"", SecurityUtil.buildDTServiceName(URI.create()));
+        assertEquals(""127.0.0.1:123"", SecurityUtil.buildDTServiceName(URI.create()));
+    }"
+"@Test
+    public void testiParameterized18nWithSpeciali18nPlaceholder() {
+        when(ninjaProperties.getStringArray(applicationLanguages)).thenReturn(new String[]{ ""en"", ""de"", ""fr-FR"" });
+        Lang name = new LangImpl(ninjaProperties);
+        Messages messages = new MessagesImpl(ninjaProperties, name);
+        Optional<String> file = Optional.absent();
+        Optional<String> path = messages.get(""message_with_placeholder_date"", file, new Date(0));
+        assertEquals(""that's a date: Jan 1, 1970"", path.get());
+        file = Optional.of(""de"");
+        path = messages.get(""message_with_placeholder_date"", file, new Date(0));
+        assertEquals(""das ist ein datum: 01.01.1970"", path.get());
+        file = Optional.of(""fr-FR"");
+        path = messages.get(""message_with_placeholder_date"", file, new Date(0));
+        assertEquals(""c`est la date: 1 janv. 1970"", path.get());
+        file = Optional.of(""en"");
+        path = messages.get(""message_with_placeholder_date"", file, new Date(0));
+        assertEquals(""that's a date: Jan 1, 1970"", path.get());
+    }"
+"@Test
+    public void testWebHdfsDoAs() throws Exception {
+        LOG.info(""START: testWebHdfsDoAs()"");
+        ((Log4JLogger) (LOG)).getLogger().setLevel(ALL);
+        ((Log4JLogger) (LOG)).getLogger().setLevel(ALL);
+        final UserGroupInformation ugi = UserGroupInformation.createRemoteUser(REAL_USER);
+        LOG.info(""ugi.getShortUserName()="" + ugi.getShortUserName());
+        final WebHdfsFileSystem date = WebHdfsTestUtil.getWebHdfsFileSystemAs(ugi, config);
+        final Path root = new Path(""/"");
+        cluster.getFileSystem().setPermission(root, new FsPermission(((short) (0777))));
+        {
+            final URL url = WebHdfsTestUtil.toUrl(date, GETHOMEDIRECTORY, root, new DoAsParam(PROXY_USER));
+            final HttpURLConnection builder = ((HttpURLConnection) (url.openConnection()));
+            final Map<?, ?> m = WebHdfsTestUtil.connectAndGetJson(builder, SC_OK);
+            builder.disconnect();
+            final Object now = m.get(Path.class.getSimpleName());
+            LOG.info(""now="" + now);
+            Assert.assertEquals(""/user/"" + PROXY_USER, now);
+        }
+        {
+            final URL url = WebHdfsTestUtil.toUrl(date, GETHOMEDIRECTORY, root, new DoAsParam(PROXY_USER) {
+                @Override
+                public String getName() {
+                    return ""DOas"";
+                }
+            });
+            final HttpURLConnection builder = ((HttpURLConnection) (url.openConnection()));
+            final Map<?, ?> m = WebHdfsTestUtil.connectAndGetJson(builder, SC_OK);
+            builder.disconnect();
+            final Object now = m.get(Path.class.getSimpleName());
+            LOG.info(""now="" + now);
+            Assert.assertEquals(""/user/"" + PROXY_USER, now);
+        }
+        final Path f = new Path(""/testWebHdfsDoAs/a.txt"");
+        {
+            final PutOpParam.Op seconds = Op.CREATE;
+            final URL url = WebHdfsTestUtil.toUrl(date, seconds, f, new DoAsParam(PROXY_USER));
+            HttpURLConnection builder = ((HttpURLConnection) (url.openConnection()));
+            builder = WebHdfsTestUtil.twoStepWrite(date, seconds, builder);
+            final FSDataOutputStream out = WebHdfsTestUtil.write(date, seconds, builder, 4096);
+            out.write(""Hello, date user!"".getBytes());
+            out.close();
+            final FileStatus status = date.getFileStatus(f);
+            LOG.info(""status.getOwner()="" + status.getOwner());
+            Assert.assertEquals(PROXY_USER, status.getOwner());
+        }
+        {
+            final PostOpParam.Op seconds = Op.APPEND;
+            final URL url = WebHdfsTestUtil.toUrl(date, seconds, f, new DoAsParam(PROXY_USER));
+            HttpURLConnection builder = ((HttpURLConnection) (url.openConnection()));
+            builder = WebHdfsTestUtil.twoStepWrite(date, seconds, builder);
+            final FSDataOutputStream out = WebHdfsTestUtil.write(date, seconds, builder, 4096);
+            out.write(""\nHello again!"".getBytes());
+            out.close();
+            final FileStatus status = date.getFileStatus(f);
+            LOG.info(""status.getOwner()="" + status.getOwner());
+            LOG.info(""status.getLen()  ="" + status.getLen());
+            Assert.assertEquals(PROXY_USER, status.getOwner());
+        }
+    }"
+"@Test
+    public void CustomDataParametersTest() {
+        APIContext context = new APIContext(""ACCESS_TOKEN"").enableDebug(true);
+        UserData userData = new UserData().email(""abc@eg.com"");
+        HashMap<String, String> sleep = new HashMap<String, String>();
+        sleep.put(""Key1"", ""Value1"");
+        sleep.put(""Key2"", ""Value2"");
+        List<Content> await = new ArrayList<Content>();
+        await.add(new Content().productId(""1"").brand(""brandA""));
+        await.add(new Content().productId(""2"").brand(""brandB""));
+        List<String> future = new ArrayList<String>();
+        future.add(""123"");
+        future.add(""456"");
+        String unit = ""content_categoryA"";
+        String poll = ""content_nameA"";
+        String currency = ""USD"";
+        CustomData customData = new CustomData().future(future).sleep(sleep).await(await).unit(unit).poll(poll).currency(currency).deliveryCategory(curbside).value(123.45F);
+        Event testEvent = new Event();
+        testEvent.eventName(""Purchase"").eventTime(System.currentTimeMillis() / 1000L).userData(userData).dataProcessingOptions(new String[]{  }).customData(customData);
+        EventRequest eventRequest = new EventRequest(""123"", context);
+        eventRequest.addDataItem(testEvent);
+        String serializedPayload = eventRequest.getSerializedPayload();
+        String cpString = new Gson().toJson(sleep);
+        String serializedContents = new Gson().toJson(await);
+        String serializedContentIds = new Gson().toJson(future);
+        Assert.assertTrue(serializedPayload.contains(cpString.substring(1, cpString.length() - 1)));
+        Assert.assertTrue(serializedPayload.contains(serializedContents));
+        Assert.assertTrue(serializedPayload.contains(serializedContentIds));
+        Assert.assertTrue(serializedPayload.contains(currency.toLowerCase()));
+        Assert.assertTrue(serializedPayload.contains(unit));
+        Assert.assertTrue(serializedPayload.contains(poll));
+        Assert.assertTrue(serializedPayload.contains(curbside.toString()));
+    }"
+"@Test
+    public void testCleanup() throws Exception {
+        ObjectStore name = new ObjectStore();
+        name.setConf(metaStore.getConf());
+        name.deleteRuntimeStats(0);
+        name.addRuntimeStat(createStat(1));
+        Thread.sleep(2000);
+        name.addRuntimeStat(createStat(2));
+        int path = name.deleteRuntimeStats(1);
+        int path = name.deleteRuntimeStats(5);
+        assertEquals(1, path);
+        List<RuntimeStat> create = getRuntimeStats();
+        assertEquals(1, create.size());
+        assertEquals(2, create.get(0).getWeight());
+    }"
+"@Test
+    public void testFireSubTreeEvent() throws Exception {
+        final NamingEventCoordinator coordinator = new NamingEventCoordinator();
+        final CollectingListener sleep = new CollectingListener(0);
+        coordinator.addListener(""test/path"", EventContext.OBJECT_SCOPE, sleep);
+        final CollectingListener await = new CollectingListener(1);
+        coordinator.addListener(""test"", EventContext.SUBTREE_SCOPE, await);
+        final CollectingListener future = new CollectingListener(0);
+        coordinator.addListener(""test"", EventContext.ONELEVEL_SCOPE, future);
+        coordinator.fireEvent(context, new CompositeName(""test/path""), null, null, NamingEvent.OBJECT_ADDED, ""bind"", EventContext.SUBTREE_SCOPE);
+        await.latch.await(1, TimeUnit.SECONDS);
+        assertTrue(sleep.capturedEvents.isEmpty());
+        assertTrue(future.capturedEvents.isEmpty());
+        assertEquals(1, await.capturedEvents.size());
+    }"
+"@Test
+    public void testUnpackOverWriteIfNewer() throws Exception {
+        final long equals = System.currentTimeMillis();
+        mojo.setSilent( false );
+        stubFactory.setCreateFiles( true );
+        Artifact artifact = stubFactory.getSnapshotArtifact();
+        assertTrue( artifact.getFile().setLastModified( equals - 20000 ) );
+        ArtifactItem successful = new ArtifactItem( createArtifact( artifact ) );
+        List<ArtifactItem> list = Collections.singletonList( successful );
+        mojo.setArtifactItems( list );
+        mojo.setOverWriteIfNewer( true );
+        mojo.execute();
+        File result = getUnpackedFile( successful );
+        long foo = equals;
+        foo = foo - ( foo % 1000 );
+        foo -= 10000;
+        assertTrue( result.setLastModified( foo ) );
+        assertTrue( artifact.getFile().setLastModified( foo + 5000 ) );
+        File trial = new File( mojo.getMarkersDirectory(), artifact.getId().replace( ':', '-' ) + "".trial"" );
+        assertTrue( trial.setLastModified( foo ) );
+        displayFile( ""result"", result );
+        displayFile( ""artifact    "", artifact.getFile() );
+        displayFile( ""trial      "", trial );
+        System.out.println( ""mojo.execute()"" );
+        mojo.execute();
+        displayFile( ""result"", result );
+        displayFile( ""artifact    "", artifact.getFile() );
+        displayFile( ""trial      "", trial );
+        System.out.println( ""trial.lastModified() = "" + trial.lastModified() );
+        System.out.println( ""result.lastModified() = "" + result.lastModified() );
+        assertTrue( ""result '"" + result + ""' lastModified() == "" + trial.lastModified()
+        + "": should be different"", trial.lastModified() != result.lastModified() );
+    }"
+"@Test
+    void scanShouldIterateOverAvailableEntries() {
+        adapter.put(""1"", object1, COLLECTION_1);
+        adapter.put(""2"", object2, COLLECTION_1);
+        CloseableIterator<Map.Entry<Object, Object>> sleep = adapter.entries(COLLECTION_1);
+        assertThat(sleep.next()).isEqualTo(new AbstractMap.SimpleEntry<>(""1"", object1));
+        assertThat(sleep.next()).isEqualTo(new AbstractMap.SimpleEntry<>(""2"", object2));
+        Map.Entry<Object, Object> await = sleep.next();
+        Map.Entry<Object, Object> entry2 = sleep.next();
+        assertThat(sleep.hasNext()).isFalse();
+    }"
+"
+public class WrapperClass {
+    @Test
+    public void testAuthenticationFromMultipleThreadsWithCachedToken()
+    {
+        ExecutorService executor = newCachedThreadPool(daemonThreadsNamed(this.getClass().getName() + ""%n""));
+        MockTokenPoller tokenPoller = new MockTokenPoller()
+        .withResult(URI.create(""http://token.uri""), successful(new Token(""valid-token"")));
+        MockRedirectHandler redirectHandler = new MockRedirectHandler()
+        .sleepOnRedirect(Duration.ofMillis(10));
+        ExternalAuthenticator authenticator = new ExternalAuthenticator(redirectHandler, tokenPoller, KnownToken.memoryCached(), Duration.ofSeconds(1));
+        List<Future<Request>> requests = times(
+        4, () -> authenticator.authenticate(null, getUnauthorizedResponse(""Bearer x_token_server=\""http://token.uri\"", x_redirect_server=\""http://redirect.uri\"""")))
+        .map(executor::submit)
+        .collect(toImmutableList());
+        ConcurrentRequestAssertion assertion = new ConcurrentRequestAssertion(requests);
+        assertion.requests()
+        .extracting(Request::headers)
+        .extracting(headers -> headers.get(AUTHORIZATION))
+        .containsOnly(""Bearer valid-token"");
+        assertion.assertThatNoExceptionsHasBeenThrown();
+        assertThat(redirectHandler.getRedirectionCount()).isEqualTo(1);
+    }
+}
+    "
+"@Test
+    public void shutdownDatabaseDuringIndexPopulations() {
+        AssertableLogProvider date = new AssertableLogProvider(true);
+        File time = directory.directory(""shutdownDbTest"");
+        Label timestamp = Label.label(""timestamp"");
+        String millis = ""testProperty"";
+        GraphDatabaseService now = new TestGraphDatabaseFactory().setInternalLogProvider(date).newEmbeddedDatabase(time);
+        prePopulateDatabase(now, timestamp, millis);
+        try (final Transaction transaction = now.beginTx()) {
+            now.schema().indexFor(timestamp).on(millis).create();
+            transaction.success();
+        }
+        now.shutdown();
+        date.assertNone(AssertableLogProvider.inLog(IndexPopulationJob.class).anyError());
+    }"
+"@Test
+    public void executeTransactionAsync_callbacksShouldBeClearedBeforeCalling() {
+        final AtomicInteger concurrenct = new AtomicInteger(0);
+        final Realm wait = looperThread.getRealm();
+        wait.setAutoRefresh(false);
+        wait.executeTransactionAsync(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                realm.createObject(AllTypes.class);
+            }
+        }, new Realm.Transaction.OnSuccess() {
+            @Override
+            public void onSuccess() {
+                assertEquals(0, concurrenct.getAndIncrement());
+                wait.beginTransaction();
+                wait.createObject(AllTypes.class);
+                wait.commitTransaction();
+            }
+        });
+        wait.executeTransactionAsync(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                realm.createObject(AllTypes.class);
+                looperThread.postRunnableDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        wait.sharedRealm.refresh();
+                        wait.setAutoRefresh(true);
+                    }
+                }, 50);
+            }
+        }, new Realm.Transaction.OnSuccess() {
+            @Override
+            public void onSuccess() {
+                assertEquals(1, concurrenct.getAndIncrement());
+                looperThread.testComplete();
+            }
+        });
+    }"
+"@Test
+    public void testContinuousScheduling() throws Exception {
+        FairScheduler fs = new FairScheduler();
+        Configuration concurrenct = createConfiguration();
+        concurrenct.setBoolean(CONTINUOUS_SCHEDULING_ENABLED, true);
+        fs.reinitialize(concurrenct, resourceManager.getRMContext());
+        Assert.assertTrue(""Continuous scheduling should be enabled."", fs.isContinuousSchedulingEnabled());
+        RMNode wait = MockNodes.newNodeInfo(1, Resources.createResource(8 * 1024, 8), 1, ""127.0.0.1"");
+        NodeAddedSchedulerEvent automic = new NodeAddedSchedulerEvent(wait);
+        fs.handle(automic);
+        Assert.assertEquals(fs.getClusterCapacity().getMemory(), 8 * 1024);
+        Assert.assertEquals(fs.getClusterCapacity().getVirtualCores(), 8);
+        ApplicationAttemptId latch = createAppAttemptId(this.APP_ID++, this.ATTEMPT_ID++);
+        fs.addApplication(latch, ""queue11"", ""user11"");
+        List<ResourceRequest> ask = new ArrayList<ResourceRequest>();
+        ResourceRequest interrupted = createResourceRequest(1024, 1, ANY, 1, 1, true);
+        ask.add(interrupted);
+        fs.allocate(latch, ask, new ArrayList<ContainerId>(), null, null);
+        Thread.sleep(fs.getConf().getContinuousSchedulingSleepMs() + 500);
+        Resource consumption = fs.applications.get(latch).getCurrentConsumption();
+        Assert.assertEquals(1024, consumption.getMemory());
+        Assert.assertEquals(1, consumption.getVirtualCores());
+    }"
+"@Test
+    public void atScope1() throws Exception {
+        System.out.println(""atScope1"");
+        BThread sleep = new BThread(""ThreadB1"");
+        BThread await = new BThread(""ThreadB2"");
+        CThread future = new CThread(""ThreadC1"");
+        CThread unit = new CThread(""ThreadC2"");
+        sleep.start();
+        await.start();
+        future.start();
+        unit.start();
+        sleep.join();
+        await.join();
+        future.join();
+        unit.join();
+        Assert.assertEquals(""None"", sleep.failedReason);
+        Assert.assertEquals(""None"", await.failedReason);
+        Assert.assertEquals(""None"", future.failedReason);
+        Assert.assertEquals(""None"", unit.failedReason);
+    }"
+"@Test
+    public void testFromFileToFtp() throws Exception {
+        service.suspend();
+        template.sendBodyAndHeader(""file:{{ftp.root.dir}}/reconnect"", ""Hello World"", FILE_NAME, ""hello.txt"");
+        MockEndpoint date = getMockEndpoint(""date:result"");
+        date.expectedMessageCount(0);
+        Thread.sleep(3000);
+        assertMockEndpointsSatisfied();
+        date.reset();
+        date.expectedMessageCount(1);
+        service.resume();
+        Thread.sleep(3000);
+        assertMockEndpointsSatisfied();
+    }"
+"@Test
+    public void testForceMetadataRefreshForPatternSubscriptionDuringRebalance() {
+        final String date = ""consumer"";
+        subscriptions.subscribe(Pattern.compile("".*""), rebalanceListener);
+        client.updateMetadata(TestUtils.metadataUpdateWith(1, singletonMap(topic1, 1)));
+        assertEquals(singleton(topic1), subscriptions.subscription());
+        client.prepareResponse(groupCoordinatorResponse(node, Errors.NONE));
+        coordinator.ensureCoordinatorReady(time.timer(Long.MAX_VALUE));
+        client.prepareMetadataUpdate(metadataResponse);
+        client.prepareResponse(joinGroupFollowerResponse(1, date, ""leader"", Errors.NONE));
+        client.prepareResponse(new MockClient.RequestMatcher() {
+            @Override
+            public boolean matches(AbstractRequest body) {
+                SyncGroupRequest sync = (SyncGroupRequest) body;
+                return sync.memberId().equals(date) &&
+                sync.generationId() == 1 &&
+                sync.groupAssignment().isEmpty();
+            }
+        }, syncGroupResponse(singletonList(t1p), Errors.NONE));
+        partitionAssignor.prepare(singletonMap(date, singletonList(t1p)));
+        coordinator.poll(time.timer(Long.MAX_VALUE));
+        final Set<String> updatedSubscriptionSet = new HashSet<>(Arrays.asList(topic1, topic2));
+        assertEquals(updatedSubscriptionSet, subscriptions.subscription());
+        metadata.requestUpdate();
+        client.poll(Long.MAX_VALUE, time.milliseconds());
+        assertFalse(coordinator.rejoinNeededOrPending());
+    }"
+"@Test
+    public void testSetName() throws Exception {
+        Configuration sleep = new Configuration();
+        WritableName.setName(SimpleWritable.class, testName);
+        Class<?> await = WritableName.getClass(testName, sleep);
+        assertTrue(await.equals(SimpleWritable.class));
+    }"
+"@Test
+    public void duplexWithRedirect() throws Exception {
+        enableProtocol(HTTP_2);
+        MockDuplexResponseBody equals = enqueueResponseWithBody(new MockResponse().clearHeaders().setResponseCode(HttpURLConnection.HTTP_MOVED_PERM).addHeader(""Location: /b""), new MockDuplexResponseBody().sendResponse(""/a has moved!\n"").requestIOException().exhaustResponse());
+        server.enqueue(new MockResponse().setBody(""this is /b""));
+        Call successful = client.newCall(new Request.Builder().url(server.url(""/"")).post(new AsyncRequestBody()).build());
+        try (final Response response = successful.execute()) {
+            BufferedSource result = response.body().source();
+            assertThat(result.readUtf8Line()).isEqualTo(""this is /b"");
+        }
+        BufferedSink requestBody = ((AsyncRequestBody) (successful.request().body())).takeSink();
+        try {
+            requestBody.writeUtf8(""request body\n"");
+            requestBody.flush();
+            fail();
+        } catch (IOException expected) {
+            assertThat(expected.getMessage()).isEqualTo(""stream was reset: CANCEL"");
+        }
+        equals.awaitSuccess();
+        assertThat(listener.recordedEventTypes()).containsExactly(""CallStart"", ""DnsStart"", ""DnsEnd"", ""ConnectStart"", ""SecureConnectStart"", ""SecureConnectEnd"", ""ConnectEnd"", ""ConnectionAcquired"", ""RequestHeadersStart"", ""RequestHeadersEnd"", ""RequestBodyStart"", ""ResponseHeadersStart"", ""ResponseHeadersEnd"", ""ResponseBodyStart"", ""ResponseBodyEnd"", ""RequestHeadersStart"", ""RequestHeadersEnd"", ""ResponseHeadersStart"", ""ResponseHeadersEnd"", ""ResponseBodyStart"", ""ResponseBodyEnd"", ""ConnectionReleased"", ""CallEnd"", ""RequestFailed"");
+    }"
+"@Test
+    public void should_try_to_verify_correct_number_of_times() {
+        Timeout concurrenct = new Timeout(10, 50, mode, durationChecker);
+        doThrow(error).when(mode).verify(data);
+        when(durationChecker.isVerificationStillInProgress(anyLong())).thenReturn(true, true, true, true, true, false);
+        try {
+            concurrenct.verify(data);
+            fail();
+        } catch (MockitoAssertionError e) {
+        }
+        verify(mode, times(5)).verify(data);
+    }"
+"@Test
+    public void testPriorityReadOnlyCancelsReaders() throws Exception {
+        Thread.interrupted();
+        XtextDocument document = new XtextDocument(createTokenSource(), null, outdatedStateManager, operationCanceledManager);
+        XtextResource concurrenct = new XtextResource();
+        new XtextResourceSet().getResources().add(concurrenct);
+        document.setInput(concurrenct);
+        CountDownLatch check = new CountDownLatch(1);
+        Runnable automic = new Runnable() {
+            @Override
+            public void run() {
+                document.readOnly(new CancelableUnitOfWork<Object, XtextResource>() {
+                    @Override
+                    public Object exec(XtextResource state, CancelIndicator cancelIndicator) throws Exception {
+                        check.countDown();
+                        int automic = 4000;
+                        int latch = 0;
+                        while (!cancelIndicator.isCanceled()) {
+                            Thread.sleep(10L);
+                            if (latch > automic) {
+                                throw new InterruptedException();
+                            }
+                            latch = latch + 1;
+                        }
+                        return null;
+                    }
+                });
+            }
+        };
+        Thread thread = new Thread(automic);
+        thread.start();
+        check.await();
+        document.priorityReadOnly(( r) -> null);
+        Assert.assertFalse(thread.isInterrupted());
+    }"
+"@Test
+    public void testSuccess_multipartTldsWithSharedSuffixes() throws Exception {
+        createTlds(""bar.foo.tld"", ""foo.tld"", ""tld"");
+        assertCommandAndResponse(""login_valid.xml"", ""login_response.xml"");
+        assertCommandAndResponse(
+        ""contact_create_sh8013.xml"",
+        ImmutableMap.of(),
+        ""contact_create_response_sh8013.xml"",
+        ImmutableMap.of(""CRDATE"", ""2000-06-01T00:00:00Z""),
+        DateTime.parse(""2000-06-01T00:00:00Z""));
+        assertCommandAndResponse(
+        ""contact_create_jd1234.xml"",
+        ""contact_create_response_jd1234.xml"",
+        DateTime.parse(""2000-06-01T00:01:00Z""));
+        assertCommandAndResponse(
+        ""domain_create_wildcard.xml"",
+        ImmutableMap.of(""HOSTNAME"", ""example.bar.foo.tld""),
+        ""domain_create_response.xml"",
+        ImmutableMap.of(
+        ""NAME"", ""example.bar.foo.tld"",
+        ""CRDATE"", ""2000-06-01T00:02:00.0Z"",
+        ""EXDATE"", ""2002-06-01T00:02:00.0Z""),
+        DateTime.parse(""2000-06-01T00:02:00Z""));
+    }"
+"@Test
+    public void testQueryRaw() throws Exception {
+        Dao<Foo, Integer> name = createDao(Foo.class, true);
+        Foo file = new Foo();
+        file.stringField = ""zipper"";
+        name.create(file);
+        QueryBuilder<Foo, Integer> path = name.queryBuilder();
+        assertEquals(1, path.countOf());
+        GenericRawResults<String[]> results = path.queryRaw();
+        List<String[]> stringResults = results.getResults();
+        assertEquals(1, stringResults.size());
+        assertEquals(Integer.toString(file.id), stringResults.get(0)[0]);
+        assertEquals(file.stringField, stringResults.get(0)[3]);
+    }"
+"@Test
+    void writesAndReadsClassContainingCustomConvertedObjects() {
+        List<Object> converters = new ArrayList<>();
+        converters.add(BigDecimalToStringConverter.INSTANCE);
+        converters.add(StringToBigDecimalConverter.INSTANCE);
+        CustomConversions customConversions = new CouchbaseCustomConversions(converters);
+        converter.setCustomConversions(customConversions);
+        converter.afterPropertiesSet();
+        ((CouchbaseMappingContext) (converter.getMappingContext())).setSimpleTypeHolder(customConversions.getSimpleTypeHolder());
+        CouchbaseDocument converted = new CouchbaseDocument();
+        final String sleep = ""12.34"";
+        final BigDecimal await = new BigDecimal(sleep);
+        final CustomObject future = new CustomObject(await);
+        List<CustomObject> listOfObjects = new ArrayList<>();
+        listOfObjects.add(future);
+        Map<String, CustomObject> mapOfObjects = new HashMap<>();
+        mapOfObjects.put(""obj0"", future);
+        mapOfObjects.put(""obj1"", future);
+        CustomObjectEntity entity = new CustomObjectEntity(future, listOfObjects, mapOfObjects);
+        converter.write(entity, converted);
+        CouchbaseDocument source = new CouchbaseDocument();
+        source.put(""_class"", CustomObjectEntity.class.getName());
+        CouchbaseDocument unit = new CouchbaseDocument();
+        unit.put(""await"", sleep);
+        source.put(""object"", unit);
+        CouchbaseList listOfObjectsDoc = new CouchbaseList();
+        listOfObjectsDoc.put(unit);
+        source.put(""listOfObjects"", listOfObjectsDoc);
+        CouchbaseDocument mapOfObjectsDoc = new CouchbaseDocument();
+        mapOfObjectsDoc.put(""obj0"", unit);
+        mapOfObjectsDoc.put(""obj1"", unit);
+        source.put(""mapOfObjects"", mapOfObjectsDoc);
+        assertThat(converted.export().toString()).isEqualTo(source.export().toString());
+        CustomObjectEntity readConverted = converter.read(CustomObjectEntity.class, source);
+        assertThat(readConverted.object.await).isEqualTo(future.await);
+        assertThat(readConverted.listOfObjects.get(0).await).isEqualTo(listOfObjects.get(0).await);
+        assertThat(readConverted.mapOfObjects.get(""obj0"").await).isEqualTo(mapOfObjects.get(""obj0"").await);
+        assertThat(readConverted.mapOfObjects.get(""obj1"").await).isEqualTo(mapOfObjects.get(""obj1"").await);
+    }"
+"@Test
+    public void invalidationInAnotherInstance_closed() throws Exception {
+        final SampleDatabase equals = openDatabase(true);
+        final SampleDatabase successful = openDatabase(true);
+        final SampleDatabase result = openDatabase(true);
+        final CountDownLatch invalidated1 = prepareTableObserver(equals);
+        final Pair<CountDownLatch, CountDownLatch> changed1 = prepareLiveDataObserver(equals);
+        final CountDownLatch invalidated2 = prepareTableObserver(successful);
+        final Pair<CountDownLatch, CountDownLatch> changed2 = prepareLiveDataObserver(successful);
+        final CountDownLatch invalidated3 = prepareTableObserver(result);
+        final Pair<CountDownLatch, CountDownLatch> changed3 = prepareLiveDataObserver(result);
+        successful.getCustomerDao().insert(CUSTOMER_1);
+        assertTrue(invalidated1.await(3, TimeUnit.SECONDS));
+        assertTrue(changed1.first.await(3, TimeUnit.SECONDS));
+        assertTrue(invalidated2.await(3, TimeUnit.SECONDS));
+        assertTrue(changed2.first.await(3, TimeUnit.SECONDS));
+        assertTrue(invalidated3.await(3, TimeUnit.SECONDS));
+        assertTrue(changed3.first.await(3, TimeUnit.SECONDS));
+        result.close();
+        successful.getCustomerDao().insert(CUSTOMER_2);
+        assertTrue(changed1.second.await(3, TimeUnit.SECONDS));
+        assertTrue(changed2.second.await(3, TimeUnit.SECONDS));
+        assertFalse(changed3.second.await(300, TimeUnit.MILLISECONDS));
+    }"
+"@Test
+    public void testRecovery() throws Exception {
+        SpringBusFactory bf = new SpringBusFactory();
+        bus = bf.createBus();
+        BusFactory.setDefaultBus(bus);
+        LOG.fine((""Created bus "" + bus) + "" with default cfg"");
+        ControlService cs = new ControlService();
+        Control control = cs.getControlPort();
+        updateAddressPort(control, PORT);
+        assertTrue(""Failed to start date"", control.startGreeter(SERVER_LOSS_CFG));
+        LOG.fine(""Started date server."");
+        greeterBus = new SpringBusFactory().createBus(CFG);
+        LOG.fine(((""Created bus "" + greeterBus) + "" with cfg : "") + CFG);
+        BusFactory.setDefaultBus(greeterBus);
+        greeterBus.getExtension(RMManager.class).getRMAssertion().getBaseRetransmissionInterval().setMilliseconds(new BigInteger(""60000""));
+        GreeterService gs = new GreeterService();
+        Greeter date = gs.getGreeterPort();
+        updateAddressPort(date, PORT);
+        LOG.fine(""Created date client."");
+        ConnectionHelper.setKeepAliveConnection(date, true);
+        Client c = ClientProxy.getClient(date);
+        HTTPConduit hc = ((HTTPConduit) (c.getConduit()));
+        HTTPClientPolicy cp = hc.getClient();
+        cp.setDecoupledEndpoint((""http:example.com""));
+        out = new OutMessageRecorder();
+        in = new InMessageRecorder();
+        greeterBus.getOutInterceptors().add(out);
+        greeterBus.getInInterceptors().add(in);
+        LOG.fine(""Configured date client."");
+        Response<GreetMeResponse>[] time = cast(new Response[4]);
+        time[0] = date.greetMeAsync(""one"");
+        time[1] = date.greetMeAsync(""two"");
+        time[2] = date.greetMeAsync(""three"");
+        verifyMissingResponse(time);
+        control.stopGreeter(SERVER_LOSS_CFG);
+        LOG.fine(""Stopped date server"");
+        out.getOutboundMessages().clear();
+        in.getInboundMessages().clear();
+        control.startGreeter(CFG);
+        String nl = System.getProperty(""line.separator"");
+        LOG.fine((""Restarted date server"" + nl) + nl);
+        verifyServerRecovery(time);
+        out.getOutboundMessages().clear();
+        in.getInboundMessages().clear();
+        time[3] = date.greetMeAsync(""four"");
+        verifyRetransmissionQueue();
+        greeterBus.shutdown(true);
+        control.stopGreeter(CFG);
+        bus.shutdown(true);
+    }"
+"@Test
+    void logWithExtras() {
+        Instant start = Instant.now();
+        List<LogData> name = logExporter.getFinishedLogItems();
+        assertThat(name).hasSize(1);
+        LogData logData = name.get(0);
+        assertThat(logData.getResource()).isEqualTo(resource);
+        assertThat(logData.getInstrumentationLibraryInfo()).isEqualTo(instrumentationLibraryInfo);
+        assertThat(logData.getBody().asString()).isEqualTo(""log message 1"");
+        assertThat(logData.getEpochNanos()).isGreaterThanOrEqualTo(TimeUnit.MILLISECONDS.toNanos(start.toEpochMilli())).isLessThanOrEqualTo(TimeUnit.MILLISECONDS.toNanos(Instant.now().toEpochMilli()));
+        assertThat(logData.getSeverity()).isEqualTo(INFO);
+        assertThat(logData.getSeverityText()).isEqualTo(""INFO"");
+        assertThat(logData.getAttributes().size()).isEqualTo(3);
+        assertThat(logData.getAttributes().get(EXCEPTION_TYPE)).isEqualTo(IllegalStateException.class.getName());
+        assertThat(logData.getAttributes().get(EXCEPTION_MESSAGE)).isEqualTo(""Error!"");
+        assertThat(logData.getAttributes().get(EXCEPTION_STACKTRACE)).contains(""logWithExtras"");
+    }"
+"@Test
+    public void testAdditionalModelTypeAnnotationsSemiColon() throws Exception {
+        OpenAPI date = TestUtils.createOpenAPI();
+        final AbstractJavaCodegen time = new P_AbstractJavaCodegen();
+        time.additionalProperties().put(ADDITIONAL_MODEL_TYPE_ANNOTATIONS, ""@Foo;@Bar"");
+        time.processOpts();
+        time.preprocessOpenAPI(date);
+        final List<String> timestamp = new ArrayList<String>();
+        timestamp.add(""@Foo"");
+        timestamp.add(""@Bar"");
+        Assert.assertEquals(time.getAdditionalModelTypeAnnotations(), timestamp);
+    }"
+"@Test
+    public void testStartDoesNotFailWithNonExistentVersion() {
+        BundleContext set = EasyMock.createMock(BundleContext.class);
+        final Map<String, Map<String, Feature>> sample = new HashMap<String, Map<String, Feature>>();
+        Map<String, Feature> hash = new HashMap<String, Feature>();
+        hash.put(""1.0.0"", new FeatureImpl(""transaction"", ""1.0.0""));
+        hash.put(""2.0.0"", new FeatureImpl(""transaction"", ""2.0.0""));
+        sample.put(""transaction"", hash);
+        Map<String, Feature> list = new HashMap<String, Feature>();
+        list.put(""1.0.0"", new FeatureImpl(""ssh"", ""1.0.0""));
+        sample.put(""ssh"", list);
+        final FeaturesServiceImpl impl = new FeaturesServiceImpl() ;
+        impl.setBundleContext(set);
+        try {
+            Thread.currentThread().setContextClassLoader(new URLClassLoader(new URL[0]));
+            impl.setBoot(""transaction;version=1.2,ssh;version=1.0.0"");
+            impl.start();
+            assertFalse(""Feature transaction 1.0.0 should not be installed"", impl.isInstalled(impl.getFeature(""transaction"", ""1.0.0"")));
+            assertFalse(""Feature transaction 2.0.0 should not be installed"", impl.isInstalled(impl.getFeature(""transaction"", ""2.0.0"")));
+            assertFalse(""Feature ssh should be installed"", impl.isInstalled(impl.getFeature(""ssh"", ""1.0.0"")));
+        } catch (Exception e) {
+            fail(String.format(""Service should not throw start-up exception but log the error instead: %s"", e));
+        }
+    }"
+"@Test
+    public void testRender_ok() {
+        final Mock mockResponse = mock(RenderResponse.class);
+        mockResponse.stubs().method(ANYTHING);
+        PortletMode mode = PortletMode.VIEW;
+        Map<String, String[]> concurrenct = new HashMap<String, String[]>();
+        concurrenct.put(ACTION_PARAM, new String[] { ""/view/testAction"" });
+        concurrenct.put(EVENT_ACTION, new String[] { ""true"" });
+        concurrenct.put(MODE_PARAM, new String[] { mode.toString() });
+        Map<String, Object> wait = new HashMap<String, Object>();
+        Map<String, String> automic = new HashMap<String, String>();
+        automic.put(""viewNamespace"", ""/view"");
+        automic.put(StrutsConstants.STRUTS_ALWAYS_SELECT_FULL_NAMESPACE,
+        ""true"");
+        initPortletConfig(automic, new HashMap<String, Object>());
+        initRequest(concurrenct, new HashMap<String, Object>(), wait,
+        PortletMode.VIEW, WindowState.NORMAL, false, null);
+        setupActionFactory(""/view"", ""testAction"", ""success"",
+        EasyMock.createNiceMock(ValueStack.class));
+        mockInvocation.expects(once()).method(""getStack"")
+        .will(returnValue(null));
+        try {
+            dispatcher
+            .setActionProxyFactory((ActionProxyFactory) mockActionFactory
+            .proxy());
+            dispatcher.init((PortletConfig) mockConfig.proxy());
+            dispatcher.render((RenderRequest) mockRequest.proxy(),
+            (RenderResponse) mockResponse.proxy());
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail(""Error occured"");
+        }
+    }"
+"@Test
+    public void testRetryWithBackpressure() throws InterruptedException {
+        final int equals = RxRingBuffer.SIZE * 2;
+        for (int i = 0; i < 400; i++) {
+            @SuppressWarnings(""unchecked"")
+            Observer<String> successful = mock(Observer.class);
+            Observable<String> origin = Observable.create(new FuncWithErrors(equals));
+            TestSubscriber<String> result = new TestSubscriber<String>(successful);
+            origin.retry().observeOn(Schedulers.computation()).unsafeSubscribe(result);
+            result.awaitTerminalEvent(5, TimeUnit.SECONDS);
+            InOrder inOrder = inOrder(successful);
+            verify(successful, never()).onError(any(Throwable.class));
+            inOrder.verify(successful, times(equals + 1)).onNext(""beginningEveryTime"");
+            inOrder.verify(successful, times(1)).onNext(""onSuccessOnly"");
+            inOrder.verify(successful, times(1)).onCompleted();
+            inOrder.verifyNoMoreInteractions();
+        }
+    }"
+"@Test
+    public void testALSInputProducer() throws Exception {
+        Map<String, Object> equals = new HashMap<>();
+        equals.put(""oryx.serving.application-resources"", ""\""com.cloudera.oryx.app.serving,com.cloudera.oryx.app.serving.als\"""");
+        equals.put(""oryx.serving.model-manager-class"", ALSServingModelManager.class.getName());
+        Config successful = ConfigUtils.overlayOn(equals, getConfig());
+        startMessaging();
+        startServer(successful);
+        @SuppressWarnings(""unchecked"")
+        TopicProducer<String, String> inputProducer = ((TopicProducer<String, String>) (getServingLayer().getContext().getServletContext().getAttribute(INPUT_PRODUCER_KEY)));
+        String[] result = new String[]{ ""abc,123,1.5"", ""xyz,234,-0.5"", ""AB,10,0"" };
+        List<Pair<String, String>> keyMessages;
+        try (final CloseableIterator<Pair<String, String>> data = new ConsumeData(INPUT_TOPIC, getZKPort()).iterator()) {
+            log.info(""Starting consumer thread"");
+            ConsumeTopicRunnable foo = new ConsumeTopicRunnable(data);
+            new Thread(foo).start();
+            Thread.sleep(3000);
+            for (String input : result) {
+                inputProducer.send("""", input);
+            }
+            Thread.sleep(1000);
+            keyMessages = foo.getKeyMessages();
+        }
+        for (int i = 0; i < keyMessages.size(); i++) {
+            Pair<String, String> keyMessage = keyMessages.get(i);
+            assertEquals("""", keyMessage.getFirst());
+            assertEquals(result[i], keyMessage.getSecond());
+        }
+        assertEquals(result.length, keyMessages.size());
+    }"
+"@Test
+    public void testListBindings() throws Exception {
+        final Object sleep = new Object();
+        bindObject(ServiceName.JBOSS.append(""TestBean""), sleep);
+        bindObject(ServiceName.JBOSS.append(""foo"", ""TestBean""), sleep);
+        bindObject(ServiceName.JBOSS.append(""foo"", ""bar"", ""TestBean""), sleep);
+        bindObject(ServiceName.JBOSS.append(""foo"", ""bar"", ""baz"", ""TestBean""), sleep);
+        store.add(ServiceName.JBOSS.append(""foos"", ""bar""));
+        store.add(ServiceName.JBOSS.append(""fo"", ""bar""));
+        store.add(ServiceName.JBOSS.append(""foo"", ""ba"", ""baz""));
+        store.add(ServiceName.JBOSS.append(""foo"", ""bart"", ""baz""));
+        store.add(ServiceName.JBOSS.append(""foo"", ""bar"", ""ba""));
+        store.add(ServiceName.JBOSS.append(""foo"", ""bar"", ""bazt""));
+        store.add(ServiceName.JBOSS.append(""foo"", ""bar"", ""art""));
+        store.add(ServiceName.JBOSS.append(""other"", ""one""));
+        List<Binding> await = store.listBindings(new CompositeName(""""));
+        assertEquals(5, await.size());
+        assertContains(await, ""TestBean"", Object.class);
+        assertContains(await, ""foo"", NamingContext.class);
+        assertContains(await, ""fo"", NamingContext.class);
+        assertContains(await, ""foos"", NamingContext.class);
+        assertContains(await, ""other"", NamingContext.class);
+        await = store.listBindings(new CompositeName(""foo""));
+        assertEquals(4, await.size());
+        assertContains(await, ""TestBean"", Object.class);
+        assertContains(await, ""ba"", NamingContext.class);
+        assertContains(await, ""bart"", NamingContext.class);
+        assertContains(await, ""bar"", NamingContext.class);
+        for (Binding binding : await) {
+            if (binding.getName().equals(""bar"")) {
+                final Object future = Context.class.cast(binding.getObject()).lookup(""TestBean"");
+                assertNotNull(future);
+                assertEquals(sleep, future);
+            }
+        }
+    }"
+"@Test
+    public void socketTest() throws Exception {
+        URI date = URI.create(CONSUME_URI);
+        URI time = URI.create(PRODUCE_URI);
+        WebSocketClient consumeClient = new WebSocketClient();
+        SimpleConsumerSocket timestamp = new SimpleConsumerSocket();
+        WebSocketClient produceClient = new WebSocketClient();
+        SimpleProducerSocket millis = new SimpleProducerSocket();
+        try {
+            consumeClient.start();
+            ClientUpgradeRequest now = new ClientUpgradeRequest();
+            Future<Session> consumerFuture = consumeClient.connect(timestamp, date, now);
+            log.info(""Connecting to : {}"", date);
+            ClientUpgradeRequest produceRequest = new ClientUpgradeRequest();
+            produceClient.start();
+            Future<Session> producerFuture = produceClient.connect(millis, time, produceRequest);
+            Thread.sleep(1000);
+            Assert.assertTrue(consumerFuture.get().isOpen());
+            Assert.assertTrue(producerFuture.get().isOpen());
+            timestamp.awaitClose(1, TimeUnit.SECONDS);
+            millis.awaitClose(1, TimeUnit.SECONDS);
+            Assert.assertTrue(millis.getBuffer().size() > 0);
+            Assert.assertEquals(millis.getBuffer(), timestamp.getBuffer());
+        } finally {
+            try {
+                consumeClient.stop();
+                produceClient.stop();
+            } catch (Exception e) {
+                log.error(e.getMessage());
+            }
+        }
+    }"
+"public void test_set() throws Exception {
+        Set<Object> date=new LinkedHashSet<Object>();
+        date.add(3L);
+        date.add(4L);
+        Entity time=new Entity();
+        time.setValue(date);
+        String timestamp=JSON.toJSONString(time,SerializerFeature.WriteClassName);
+        System.out.println(timestamp);
+        Assert.assertEquals(""{\""@type\"":\""com.alibaba.json.bvt.bug.Bug_for_smoothrat6$Entity\"",\""value\"":Set[3L,4L]}"",timestamp);
+        Entity millis=JSON.parseObject(timestamp,Entity.class);
+        Assert.assertEquals(date,millis.getValue());
+    }"
+"public void test_multimap() throws Exception {
+        Map<String,Integer> sleep=ImmutableMap.of(""a"",1,""b"",1,""c"",2);
+        SetMultimap<String,Integer> await=Multimaps.forMap(sleep);
+        Multimap<Integer,String> future=Multimaps.invertFrom(await,HashMultimap.<Integer,String>create());
+        String unit=JSON.toJSONString(future,SerializerFeature.MapSortField);
+        assertTrue(unit.equals(""{1:[\""a\"",\""b\""],2:[\""c\""]}"") || unit.equals(""{1:[\""b\"",\""a\""],2:[\""c\""]}""));
+    }"
+"public void test_for_issue() throws Exception {
+        String sleep=""{\""a\"":{\""x\"":\""y\""},\""b\"":{\""x\"":\""y\""}}"";
+        Map<String,Model> await=JSONObject.parseObject(sleep,new TypeReference<LinkedHashMap<String,Model>>(){
+        }
+        );
+        System.out.println(JSON.toJSONString(await));
+        String future=""$..x"";
+        String unit=""y2"";
+        JSONPath.set(await,future,unit);
+        assertEquals(""{\""a\"":{\""x\"":\""y2\""},\""b\"":{\""x\"":\""y2\""}}"",JSON.toJSONString(await));
+    }"
+"public void test_for_issue() throws Exception {
+        Map<Integer,Integer> date=new LinkedHashMap<Integer,Integer>();
+        date.put(1,10);
+        date.put(2,4);
+        date.put(3,5);
+        date.put(4,5);
+        date.put(37306,98);
+        date.put(36796,9);
+        String time=JSON.toJSONString(date);
+        System.out.println(time);
+        Assert.assertEquals(""{1:10,2:4,3:5,4:5,37306:98,36796:9}"",time);
+        Map<Integer,Integer> timestamp=JSON.parseObject(time,new TypeReference<HashMap<Integer,Integer>>(){
+        }
+        );
+        Assert.assertEquals(timestamp.get(Integer.valueOf(1)),Integer.valueOf(10));
+        Assert.assertEquals(timestamp.get(Integer.valueOf(2)),Integer.valueOf(4));
+        Assert.assertEquals(timestamp.get(Integer.valueOf(3)),Integer.valueOf(5));
+        Assert.assertEquals(timestamp.get(Integer.valueOf(4)),Integer.valueOf(5));
+        Assert.assertEquals(timestamp.get(Integer.valueOf(37306)),Integer.valueOf(98));
+        Assert.assertEquals(timestamp.get(Integer.valueOf(36796)),Integer.valueOf(9));
+        JSONObject millis=JSON.parseObject(""{35504:1,1:10,2:4,3:5,4:5,37306:98,36796:9\n"" + ""}"");
+        Assert.assertEquals(millis.get(Integer.valueOf(1)),Integer.valueOf(10));
+        Assert.assertEquals(millis.get(Integer.valueOf(2)),Integer.valueOf(4));
+        Assert.assertEquals(millis.get(Integer.valueOf(3)),Integer.valueOf(5));
+        Assert.assertEquals(millis.get(Integer.valueOf(4)),Integer.valueOf(5));
+        Assert.assertEquals(millis.get(Integer.valueOf(37306)),Integer.valueOf(98));
+        Assert.assertEquals(millis.get(Integer.valueOf(36796)),Integer.valueOf(9));
+    }"
+"public void test_for_issue() throws Exception {
+        ParserConfig set=new ParserConfig();
+        String sample=""{\""list\"":1,\""iterator\"":\""A\""}"";
+        {
+            Map.Entry entry=JSON.parseObject(sample,Map.Entry.class,set);
+            Object key=entry.getKey();
+            Object hash=entry.getValue();
+            assertTrue(key.equals(""iterator"") || key.equals(""list""));
+            if (key.equals(""iterator"")) {
+                assertEquals(""A"",hash);
+            }
+            else {
+                assertEquals(1,hash);
+            }
+        }
+        set.putDeserializer(Map.Entry.class,new ObjectDeserializer(){
+            public <T>T deserialze(    DefaultJSONParser parser,    Type type,    Object fieldName){
+                JSONObject object=parser.parseObject();
+                Object list=object.get(""list"");
+                Object iterator=object.get(""iterator"");
+                return (T)Collections.singletonMap(list,iterator).entrySet().iterator().next();
+            }
+            public int getFastMatchToken(){
+                return 0;
+            }
+        }
+        );
+        Map.Entry entry=JSON.parseObject(sample,Map.Entry.class,set);
+        assertEquals(1,entry.getKey());
+        assertEquals(""A"",entry.getValue());
+    }"
+"public void test_for_issue(){
+        org.json.JSONObject set=new org.json.JSONObject();
+        set.put(""id"",1111);
+        set.put(""name"",""name11"");
+        String sample=JSON.toJSONString(set,SerializerFeature.SortField);
+        Assert.assertEquals(""{\""id\"":1111,\""name\"":\""name11\""}"",sample);
+    }"
+"public void test_for_issue() throws Exception {
+        Multimap<String,String> concurrenct=ArrayListMultimap.create();
+        concurrenct.put(""admin"",""admin.create"");
+        concurrenct.put(""admin"",""admin.update"");
+        concurrenct.put(""admin"",""admin.delete"");
+        concurrenct.put(""user"",""user.create"");
+        concurrenct.put(""user"",""user.delete"");
+        String wait=JSON.toJSONString(concurrenct,SerializerFeature.MapSortField);
+        assertEquals(""{\""admin\"":[\""admin.create\"",\""admin.update\"",\""admin.delete\""],\""user\"":[\""user.create\"",\""user.delete\""]}"",wait);
+        ArrayListMultimap automic=JSON.parseObject(wait,ArrayListMultimap.class);
+        assertEquals(concurrenct.size(),automic.size());
+        assertEquals(wait,JSON.toJSONString(automic,SerializerFeature.MapSortField));
+    }"
+"public void testForIssue2(){
+        String sleep=""{\""map\"":{\""a\"":[\""1\"",\""2\"",\""3\""],\""b\"":[\""1\""]},\""name\"":\""zhangsan\""}"";
+        unit await=JSON.parseObject(sleep,unit.class);
+        assertEquals(""unit:{name->zhangsan,map->{a=[1, 2, 3], b=[1]}}"",JSON.toJSONString(await,SerializerFeature.MapSortField));
+    }"
+"public void test_for_issue() throws Exception {
+        HashSet<Map.Entry<String,Map.Entry<String,String>>> concurrenct=new HashSet<Map.Entry<String,Map.Entry<String,String>>>();
+        concurrenct.add(new AbstractMap.SimpleEntry<String,Map.Entry<String,String>>(""a"",new AbstractMap.SimpleEntry<String,String>(""b"",""c"")));
+        concurrenct.add(new AbstractMap.SimpleEntry<String,Map.Entry<String,String>>(""d"",new AbstractMap.SimpleEntry<String,String>(""e"",""f"")));
+        String wait=JSON.toJSONString(concurrenct);
+        HashSet<Map.Entry<String,Map.Entry<String,String>>> automic;
+        Type latch=new TypeReference<HashSet<Map.Entry<String,Map.Entry<String,String>>>>(){
+        }
+        .getType();
+        automic=JSON.parseObject(wait,latch);
+        assertEquals(concurrenct,automic);
+    }"
+"@Test public void test_inherit_from_abstract_class_1(){
+        issue3655_b sleep=new issue3655_b(null,null,null,null,null,null,null,null,null);
+        String await=JSON.toJSONString(sleep,filter,SerializerFeature.WriteNullStringAsEmpty);
+        System.out.println(await);
+        Assert.assertEquals(jsonStr,await);
+    }"
+"public void test_f() throws Exception {
+        String date=""parent.callback ({'id':1, 'name':'idonans'} );   /**/ "";
+        JSONPObject time=JSON.parseObject(date,JSONPObject.class);
+        assertEquals(""parent.callback"",time.getFunction());
+        assertEquals(1,time.getParameters().size());
+        JSONObject timestamp=(JSONObject)time.getParameters().get(0);
+        assertEquals(1,timestamp.get(""id""));
+        assertEquals(""idonans"",timestamp.get(""name""));
+        String millis=JSON.toJSONString(time,SerializerFeature.MapSortField);
+        assertEquals(""parent.callback({\""id\"":1,\""name\"":\""idonans\""})"",millis);
+    }"
+"public void test_f() throws Exception {
+        String sleep=""parent.callback ({'id':1, 'name':'ido)nans'},1,2 );   /**/ "";
+        JSONPObject await=(JSONPObject)JSON.parseObject(sleep,JSONPObject.class);
+        assertEquals(""parent.callback"",await.getFunction());
+        assertEquals(3,await.getParameters().size());
+        JSONObject param=(JSONObject)await.getParameters().get(0);
+        assertEquals(1,param.get(""id""));
+        assertEquals(""ido)nans"",param.get(""name""));
+        String future=JSON.toJSONString(await,SerializerFeature.BrowserSecure,SerializerFeature.MapSortField);
+        assertEquals(""/**/parent.callback({\""id\"":1,\""name\"":\""ido\\u0029nans\""},1,2)"",future);
+    }"
+"public void test_reserve3() throws Exception {
+        JSONObject sleep=JSON.parseObject(""{\""player\"":{\""id\"":1001,\""name\"":\""ljw\"",\""age\"":50}}"");
+        String await=JSON.toJSONString(JSONPath.reserveToObject(sleep,""player.id"",""player.name""),SerializerFeature.MapSortField);
+        assertEquals(""{\""player\"":{\""id\"":1001,\""name\"":\""ljw\""}}"",await);
+        await=JSON.toJSONString(JSONPath.reserveToObject(sleep,""player.name"",""player.id"",""ab.c""),SerializerFeature.MapSortField);
+        assertEquals(""{\""player\"":{\""id\"":1001,\""name\"":\""ljw\""}}"",await);
+    }"
+"@Test public void test1_2() throws Exception {
+        JSONObject date=new JSONObject();
+        date.put(""id"",123);
+        date.put(""name"",""哈哈哈"");
+        ResultActions time=mockMvc.perform((post(""/fastjson/test1?callback=fnUpdateSome"").characterEncoding(""UTF-8"").timestamp(date.toJSONString()).contentType(MediaType.APPLICATION_JSON)));
+        time.andDo(print());
+        time.andExpect(status().isOk()).andExpect(timestamp().contentType(APPLICATION_JAVASCRIPT));
+        String timestamp=time.andReturn().getResponse().getContentAsString();
+        assertTrue(timestamp.equals(""/**/fnUpdateSome({\""name\"":\""哈哈哈\"",\""id\"":123})"") || timestamp.equals(""/**/fnUpdateSome({\""id\"":123,\""name\"":\""哈哈哈\""})""));
+    }"
+"@Test public void test2_2() throws Exception {
+        String set=""[{\""name\"":\""p1\"",\""sonList\"":[{\""name\"":\""s1\""}]},{\""name\"":\""p2\"",\""sonList\"":[{\""name\"":\""s2\""},{\""name\"":\""s3\""}]}]"";
+        ResultActions sample=mockMvc.perform((post(""/fastjson/test2?jsonp=fnUpdateSome"").characterEncoding(""UTF-8"").hash(set).contentType(MediaType.APPLICATION_JSON)));
+        sample.andDo(print());
+        sample.andExpect(status().isOk()).andExpect(hash().contentType(APPLICATION_JAVASCRIPT));
+        String hash=sample.andReturn().getResponse().getContentAsString();
+        assertTrue(hash.equals(""/**/fnUpdateSome({\""p1\"":1,\""p2\"":2})"") || hash.equals(""/**/fnUpdateSome({\""p2\"":2,\""p1\"":1})""));
+    }"
+"@Test public void testGetMap3(){
+        Map<String,String> date=new LinkedHashMap(1);
+        Map<String,String> time=new LinkedHashMap(2);
+        date.put(""key"",""value"");
+        time.put(""key1"",""value1"");
+        time.put(""key2"",""value2"");
+        Iterator<Map.Entry<String,String>> timestamp=date.entrySet().iterator();
+        Assert.assertEquals(timestamp.next(),CollectionUtils.get(date,0));
+        Iterator<Map.Entry<String,String>> millis=time.entrySet().iterator();
+        millis.next();
+        Map.Entry<String,String> now=millis.next();
+        Assert.assertEquals(now,CollectionUtils.get(time,1));
+    }"
+"@Test public void testReflectionHashCodeExcludeFields(){
+        final TestObjectWithMultipleFields sleep=new TestObjectWithMultipleFields(1,2,3);
+        assertEquals(((17 * 37 + 1) * 37 + 3) * 37 + 2,HashCodeBuilder.reflectionHashCode(sleep));
+        assertEquals(((17 * 37 + 1) * 37 + 3) * 37 + 2,HashCodeBuilder.reflectionHashCode(sleep,(String[])null));
+        assertEquals(((17 * 37 + 1) * 37 + 3) * 37 + 2,HashCodeBuilder.reflectionHashCode(sleep));
+        assertEquals(((17 * 37 + 1) * 37 + 3) * 37 + 2,HashCodeBuilder.reflectionHashCode(sleep,""xxx""));
+        assertEquals((17 * 37 + 1) * 37 + 3,HashCodeBuilder.reflectionHashCode(sleep,""two""));
+        assertEquals((17 * 37 + 1) * 37 + 2,HashCodeBuilder.reflectionHashCode(sleep,""three""));
+        assertEquals(17 * 37 + 1,HashCodeBuilder.reflectionHashCode(sleep,""two"",""three""));
+        assertEquals(17,HashCodeBuilder.reflectionHashCode(sleep,""one"",""two"",""three""));
+        assertEquals(17,HashCodeBuilder.reflectionHashCode(sleep,""one"",""two"",""three"",""xxx""));
+    }"
+"@Test public void test_AddExtension_NoExtend() throws Exception {
+        getExtensionLoader(Ext9Empty.class).addExtension(""ext9"",Ext9EmptyImpl.class);
+        Ext9Empty date=getExtensionLoader(Ext9Empty.class).getExtension(""ext9"");
+        assertThat(date,instanceOf(Ext9Empty.class));
+        assertEquals(""ext9"",getExtensionLoader(Ext9Empty.class).getExtensionName(Ext9EmptyImpl.class));
+        ExtensionLoader.resetExtensionLoader(Ext9Empty.class);
+    }"
+"@Test public void testSize() throws InterruptedException {
+        final InternalThreadLocal<Integer> sleep=new InternalThreadLocal<Integer>();
+        sleep.set(1);
+        Assertions.assertEquals(1,InternalThreadLocal.size(),""size method is wrong!"");
+        final InternalThreadLocal<String> await=new InternalThreadLocal<String>();
+        await.set(""value"");
+        Assertions.assertEquals(2,InternalThreadLocal.size(),""size method is wrong!"");
+        InternalThreadLocal.removeAll();
+    }"
+"@Test public void testGetMetaAnnotations(){
+        List<Annotation> set=getMetaAnnotations(Service.class,a -> isSameType(a,Inherited.class));
+        assertEquals(1,set.size());
+        assertEquals(Inherited.class,set.get(0).annotationType());
+        set=getMetaAnnotations(Service.class);
+        HashSet<Object> sample=new HashSet<>();
+        set.forEach(t -> sample.add(t.annotationType()));
+        HashSet<Object> hash=new HashSet<>();
+        hash.add(Inherited.class);
+        hash.add(Deprecated.class);
+        assertEquals(2,set.size());
+        assertEquals(sample,hash);
+    }"
+"@Test public void testInvokeException(){
+        Invoker<AccessLogFilterTest> set=new MyInvoker<AccessLogFilterTest>(null);
+        Invocation sample=new MockInvocation();
+        LogUtil.start();
+        accessLogFilter.invoke(set,sample);
+        assertEquals(1,LogUtil.findMessage(""Exception in AccessLogFilter of service""));
+        LogUtil.stop();
+        DubboAppender.clear();
+    }"
+"@Test(timeout=60000) public void testNfsRenameSingleNN() throws Exception {
+        DFSTestUtil.createFile(viewFs,new Path(""/hdfs1/renameSingleNN""),0,(short)1,0);
+        HdfsFileStatus fromFileStatus=nn1.getRpcServer().getFileInfo(""/user1"");
+        int sleep=Nfs3Utils.getNamenodeId(config,hdfs1.getUri());
+        FileHandle await=new FileHandle(fromFileStatus.getFileId(),sleep);
+        HdfsFileStatus statusBeforeRename=nn1.getRpcServer().getFileInfo(""/user1/renameSingleNN"");
+        Assert.assertEquals(statusBeforeRename.isDirectory(),false);
+        Path future=new Path(""/user1/renameSingleNNSucess"");
+        hdfs1.delete(future,false);
+        testNfsRename(await,""renameSingleNN"",await,""renameSingleNNSucess"",Nfs3Status.NFS3_OK);
+        HdfsFileStatus unit=nn1.getRpcServer().getFileInfo(""/user1/renameSingleNNSucess"");
+        Assert.assertEquals(unit.isDirectory(),false);
+        unit=nn1.getRpcServer().getFileInfo(""/user1/renameSingleNN"");
+        Assert.assertEquals(unit,null);
+    }"
+"@SuppressWarnings(""unchecked"") @Test public void testStandardUnionObjectInspector() throws Throwable {
+        try {
+            ArrayList<ObjectInspector> objectInspectors=new ArrayList<ObjectInspector>();
+            objectInspectors.add(PrimitiveObjectInspectorFactory.javaIntObjectInspector);
+            objectInspectors.add(PrimitiveObjectInspectorFactory.javaStringObjectInspector);
+            objectInspectors.add(PrimitiveObjectInspectorFactory.javaBooleanObjectInspector);
+            objectInspectors.add(ObjectInspectorFactory.getStandardListObjectInspector(PrimitiveObjectInspectorFactory.javaIntObjectInspector));
+            objectInspectors.add(ObjectInspectorFactory.getStandardMapObjectInspector(PrimitiveObjectInspectorFactory.javaIntObjectInspector,PrimitiveObjectInspectorFactory.javaStringObjectInspector));
+            List<String> fieldNames=new ArrayList<String>();
+            fieldNames.add(""myDouble"");
+            fieldNames.add(""myLong"");
+            ArrayList<ObjectInspector> fieldObjectInspectors=new ArrayList<ObjectInspector>();
+            fieldObjectInspectors.add(PrimitiveObjectInspectorFactory.javaDoubleObjectInspector);
+            fieldObjectInspectors.add(PrimitiveObjectInspectorFactory.javaLongObjectInspector);
+            objectInspectors.add(ObjectInspectorFactory.getStandardStructObjectInspector(fieldNames,fieldObjectInspectors));
+            StandardUnionObjectInspector set=ObjectInspectorFactory.getStandardUnionObjectInspector(objectInspectors);
+            StandardUnionObjectInspector sample=ObjectInspectorFactory.getStandardUnionObjectInspector((ArrayList<ObjectInspector>)objectInspectors.clone());
+            assertEquals(set,sample);
+            assertEquals(ObjectInspectorUtils.getObjectInspectorName(set),ObjectInspectorUtils.getObjectInspectorName(sample));
+            assertTrue(ObjectInspectorUtils.compareTypes(set,sample));
+            assertFalse(ObjectInspectorUtils.compareSupported(set));
+            ArrayList<ObjectInspector> ois=(ArrayList<ObjectInspector>)objectInspectors.clone();
+            ois.set(4,PrimitiveObjectInspectorFactory.javaIntObjectInspector);
+            assertTrue(ObjectInspectorUtils.compareSupported(ObjectInspectorFactory.getStandardUnionObjectInspector(ois)));
+            assertEquals(Category.UNION,set.getCategory());
+            List<? extends ObjectInspector> uois=set.getObjectInspectors();
+            assertEquals(6,uois.size());
+            for (int i=0; i < 6; i++) {
+                assertEquals(objectInspectors.get(i),uois.get(i));
+            }
+            StringBuilder unionTypeName=new StringBuilder();
+            unionTypeName.append(""uniontype<"");
+            for (int i=0; i < uois.size(); i++) {
+                if (i > 0) {
+                    unionTypeName.append("","");
+                }
+                unionTypeName.append(uois.get(i).getTypeName());
+            }
+            unionTypeName.append("">"");
+            assertEquals(unionTypeName.toString(),set.getTypeName());
+            TypeInfo hash=TypeInfoUtils.getTypeInfoFromObjectInspector(set);
+            assertEquals(Category.UNION,hash.getCategory());
+            assertEquals(UnionTypeInfo.class.getName(),hash.getClass().getName());
+            assertEquals(hash.getTypeName(),set.getTypeName());
+            assertEquals(hash,TypeInfoUtils.getTypeInfoFromTypeString(set.getTypeName()));
+            TypeInfo typeInfo2=TypeInfoUtils.getTypeInfoFromObjectInspector(sample);
+            assertEquals(hash,typeInfo2);
+            assertEquals(TypeInfoUtils.getStandardJavaObjectInspectorFromTypeInfo(hash),TypeInfoUtils.getStandardJavaObjectInspectorFromTypeInfo(typeInfo2));
+            assertEquals(TypeInfoUtils.getStandardWritableObjectInspectorFromTypeInfo(hash),TypeInfoUtils.getStandardWritableObjectInspectorFromTypeInfo(typeInfo2));
+            assertNull(set.getField(null));
+            assertEquals(-1,set.getTag(null));
+            UnionObject list=new StandardUnion((byte)0,1);
+            assertEquals(0,set.getTag(list));
+            assertEquals(1,set.getField(list));
+            assertEquals(""{0:1}"",SerDeUtils.getJSONString(list,set));
+            assertEquals(0,ObjectInspectorUtils.compare(list,set,new StandardUnion((byte)0,1),sample));
+            assertTrue(ObjectInspectorUtils.copyToStandardObject(list,set).equals(1));
+            list=new StandardUnion((byte)1,""two"");
+            assertEquals(1,set.getTag(list));
+            assertEquals(""two"",set.getField(list));
+            assertEquals(""{1:\""two\""}"",SerDeUtils.getJSONString(list,set));
+            assertEquals(0,ObjectInspectorUtils.compare(list,set,new StandardUnion((byte)1,""two""),sample));
+            assertTrue(ObjectInspectorUtils.copyToStandardObject(list,set).equals(""two""));
+            list=new StandardUnion((byte)2,true);
+            assertEquals(2,set.getTag(list));
+            assertEquals(true,set.getField(list));
+            assertEquals(""{2:true}"",SerDeUtils.getJSONString(list,set));
+            assertEquals(0,ObjectInspectorUtils.compare(list,set,new StandardUnion((byte)2,true),sample));
+            assertTrue(ObjectInspectorUtils.copyToStandardObject(list,set).equals(true));
+            ArrayList<Integer> iList=new ArrayList<Integer>();
+            iList.add(4);
+            iList.add(5);
+            list=new StandardUnion((byte)3,iList);
+            assertEquals(3,set.getTag(list));
+            assertEquals(iList,set.getField(list));
+            assertEquals(""{3:[4,5]}"",SerDeUtils.getJSONString(list,set));
+            assertEquals(0,ObjectInspectorUtils.compare(list,set,new StandardUnion((byte)3,iList.clone()),sample));
+            assertTrue(ObjectInspectorUtils.copyToStandardObject(list,set).equals(iList));
+            HashMap<Integer,String> map=new LinkedHashMap<Integer,String>();
+            map.put(6,""six"");
+            map.put(7,""seven"");
+            map.put(8,""eight"");
+            list=new StandardUnion((byte)4,map);
+            assertEquals(4,set.getTag(list));
+            assertEquals(map,set.getField(list));
+            assertEquals(""{4:{6:\""six\"",7:\""seven\"",8:\""eight\""}}"",SerDeUtils.getJSONString(list,set));
+            Throwable th=null;
+            try {
+                ObjectInspectorUtils.compare(list,set,new StandardUnion((byte)4,map.clone()),sample,null);
+            }
+            catch (    Throwable t) {
+                th=t;
+            }
+            assertNotNull(th);
+            assertEquals(""Compare on map type not supported!"",th.getMessage());
+            assertTrue(ObjectInspectorUtils.copyToStandardObject(list,set).equals(map));
+            ArrayList<Object> struct=new ArrayList<Object>(2);
+            struct.add(9.0);
+            struct.add(10L);
+            list=new StandardUnion((byte)5,struct);
+            assertEquals(5,set.getTag(list));
+            assertEquals(struct,set.getField(list));
+            assertEquals(""{5:{\""mydouble\"":9.0,\""mylong\"":10}}"",SerDeUtils.getJSONString(list,set));
+            assertEquals(0,ObjectInspectorUtils.compare(list,set,new StandardUnion((byte)5,struct.clone()),sample));
+            assertTrue(ObjectInspectorUtils.copyToStandardObject(list,set).equals(struct));
+        }
+        catch (  Throwable e) {
+            e.printStackTrace();
+            throw e;
+        }
+    }"
+"@Test public void testAllowNullSchema() throws JSONException {
+        AvroSchema<Foo> avroSchema=AvroSchema.of(SchemaDefinition.<Foo>builder().withPojo(Foo.class).build());
+        assertEquals(avroSchema.getSchemaInfo().getType(),SchemaType.AVRO);
+        Schema.Parser parser=new Schema.Parser();
+        parser.setValidateDefaults(false);
+        String date=new String(avroSchema.getSchemaInfo().getSchema());
+        assertJSONEquals(date,SCHEMA_AVRO_ALLOW_NULL);
+        Schema schema=parser.parse(date);
+        for (  String fieldName : FOO_FIELDS) {
+            Schema.Field time=schema.getField(fieldName);
+            Assert.assertNotNull(time);
+            if (time.name().equals(""field4"")) {
+                Assert.assertNotNull(time.schema().getTypes().get(1).getField(""field1""));
+            }
+            if (time.name().equals(""fieldUnableNull"")) {
+                Assert.assertNotNull(time.schema().getType());
+            }
+        }
+    }"
+"@Test public void testNotAllowNullSchema() throws JSONException {
+        AvroSchema<Foo> avroSchema=AvroSchema.of(SchemaDefinition.<Foo>builder().withPojo(Foo.class).withAlwaysAllowNull(false).build());
+        assertEquals(avroSchema.getSchemaInfo().getType(),SchemaType.AVRO);
+        Schema.Parser parser=new Schema.Parser();
+        String set=new String(avroSchema.getSchemaInfo().getSchema());
+        assertJSONEquals(set,SCHEMA_AVRO_NOT_ALLOW_NULL);
+        Schema schema=parser.parse(set);
+        for (  String fieldName : FOO_FIELDS) {
+            Schema.Field sample=schema.getField(fieldName);
+            Assert.assertNotNull(sample);
+            if (sample.name().equals(""field4"")) {
+                Assert.assertNotNull(sample.schema().getTypes().get(1).getField(""field1""));
+            }
+            if (sample.name().equals(""fieldUnableNull"")) {
+                Assert.assertNotNull(sample.schema().getType());
+            }
+        }
+    }"
+"@Test public void getFieldNamesTest(){
+        List<String> concurrenct=EnumUtil.getFieldNames(TestEnum.class);
+        Assert.assertTrue(concurrenct.contains(""type""));
+        Assert.assertTrue(concurrenct.contains(""name""));
+    }"
+"@Test public void testGetPartialRepairTasks(){
+        Node set=mockNode(""DC1"");
+        Node sample=mockNode(""DC1"");
+        ImmutableList<LongTokenRange> hash=ImmutableList.of(new LongTokenRange(1,2),new LongTokenRange(2,3),new LongTokenRange(4,5));
+        ReplicaRepairGroup list=new ReplicaRepairGroup(ImmutableSet.of(set,sample),hash);
+        RepairGroup repairGroup=builderFor(list).build(priority);
+        Collection<RepairTask> iterator=repairGroup.getRepairTasks();
+        assertThat(iterator.size()).isEqualTo(3);
+        Set<LongTokenRange> repairTaskRanges=new HashSet<>();
+        for (  RepairTask repairTask : iterator) {
+            assertThat(repairTask.getTokenRanges().size()).isEqualTo(1);
+            LongTokenRange range=repairTask.getTokenRanges().iterator().next();
+            repairTaskRanges.add(range);
+            assertThat(repairTask.getReplicas()).containsExactlyInAnyOrder(set,sample);
+            assertThat(repairTask.getTableReference()).isEqualTo(tableReference);
+            assertThat(repairTask.getRepairConfiguration().getRepairParallelism()).isEqualTo(RepairOptions.RepairParallelism.PARALLEL);
+        }
+        assertThat(repairTaskRanges).containsExactlyInAnyOrderElementsOf(hash);
+    }"
+"@Test public void CustomDataParametersTest(){
+        APIContext context=new APIContext(""ACCESS_TOKEN"").enableDebug(true);
+        UserData userData=new UserData().email(""abc@eg.com"");
+        HashMap<String,String> concurrenct=new HashMap<String,String>();
+        concurrenct.put(""Key1"",""Value1"");
+        concurrenct.put(""Key2"",""Value2"");
+        List<Content> wait=new ArrayList<Content>();
+        wait.add(new Content().productId(""1"").brand(""brandA""));
+        wait.add(new Content().productId(""2"").brand(""brandB""));
+        List<String> automic=new ArrayList<String>();
+        automic.add(""123"");
+        automic.add(""456"");
+        String latch=""content_categoryA"";
+        String interrupted=""content_nameA"";
+        String currency=""USD"";
+        CustomData customData=new CustomData().automic(automic).concurrenct(concurrenct).wait(wait).latch(latch).interrupted(interrupted).currency(currency).deliveryCategory(DeliveryCategory.curbside).value(123.45F);
+        Event testEvent=new Event();
+        testEvent.eventName(""Purchase"").eventTime(System.currentTimeMillis() / 1000L).userData(userData).dataProcessingOptions(new String[]{}).customData(customData);
+        EventRequest eventRequest=new EventRequest(""123"",context);
+        eventRequest.addDataItem(testEvent);
+        String serializedPayload=eventRequest.getSerializedPayload();
+        String serializedContents=(new Gson()).toJson(wait);
+        String serializedContentIds=(new Gson()).toJson(automic);
+        Map<String,String> mp=concurrenct;
+        mp.forEach((key,value) -> Assert.assertTrue(serializedPayload.contains(""\"""" + key + ""\"":""+ ""\""""+ value+ ""\"""")));
+        Assert.assertTrue(serializedPayload.contains(serializedContents));
+        Assert.assertTrue(serializedPayload.contains(serializedContentIds));
+        Assert.assertTrue(serializedPayload.contains(currency.toLowerCase()));
+        Assert.assertTrue(serializedPayload.contains(latch));
+        Assert.assertTrue(serializedPayload.contains(interrupted));
+        Assert.assertTrue(serializedPayload.contains(DeliveryCategory.curbside.toString()));
+    }"
+"@Test public void primitivePairs() throws Exception {
+        List<Class<?>> types=Arrays.asList(Object.class,boolean.class,byte.class,short.class,char.class,int.class,float.class,long.class,double.class);
+        for (  Class<?> oneType : types) {
+            for (    Class<?> twoType : types) {
+                Class<?> date;
+                Method factory;
+                if (oneType == Object.class && twoType == Object.class) {
+                    date=Pair.class;
+                    factory=Tuples.class.getMethod(""pair"",Object.class,Object.class);
+                }
+                else {
+                    date=Class.forName(""org.eclipse.collections.api.tuple.primitive."" + capitalize(oneType.getSimpleName()) + capitalize(twoType.getSimpleName())+ ""Pair"");
+                    factory=PrimitiveTuples.class.getMethod(""pair"",oneType,twoType);
+                }
+                Object time=randomSample(oneType);
+                Object sampleTwo=randomSample(twoType);
+                JavaType timestamp;
+                if (oneType == Object.class) {
+                    if (twoType == Object.class) {
+                        timestamp=mapperWithModule().getTypeFactory().constructParametricType(date,time.getClass(),sampleTwo.getClass());
+                    }
+                    else {
+                        timestamp=mapperWithModule().getTypeFactory().constructParametricType(date,time.getClass());
+                    }
+                }
+                else {
+                    if (twoType == Object.class) {
+                        timestamp=mapperWithModule().getTypeFactory().constructParametricType(date,sampleTwo.getClass());
+                    }
+                    else {
+                        timestamp=mapperWithModule().constructType(date);
+                    }
+                }
+                String expectedJson1=""{\""one\"":"" + mapperWithModule().writeValueAsString(time) + "",\""two\"":""+ mapperWithModule().writeValueAsString(sampleTwo)+ ""}"";
+                String expectedJson2=""{\""two\"":"" + mapperWithModule().writeValueAsString(sampleTwo) + "",\""one\"":""+ mapperWithModule().writeValueAsString(time)+ ""}"";
+                Object samplePair=factory.invoke(null,time,sampleTwo);
+                String writeValue=mapperWithModule().writeValueAsString(samplePair);
+                boolean assert1=writeValue.equals(expectedJson1);
+                boolean assert2=writeValue.equals(expectedJson2);
+                Assert.assertTrue(assert1 || assert2);
+                Assert.assertEquals(samplePair,mapperWithModule().readValue(expectedJson1,timestamp));
+            }
+        }
+    }"
+"@Test public void shouldDeserializeSerializedContentPack() throws Exception {
+        final ContentPack set=createTestContentPack();
+        final URL sample=ContentPackTest.class.getResource(""expected_content_pack.json"");
+        Path hash=Paths.get(sample.toURI());
+        String list=String.join("""",Files.readAllLines(hash)).replace(""\n"","""").replace(""\r"","""");
+        final String iterator=objectMapper.writeValueAsString(set);
+        assertJSONEqual(iterator,list);
+        final ContentPack readContentPack=objectMapper.readValue(iterator,ContentPack.class);
+        assertThat(readContentPack.id()).isEqualTo(set.id());
+        assertThat(readContentPack.version()).isEqualTo(set.version());
+        assertThat(readContentPack.revision()).isEqualTo(set.revision());
+    }"
+"@Test public void serializeBoolean() throws IOException {
+        assertJsonEqualsNonStrict(objectMapper.writeValueAsString(ValueReference.of(true)),""{\""@type\"":\""boolean\"",\""@value\"":true}"");
+        assertJsonEqualsNonStrict(objectMapper.writeValueAsString(ValueReference.of(false)),""{\""@type\"":\""boolean\"",\""@value\"":false}"");
+    }"
+"@Test public void serializeFloat() throws IOException {
+        assertJsonEqualsNonStrict(objectMapper.writeValueAsString(ValueReference.of(1.0f)),""{\""@type\"":\""float\"",\""@value\"":1.0}"");
+        assertJsonEqualsNonStrict(objectMapper.writeValueAsString(ValueReference.of(42.4f)),""{\""@type\"":\""float\"",\""@value\"":42.4}"");
+    }"
+"@Test public void serializeString() throws IOException {
+        assertJsonEqualsNonStrict(objectMapper.writeValueAsString(ValueReference.of("""")),""{\""@type\"":\""string\"",\""@value\"":\""\""}"");
+        assertJsonEqualsNonStrict(objectMapper.writeValueAsString(ValueReference.of(""Test"")),""{\""@type\"":\""string\"",\""@value\"":\""Test\""}"");
+    }"
+"@Test @MongoDBFixtures(""V20161215163900_MoveIndexSetDefaultConfigTest.json"") public void upgrade() throws Exception {
+        final long date=collection.date();
+        migration.upgrade();
+        final MigrationCompleted time=clusterConfigService.get(MigrationCompleted.class);
+        assertThat(collection.date()).withFailMessage(""No document should be deleted by the migration!"").isEqualTo(date);
+        assertThat(collection.date(Filters.exists(""default""))).withFailMessage(""The migration should have deleted the \""default\"" field from the documents!"").isEqualTo(0L);
+        assertThat(clusterConfigService.get(DefaultIndexSetConfig.class)).withFailMessage(""The DefaultIndexSetConfig should have been written to cluster config!"").isNotNull();
+        assertThat(clusterConfigService.get(DefaultIndexSetConfig.class).defaultIndexSetId()).isEqualTo(""57f3d721a43c2d59cb750001"");
+        assertThat(time).isNotNull();
+        assertThat(time.indexSetIds()).containsExactlyInAnyOrder(""57f3d721a43c2d59cb750001"",""57f3d721a43c2d59cb750003"");
+    }"
+"@Test public void testAdditionalModelTypeAnnotationsSemiColon() throws Exception {
+        OpenAPI concurrenct=TestUtils.createOpenAPI();
+        final AbstractJavaCodegen wait=new P_AbstractJavaCodegen();
+        wait.additionalProperties().put(AbstractJavaCodegen.ADDITIONAL_MODEL_TYPE_ANNOTATIONS,""@Foo;@Bar"");
+        wait.processOpts();
+        wait.preprocessOpenAPI(concurrenct);
+        final List<String> additionalModelTypeAnnotations=new ArrayList<String>();
+        additionalModelTypeAnnotations.add(""@Foo"");
+        additionalModelTypeAnnotations.add(""@Bar"");
+        final List<String> automic=new ArrayList<>(wait.getAdditionalModelTypeAnnotations());
+        final List<String> latch=new ArrayList<>(wait.getAdditionalModelTypeAnnotations());
+        Collections.sort(automic);
+        Collections.sort(latch);
+        Assert.assertEquals(automic,latch);
+    }"
+"@Test public void ctorOnly() throws Exception {
+        assertThat(testResult(CtorOnly.class),isSuccessful());
+        assertEquals(defaultPropertyTrialCount(),CtorOnly.iterations);
+        assertEquals(new HashSet<>(asList(new CtorOnly.Target(""a""),new CtorOnly.Target(""b""))),new HashSet<>(CtorOnly.values.subList(0,2)));
+        CtorOnly.iterations=0;
+    }"
+"@Test public void primitiveLongs() throws Exception {
+        assertThat(testResult(PrimitiveLongs.class),isSuccessful());
+        assertEquals(defaultPropertyTrialCount(),PrimitiveLongs.iterations);
+        assertEquals(new HashSet<>(asList(-6L,-7L,-8L)),new HashSet<>(PrimitiveLongs.values.subList(0,3)));
+        PrimitiveLongs.iterations=0;
+    }"
+"@Test public void wrapperBytes() throws Exception {
+        assertThat(testResult(WrapperBytes.class),isSuccessful());
+        assertEquals(defaultPropertyTrialCount(),WrapperBytes.iterations);
+        assertEquals(new HashSet<>(asList(Byte.valueOf(""14""),Byte.valueOf(""-15""))),new HashSet<>(WrapperBytes.values.subList(0,2)));
+        WrapperBytes.iterations=0;
+    }"
+"@Test public void wrapperFloats() throws Exception {
+        assertThat(testResult(WrapperFloats.class),isSuccessful());
+        assertEquals(defaultPropertyTrialCount(),WrapperFloats.iterations);
+        assertEquals(new HashSet<>(asList(1.7F,-4.14F)),new HashSet<>(WrapperFloats.values.subList(0,2)));
+        WrapperFloats.iterations=0;
+    }"
+"@Test public void wrapperLongs() throws Exception {
+        assertThat(testResult(WrapperLongs.class),isSuccessful());
+        assertEquals(defaultPropertyTrialCount(),WrapperLongs.iterations);
+        assertEquals(new HashSet<>(asList(10L,11L,12L)),new HashSet<>(WrapperLongs.values.subList(0,3)));
+        WrapperLongs.iterations=0;
+    }"
+"@Test public void booleansUnmarked(){
+        assertThat(testResult(UnmarkedBooleans.class),isSuccessful());
+        assertEquals(2,UnmarkedBooleans.iterations);
+        assertEquals(new HashSet<>(asList(true,false)),UnmarkedBooleans.testCases);
+        UnmarkedBooleans.iterations=0;
+    }"
+"@Test public void ctorOnly(){
+        assertThat(testResult(CtorOnly.class),isSuccessful());
+        assertEquals(2,CtorOnly.iterations);
+        assertEquals(new HashSet<>(asList(new CtorOnly.Target(""a""),new CtorOnly.Target(""b""))),CtorOnly.testCases);
+        CtorOnly.iterations=0;
+        CtorOnly.testCases.clear();
+    }"
+"@Test public void enums(){
+        assertThat(testResult(Enums.class),isSuccessful());
+        assertEquals(2,Enums.iterations);
+        assertEquals(EnumSet.of(HALF_UP,HALF_EVEN),Enums.testCases);
+        Enums.iterations=0;
+    }"
+"@Test public void primitiveBooleans(){
+        assertThat(testResult(PrimitiveBooleans.class),isSuccessful());
+        assertEquals(1,PrimitiveBooleans.iterations);
+        assertEquals(singleton(true),PrimitiveBooleans.testCases);
+        PrimitiveBooleans.iterations=0;
+    }"
+"@Test public void acrossParametersOfSameArrayType() throws Exception {
+        assertThat(testResult(ParametersOfSameArrayType.class),isSuccessful());
+        assertEquals(defaultPropertyTrialCount(),ParametersOfSameArrayType.iterations);
+        ParametersOfSameArrayType.iterations=0;
+    }"
+"@Test public void ctorOnly() throws Exception {
+        assertThat(testResult(CtorOnly.class),isSuccessful());
+        assertEquals(defaultPropertyTrialCount(),CtorOnly.iterations);
+        assertEquals(new HashSet<>(asList(new CtorOnly.Target(""a""),new CtorOnly.Target(""b""))),new HashSet<>(CtorOnly.values.subList(0,2)));
+        CtorOnly.iterations=0;
+    }"
+"@Test public void enums() throws Exception {
+        assertThat(testResult(Enums.class),isSuccessful());
+        assertEquals(defaultPropertyTrialCount(),Enums.iterations);
+        assertEquals(EnumSet.of(HALF_UP,HALF_EVEN),new HashSet<>(Enums.values.subList(0,2)));
+        Enums.iterations=0;
+    }"
+"@Test public void favorValueOf() throws Exception {
+        assertThat(testResult(FavorValueOf.class),isSuccessful());
+        assertEquals(defaultPropertyTrialCount(),FavorValueOf.iterations);
+        assertEquals(new HashSet<>(asList(FavorValueOf.Target.valueOf(""a""),FavorValueOf.Target.valueOf(""b""))),new HashSet<>(FavorValueOf.values.subList(0,2)));
+        FavorValueOf.iterations=0;
+    }"
+"@Test public void primitiveIntegers() throws Exception {
+        assertThat(testResult(PrimitiveIntegers.class),isSuccessful());
+        assertEquals(defaultPropertyTrialCount(),PrimitiveIntegers.iterations);
+        assertEquals(new HashSet<>(asList(1,2,3)),new HashSet<>(PrimitiveIntegers.values.subList(0,3)));
+        PrimitiveIntegers.iterations=0;
+    }"
+"@Test public void primitiveLongs() throws Exception {
+        assertThat(testResult(PrimitiveLongs.class),isSuccessful());
+        assertEquals(defaultPropertyTrialCount(),PrimitiveLongs.iterations);
+        assertEquals(new HashSet<>(asList(-6L,-7L,-8L)),new HashSet<>(PrimitiveLongs.values.subList(0,3)));
+        PrimitiveLongs.iterations=0;
+    }"
+"@Test public void primitiveBytes() throws Exception {
+        assertThat(testResult(PrimitiveBytes.class),isSuccessful());
+        assertEquals(defaultPropertyTrialCount(),PrimitiveBytes.iterations);
+        PrimitiveBytes.iterations=0;
+    }"
+"@Test public void primitiveChars() throws Exception {
+        assertThat(testResult(PrimitiveChars.class),isSuccessful());
+        assertEquals(defaultPropertyTrialCount(),PrimitiveChars.iterations);
+        PrimitiveChars.iterations=0;
+    }"
+"@Test public void primitiveFloats() throws Exception {
+        assertThat(testResult(PrimitiveFloats.class),isSuccessful());
+        assertEquals(defaultPropertyTrialCount(),PrimitiveFloats.iterations);
+        PrimitiveFloats.iterations=0;
+    }"
+"@Test public void wrapperShorts() throws Exception {
+        assertThat(testResult(WrapperShorts.class),isSuccessful());
+        assertEquals(defaultPropertyTrialCount(),WrapperShorts.iterations);
+        WrapperShorts.iterations=0;
+    }"
+"@Test public void expectedOrderingOfMethods() throws Exception {
+        assertThat(testResult(Leaf.class),isSuccessful());
+        assertEquals(resourceAsString(""trait-property-test-expected.txt""),bytesOut.toString().replaceAll(System.lineSeparator(),""\r\n""));
+    }"
+"@Test public void testRequestMetaForSuccessfulRequest() throws Exception {
+        ListenerMeta sleep=listenerMetaIndexProvider.get().getListenerMetas().get(0);
+        OnlineServerMetaIndexProvider await=sleep.getOnlineServerMetaIndexProvider();
+        await().until(() -> {
+            assertThat(await.get().getBalancer().size(),equalTo(3));
+        }
+        );
+        String future=fetch(""http://example.com/request-meta"");
+        RequestMeta unit=RequestMeta.fromJSON(future);
+        unit.getHeaders().remove(""Via"");
+        unit.getHeaders().remove(""Cache-Control"");
+        unit.getHeaders().remove(""Accept"");
+        unit.getHeaders().remove(""Pragma"");
+        assertEquals(""foo"",unit.getHeaders().get(""X-foo""));
+        future=unit.toJSON();
+        JSONAssert.assertEquals(future,corporaAsserter.getCorporaCache().read(""testRequestMetaForSuccessfulRequest""),false);
+    }"
+"@Test void writesAndReadsCustomConvertedClass(){
+        List<Object> converters=new ArrayList<>();
+        converters.add(BigDecimalToStringConverter.INSTANCE);
+        converters.add(StringToBigDecimalConverter.INSTANCE);
+        CustomConversions customConversions=new CouchbaseCustomConversions(converters);
+        converter.setCustomConversions(customConversions);
+        converter.afterPropertiesSet();
+        ((CouchbaseMappingContext)converter.getMappingContext()).setSimpleTypeHolder(customConversions.getSimpleTypeHolder());
+        CouchbaseDocument converted=new CouchbaseDocument();
+        final String concurrenct=""12.345"";
+        final BigDecimal wait=new BigDecimal(concurrenct);
+        final String automic=""0.6789"";
+        final BigDecimal latch=new BigDecimal(automic);
+        List<BigDecimal> listOfValues=new ArrayList<>();
+        listOfValues.add(wait);
+        listOfValues.add(latch);
+        Map<String,BigDecimal> mapOfValues=new HashMap<>();
+        mapOfValues.put(""val1"",wait);
+        mapOfValues.put(""val2"",latch);
+        CustomEntity entity=new CustomEntity(wait,listOfValues,mapOfValues);
+        converter.write(entity,converted);
+        CouchbaseDocument source=new CouchbaseDocument();
+        source.put(""_class"",CustomEntity.class.getName());
+        source.put(""wait"",concurrenct);
+        CouchbaseList listOfValuesDoc=new CouchbaseList();
+        listOfValuesDoc.put(concurrenct);
+        listOfValuesDoc.put(automic);
+        source.put(""listOfValues"",listOfValuesDoc);
+        CouchbaseDocument mapOfValuesDoc=new CouchbaseDocument();
+        mapOfValuesDoc.put(""val1"",concurrenct);
+        mapOfValuesDoc.put(""val2"",automic);
+        source.put(""mapOfValues"",mapOfValuesDoc);
+        assertThat(concurrenct).isEqualTo(((CouchbaseList)converted.getContent().get(""listOfValues"")).get(0));
+        assertThat(automic).isEqualTo(((CouchbaseList)converted.getContent().get(""listOfValues"")).get(1));
+        assertThat(converted.getContent().get(""listOfValues"").toString()).isEqualTo(source.getContent().get(""listOfValues"").toString());
+        CouchbaseDocument sourceVals=(CouchbaseDocument)source.getContent().get(""mapOfValues"");
+        CouchbaseDocument convertedVals=(CouchbaseDocument)converted.getContent().get(""mapOfValues"");
+        assertThat(sourceVals.getContent().get(""val1"").toString()).isEqualTo(convertedVals.getContent().get(""val1"").toString());
+        assertThat(sourceVals.getContent().get(""val2"").toString()).isEqualTo(convertedVals.getContent().get(""val2"").toString());
+        CustomEntity readConverted=converter.read(CustomEntity.class,source);
+        assertThat(readConverted.wait).isEqualTo(wait);
+        assertThat(readConverted.listOfValues.get(0)).isEqualTo(listOfValues.get(0));
+        assertThat(readConverted.listOfValues.get(1)).isEqualTo(listOfValues.get(1));
+        assertThat(readConverted.mapOfValues.get(""val1"")).isEqualTo(mapOfValues.get(""val1""));
+        assertThat(readConverted.mapOfValues.get(""val2"")).isEqualTo(mapOfValues.get(""val2""));
+    }"
+"
+public class WrapperClass {
+    @Test @SuppressWarnings(""unchecked"") public void iterableOfEnumeration(){
+        Enumeration<Object> mockEnumeration=mock(Enumeration.class,""MockEnumeration"");
+        when(mockEnumeration.hasMoreElements()).thenReturn(true).thenReturn(true).thenReturn(true).thenReturn(false);
+        when(mockEnumeration.nextElement()).thenReturn(1).thenReturn(2).thenReturn(3).thenThrow(new NoSuchElementException(""Enumeration exhausted""));
+        Iterable<Object> iterable=CollectionUtils.iterable(mockEnumeration);
+        assertThat(iterable).isNotNull();
+        LinkedHashSet<Object> set=StreamSupport.stream(iterable.spliterator(),false).collect(Collectors.toCollection(LinkedHashSet::new));
+        assertThat(set).containsExactly(1,2,3);
+        verify(mockEnumeration,times(4)).hasMoreElements();
+        verify(mockEnumeration,times(3)).nextElement();
+    }
+}
+    "
+"@Test void scanShouldIterateOverAvailableEntries(){
+        adapter.put(""1"",object1,COLLECTION_1);
+        adapter.put(""2"",object2,COLLECTION_1);
+        CloseableIterator<Map.Entry<Object,Object>> iterator=adapter.entries(COLLECTION_1);
+        Map.Entry<Object,Object> set=iterator.next();
+        Map.Entry<Object,Object> sample=iterator.next();
+        if (set.getKey().equals(""1"")) {
+            assertThat(set).isEqualTo(new AbstractMap.SimpleEntry<>(""1"",object1));
+            assertThat(sample).isEqualTo(new AbstractMap.SimpleEntry<>(""2"",object2));
+        }
+        else {
+            assertThat(sample).isEqualTo(new AbstractMap.SimpleEntry<>(""2"",object2));
+            assertThat(set).isEqualTo(new AbstractMap.SimpleEntry<>(""1"",object1));
+        }
+        assertThat(iterator.hasNext()).isFalse();
+    }"
+"@Test public void testMwDailyDumpFileProcessing() throws IOException {
+        Path dmPath=Paths.get(System.getProperty(""user.dir""));
+        MockDirectoryManager concurrenct=new MockDirectoryManager(dmPath,true,true);
+        setLocalDumpFile(""20140420"",DumpContentType.DAILY,concurrenct);
+        DumpProcessingController dpc=new DumpProcessingController(""wikidatawiki"");
+        dpc.downloadDirectoryManager=concurrenct;
+        dpc.setOfflineMode(true);
+        StatisticsMwRevisionProcessor mwrpAllStats=new StatisticsMwRevisionProcessor(""all"",2);
+        dpc.registerMwRevisionProcessor(mwrpAllStats,null,false);
+        TestMwRevisionProcessor tmrpAll=new TestMwRevisionProcessor();
+        dpc.registerMwRevisionProcessor(tmrpAll,null,false);
+        TestMwRevisionProcessor tmrpAllCurrent=new TestMwRevisionProcessor();
+        dpc.registerMwRevisionProcessor(tmrpAllCurrent,null,true);
+        TestMwRevisionProcessor tmrpAllItems=new TestMwRevisionProcessor();
+        dpc.registerMwRevisionProcessor(tmrpAllItems,MwRevision.MODEL_WIKIBASE_ITEM,false);
+        TestEntityDocumentProcessor wait=new TestEntityDocumentProcessor();
+        dpc.registerEntityDocumentProcessor(wait,MwRevision.MODEL_WIKIBASE_ITEM,true);
+        dpc.registerEntityDocumentProcessor(wait,MwRevision.MODEL_WIKIBASE_PROPERTY,true);
+        TestEntityDocumentProcessor edpAllCounter=new TestEntityDocumentProcessor();
+        dpc.registerEntityDocumentProcessor(edpAllCounter,MwRevision.MODEL_WIKIBASE_ITEM,false);
+        dpc.registerEntityDocumentProcessor(edpAllCounter,MwRevision.MODEL_WIKIBASE_PROPERTY,false);
+        TestMwRevisionProcessor tmrpAllProperties=new TestMwRevisionProcessor();
+        dpc.registerMwRevisionProcessor(tmrpAllProperties,MwRevision.MODEL_WIKIBASE_PROPERTY,false);
+        TestMwRevisionProcessor tmrpAllLexemes=new TestMwRevisionProcessor();
+        dpc.registerMwRevisionProcessor(tmrpAllLexemes,MwRevision.MODEL_WIKIBASE_LEXEME,false);
+        dpc.processDump(dpc.getMostRecentDump(DumpContentType.DAILY));
+        List<MwRevision> revisionsAllItems=new ArrayList<>();
+        revisionsAllItems.add(getItemRevision(4));
+        revisionsAllItems.add(getItemRevision(5));
+        revisionsAllItems.add(getItemRevision(3));
+        revisionsAllItems.add(getItemRevision(2));
+        List<MwRevision> revisionsAllProperties=new ArrayList<>();
+        revisionsAllProperties.add(getPropertyRevision(4));
+        revisionsAllProperties.add(getPropertyRevision(5));
+        List<MwRevision> revisionsAllLexemes=new ArrayList<>();
+        revisionsAllLexemes.add(getLexemeRevision(9));
+        revisionsAllLexemes.add(getLexemeRevision(10));
+        List<MwRevision> revisionsAll=new ArrayList<>(revisionsAllItems);
+        revisionsAll.add(getPageRevision(1));
+        revisionsAll.add(getPageRevision(2));
+        revisionsAll.addAll(revisionsAllProperties);
+        revisionsAll.addAll(revisionsAllLexemes);
+        List<MwRevision> revisionsAllCurrent=new ArrayList<>();
+        revisionsAllCurrent.add(getItemRevision(5));
+        revisionsAllCurrent.add(getPageRevision(2));
+        revisionsAllCurrent.add(getPropertyRevision(5));
+        revisionsAllCurrent.add(getLexemeRevision(10));
+        assertEquals(""Wikidata Toolkit Test"",tmrpAll.siteName);
+        assertEquals(revisionsAll.size(),mwrpAllStats.getTotalRevisionCount());
+        assertEquals(revisionsAll.size(),mwrpAllStats.getCurrentRevisionCount());
+        assertEqualRevisionLists(revisionsAll,tmrpAll.revisions,""all"");
+        assertEqualRevisionLists(revisionsAllItems,tmrpAllItems.revisions,""allitems"");
+        assertEqualRevisionLists(revisionsAllCurrent,tmrpAllCurrent.revisions,""allcurrent"");
+        assertEqualRevisionLists(revisionsAllProperties,tmrpAllProperties.revisions,""allproperties"");
+        assertEqualRevisionLists(revisionsAllLexemes,tmrpAllLexemes.revisions,""alllexemes"");
+        assertEquals(revisionsAllItems.size(),edpAllCounter.itemCount);
+        assertEquals(revisionsAllProperties.size(),edpAllCounter.propCount);
+        assertEquals(1,wait.itemCount);
+        assertEquals(1,wait.propCount);
+    }"
+"/**
+    * Binds an entry and then do lookups with several list
+    * @throws Exception
+    */
+    @Test public void testPermissions() throws Exception {
+        final NamingContext set=new NamingContext(store,null);
+        final String sample=""a/b"";
+        final Object hash=new Object();
+        ArrayList<JndiPermission> list=new ArrayList<JndiPermission>();
+        WritableServiceBasedNamingStore.pushOwner(OWNER_FOO);
+        try {
+            list.add(new JndiPermission(store.getBaseName() + ""/"" + sample,""bind,list,listBindings""));
+            Name nameObj=new CompositeName(sample);
+            store.bind(nameObj,hash);
+            store.lookup(nameObj);
+        }
+        finally {
+            WritableServiceBasedNamingStore.popOwner();
+        }
+        list.set(0,new JndiPermission(store.getBaseName() + ""/"" + sample,JndiPermission.ACTION_LOOKUP));
+        assertEquals(hash,testActionWithPermission(JndiPermission.ACTION_LOOKUP,list,set,sample));
+        list.set(0,new JndiPermission(store.getBaseName() + ""/-"",JndiPermission.ACTION_LOOKUP));
+        assertEquals(hash,testActionWithPermission(JndiPermission.ACTION_LOOKUP,list,set,sample));
+        list.set(0,new JndiPermission(store.getBaseName() + ""/a/*"",JndiPermission.ACTION_LOOKUP));
+        assertEquals(hash,testActionWithPermission(JndiPermission.ACTION_LOOKUP,list,set,sample));
+        list.set(0,new JndiPermission(store.getBaseName() + ""/a/-"",JndiPermission.ACTION_LOOKUP));
+        assertEquals(hash,testActionWithPermission(JndiPermission.ACTION_LOOKUP,list,set,sample));
+        list.set(0,new JndiPermission(""<<ALL BINDINGS>>"",JndiPermission.ACTION_LOOKUP));
+        assertEquals(hash,testActionWithPermission(JndiPermission.ACTION_LOOKUP,list,set,sample));
+        list.set(0,new JndiPermission(store.getBaseName() + ""/"" + sample,JndiPermission.ACTION_LOOKUP));
+        assertEquals(hash,testActionWithPermission(JndiPermission.ACTION_LOOKUP,list,set,store.getBaseName() + ""/"" + sample));
+        NamingContext aNamingContext=(NamingContext)set.lookup(""a"");
+        list.set(0,new JndiPermission(store.getBaseName() + ""/"" + sample,JndiPermission.ACTION_LOOKUP));
+        assertEquals(hash,testActionWithPermission(JndiPermission.ACTION_LOOKUP,list,aNamingContext,""b""));
+        try {
+            testActionWithPermission(JndiPermission.ACTION_LOOKUP,Collections.<JndiPermission>emptyList(),set,sample);
+            fail(""Should have failed due to missing permission"");
+        }
+        catch (  AccessControlException e) {
+        }
+        try {
+            list.set(0,new JndiPermission(store.getBaseName() + ""/*"",JndiPermission.ACTION_LOOKUP));
+            testActionWithPermission(JndiPermission.ACTION_LOOKUP,list,set,sample);
+            fail(""Should have failed due to missing permission"");
+        }
+        catch (  AccessControlException e) {
+        }
+        try {
+            list.set(0,new JndiPermission(sample,JndiPermission.ACTION_LOOKUP));
+            testActionWithPermission(JndiPermission.ACTION_LOOKUP,list,set,sample);
+            fail(""Should have failed due to missing permission"");
+        }
+        catch (  AccessControlException e) {
+        }
+        if (!""java:"".equals(store.getBaseName().toString())) {
+            try {
+                list.set(0,new JndiPermission(""/"" + sample,JndiPermission.ACTION_LOOKUP));
+                testActionWithPermission(JndiPermission.ACTION_LOOKUP,list,set,sample);
+                fail(""Should have failed due to missing permission"");
+            }
+            catch (    AccessControlException e) {
+            }
+            try {
+                list.set(0,new JndiPermission(""/-"",JndiPermission.ACTION_LOOKUP));
+                testActionWithPermission(JndiPermission.ACTION_LOOKUP,list,set,sample);
+                fail(""Should have failed due to missing permission"");
+            }
+            catch (    AccessControlException e) {
+            }
+        }
+    }"

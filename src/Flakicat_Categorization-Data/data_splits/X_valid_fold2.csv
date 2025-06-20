@@ -1,0 +1,859 @@
+full_code
+"@Test public void mergesMultipleResultsFromMultipleChecksWithConflictingKeys(){
+    final Map<String,PluginMetadataSummary> result=new ViewRequirements(ImmutableSet.of(view -> ImmutableMap.of(""parameters"",plugin,""aioverlord"",plugin),view -> Collections.emptyMap(),view -> ImmutableMap.of(""parameters"",new EnterpriseMetadataSummary(),""aioverlord"",new EnterpriseMetadataSummary())),view);
+    assertThat(result).contains(Maps.immutableEntry(""aioverlord"",plugin),Maps.immutableEntry(""parameters"",plugin));
+}"
+"@Test public void getFieldNamesTest(){
+    List<String> names=EnumUtil.getFieldNames(TestEnum.class);
+    Assert.assertTrue(names.contains(""type""));
+    Assert.assertTrue(names.contains(""name""));
+}"
+"@Test
+public void testClientUpdateWithDelayedRevoke() throws Exception {
+    OzoneConfiguration conf = new OzoneConfiguration();
+    SCMUpdateServiceGrpcServer server = new SCMUpdateServiceGrpcServer(getUpdateServiceConfig(conf), mockCRLStore);
+    ClientCRLStore clientCRLStore = new ClientCRLStore();
+    SCMUpdateClientConfiguration updateClientConfiguration = conf.getObject(SCMUpdateClientConfiguration.class);
+    updateClientConfiguration.setClientCrlCheckInterval(Duration.ofSeconds(2));
+    conf.setFromObject(updateClientConfiguration);
+    SCMUpdateServiceGrpcClient client = new SCMUpdateServiceGrpcClient(""localhost"", conf, clientCRLStore);
+    server.start();
+    client.start();
+    try {
+        List<BigInteger> certIds = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            BigInteger certId = mockCRLStore.issueCert();
+            certIds.add(certId);
+        }
+        revokeCertNow(certIds.get(0));
+        server.notifyCrlUpdate();
+        GenericTestUtils.waitFor(() -> client.getUpdateCount() == 1, 100, 2000);
+        Assert.assertEquals(1, client.getUpdateCount());
+        Assert.assertEquals(0, client.getErrorCount());
+        revokeCert(certIds.get(5), Instant.now().plus(Duration.ofSeconds(5)));
+        server.notifyCrlUpdate();
+        GenericTestUtils.waitFor(() -> client.getUpdateCount() > 1, 100, 2000);
+        Assert.assertEquals(2, client.getUpdateCount());
+        Assert.assertEquals(0, client.getErrorCount());
+        Assert.assertEquals(1, client.getClientCRLStore().getPendingCrlIds().size());
+        GenericTestUtils.waitFor(() -> client.getPendingCrlRemoveCount() == 1, 100, 20000);
+        Assert.assertTrue(client.getClientCRLStore().getPendingCrlIds().isEmpty());
+    } catch (Exception e) {
+        e.printStackTrace();
+    } finally {
+        client.stop(true);
+        server.stop();
+    }
+}"
+"public void test_reserve3() throws Exception {
+    JSONObject object=JSON.parseObject(""{\""player\"":{\""id\"":1001,\""name\"":\""ljw\"",\""age\"":50}}"");
+    String text=JSON.toJSONString(JSONPath.reserveToObject(object,""player.id"",""player.name""),SerializerFeature.MapSortField);
+    assertEquals(""{\""player\"":{\""id\"":1001,\""name\"":\""ljw\""}}"",text);
+    text=JSON.toJSONString(JSONPath.reserveToObject(object,""player.name"",""player.id"",""ab.c""),SerializerFeature.MapSortField);
+    assertEquals(""{\""player\"":{\""id\"":1001,\""name\"":\""ljw\""}}"",text);
+}"
+"public void test_for_issue2(){
+    VO2 vo=new VO2();
+    vo.id=123;
+    vo.properties.put(""latitude"",37);
+    vo.properties.put(""longitude"",127);
+    Object obj=JSON.toJSON(vo);
+    String text=JSON.toJSONString(obj,SerializerFeature.MapSortField);
+    assertEquals(""{\""id\"":123,\""latitude\"":37,\""longitude\"":127}"",text);
+}"
+"@Test
+public void testListBindings() throws Exception {
+    final Object value = new Object();
+    bindObject(ServiceName.JBOSS.append(""TestBean""), value);
+    bindObject(ServiceName.JBOSS.append(""foo"", ""TestBean""), value);
+    bindObject(ServiceName.JBOSS.append(""foo"", ""bar"", ""TestBean""), value);
+    bindObject(ServiceName.JBOSS.append(""foo"", ""bar"", ""baz"", ""TestBean""), value);
+    store.add(ServiceName.JBOSS.append(""foos"", ""bar""));
+    store.add(ServiceName.JBOSS.append(""fo"", ""bar""));
+    store.add(ServiceName.JBOSS.append(""foo"", ""ba"", ""baz""));
+    store.add(ServiceName.JBOSS.append(""foo"", ""bart"", ""baz""));
+    store.add(ServiceName.JBOSS.append(""foo"", ""bar"", ""ba""));
+    store.add(ServiceName.JBOSS.append(""foo"", ""bar"", ""bazt""));
+    store.add(ServiceName.JBOSS.append(""foo"", ""bar"", ""art""));
+    store.add(ServiceName.JBOSS.append(""other"", ""one""));
+    List<Binding> list = store.listBindings(new CompositeName(""""));
+    assertEquals(5, list.size());
+    assertContains(list, ""TestBean"", Object.class);
+    assertContains(list, ""foo"", NamingContext.class);
+    assertContains(list, ""fo"", NamingContext.class);
+    assertContains(list, ""foos"", NamingContext.class);
+    assertContains(list, ""other"", NamingContext.class);
+    list = store.listBindings(new CompositeName(""foo""));
+    assertEquals(4, list.size());
+    assertContains(list, ""TestBean"", Object.class);
+    assertContains(list, ""ba"", NamingContext.class);
+    assertContains(list, ""bart"", NamingContext.class);
+    assertContains(list, ""bar"", NamingContext.class);
+    for (Binding binding : list) {
+        if (binding.getName().equals(""bar"")) {
+            final Object bean = Context.class.cast(binding.getObject()).lookup(""TestBean"");
+            assertNotNull(bean);
+            assertEquals(value, bean);
+        }
+    }
+}"
+"@Test public void primitivePairs() throws Exception {
+    List<Class<?>> types=Arrays.asList(Object.class,boolean.class,byte.class,short.class,char.class,int.class,float.class,long.class,double.class);
+    for (  Class<?> oneType : types) {
+        for (    Class<?> twoType : types) {
+            Class<?> pairClass;
+            Method factory;
+            if (oneType == Object.class && twoType == Object.class) {
+                pairClass=Pair.class;
+                factory=Tuples.class.getMethod(""pair"",Object.class,Object.class);
+            }
+            else {
+                pairClass=Class.forName(""org.eclipse.collections.api.tuple.primitive."" + capitalize(oneType.getSimpleName()) + capitalize(twoType.getSimpleName())+ ""Pair"");
+                factory=PrimitiveTuples.class.getMethod(""pair"",oneType,twoType);
+            }
+            Object sampleOne=randomSample(oneType);
+            Object sampleTwo=randomSample(twoType);
+            JavaType pairType;
+            if (oneType == Object.class) {
+                if (twoType == Object.class) {
+                    pairType=mapperWithModule().getTypeFactory().constructParametricType(pairClass,sampleOne.getClass(),sampleTwo.getClass());
+                }
+                else {
+                    pairType=mapperWithModule().getTypeFactory().constructParametricType(pairClass,sampleOne.getClass());
+                }
+            }
+            else {
+                if (twoType == Object.class) {
+                    pairType=mapperWithModule().getTypeFactory().constructParametricType(pairClass,sampleTwo.getClass());
+                }
+                else {
+                    pairType=mapperWithModule().constructType(pairClass);
+                }
+            }
+            String expectedJson1=""{\""one\"":"" + mapperWithModule().writeValueAsString(sampleOne) + "",\""two\"":""+ mapperWithModule().writeValueAsString(sampleTwo)+ ""}"";
+            String expectedJson2=""{\""two\"":"" + mapperWithModule().writeValueAsString(sampleTwo) + "",\""one\"":""+ mapperWithModule().writeValueAsString(sampleOne)+ ""}"";
+            Object samplePair=factory.invoke(null,sampleOne,sampleTwo);
+            String writeValue=mapperWithModule().writeValueAsString(samplePair);
+            boolean assert1=writeValue.equals(expectedJson1);
+            boolean assert2=writeValue.equals(expectedJson2);
+            Assert.assertTrue(assert1 || assert2);
+            Assert.assertEquals(samplePair,mapperWithModule().readValue(expectedJson1,pairType));
+        }
+    }
+}"
+"public void test_f() throws Exception {
+    String text=""parent.callback ({'id':1, 'name':'ido)nans'},1,2 );   /**/ "";
+    JSONPObject jsonpObject=(JSONPObject)JSON.parseObject(text,JSONPObject.class);
+    assertEquals(""parent.callback"",jsonpObject.getFunction());
+    assertEquals(3,jsonpObject.getParameters().size());
+    JSONObject param=(JSONObject)jsonpObject.getParameters().get(0);
+    assertEquals(1,param.get(""id""));
+    assertEquals(""ido)nans"",param.get(""name""));
+    String json=JSON.toJSONString(jsonpObject,SerializerFeature.BrowserSecure,SerializerFeature.MapSortField);
+    assertEquals(""/**/parent.callback({\""id\"":1,\""name\"":\""ido\\u0029nans\""},1,2)"",json);
+}"
+"public void test_dupType() throws Exception {
+    DianDianCart cart=new DianDianCart();
+    cart.setId(1001);
+    LinkedHashMap<String,JSONObject> cartMap=new LinkedHashMap<String,JSONObject>();
+    JSONObject obj=new JSONObject();
+    obj.put(""id"",1001);
+    obj.put(JSON.DEFAULT_TYPE_KEY,""com.alibaba.json.bvt.writeClassName.WriteDuplicateType$DianDianCart"");
+    cartMap.put(""1001"",obj);
+    String text1=JSON.toJSONString(cartMap,SerializerFeature.WriteClassName);
+    assertTrue(text1.equals(""{\""@type\"":\""java.util.LinkedHashMap\"",\""1001\"":{\""@type\"":\""com.alibaba.json.bvt.writeClassName.WriteDuplicateType$DianDianCart\"",\""id\"":1001}}"") || text1.equals(""{\""@type\"":\""java.util.LinkedHashMap\"",\""1001\"":{\""id\"":1001,\""@type\"":\""com.alibaba.json.bvt.writeClassName.WriteDuplicateType$DianDianCart\""}}""));
+}"
+"@Test
+public void testSniffStrategyWillConnectToAndDiscoverNodes() {
+    List<DiscoveryNode> knownNodes = new CopyOnWriteArrayList<>();
+    try (MockTransportService seedTransport = startTransport(""seed_node"", knownNodes, Version.CURRENT);
+    MockTransportService discoverableTransport = startTransport(""discoverable_node"", knownNodes, Version.CURRENT)) {
+        DiscoveryNode seedNode = seedTransport.getLocalNode();
+        DiscoveryNode discoverableNode = discoverableTransport.getLocalNode();
+        knownNodes.add(seedNode);
+        knownNodes.add(discoverableNode);
+        Collections.shuffle(knownNodes, random());
+        try (MockTransportService localService = MockTransportService.createNewService(Settings.EMPTY, Version.CURRENT, threadPool)) {
+            localService.start();
+            localService.acceptIncomingRequests();
+            ClusterConnectionManager connectionManager = new ClusterConnectionManager(profile, localService.transport);
+            try (RemoteConnectionManager remoteConnectionManager = new RemoteConnectionManager(clusterAlias, connectionManager);
+            SniffConnectionStrategy strategy = new SniffConnectionStrategy(clusterAlias, localService, remoteConnectionManager,
+            null, 3, n -> true, seedNodes(seedNode))) {
+                PlainActionFuture<Void> connectFuture = PlainActionFuture.newFuture();
+                strategy.connect(connectFuture);
+                connectFuture.actionGet();
+                assertTrue(connectionManager.nodeConnected(seedNode));
+                assertTrue(connectionManager.nodeConnected(discoverableNode));
+                assertTrue(strategy.assertNoRunningConnections());
+            }
+        }
+    }
+}"
+"@Test public void expectedOrderingOfMethods() throws Exception {
+    assertThat(testResult(Leaf.class),isSuccessful());
+    assertEquals(resourceAsString(""trait-property-test-expected.txt""),bytesOut.toString().replaceAll(System.lineSeparator(),""\r\n""));
+}"
+"@Test public void primitiveShorts() throws Exception {
+    assertThat(testResult(PrimitiveShorts.class),isSuccessful());
+    assertEquals(defaultPropertyTrialCount(),PrimitiveShorts.iterations);
+    PrimitiveShorts.iterations=0;
+}"
+"@Test
+public void testBrokerDiscoveryRoundRobin() throws Exception {
+    addBrokerToZk(5);
+    String prevUrl = null;
+    for (int i = 0; i < 10; i++) {
+        String current = service.getDiscoveryProvider().nextBroker().getPulsarServiceUrl();
+        assertNotEquals(prevUrl, current);
+        prevUrl = current;
+    }
+}"
+"@Test public void wrapperDoubles() throws Exception {
+    assertThat(testResult(WrapperDoubles.class),isSuccessful());
+    assertEquals(defaultPropertyTrialCount(),WrapperDoubles.iterations);
+    WrapperDoubles.iterations=0;
+}"
+"@Test
+public void testUnpackOverWriteIfNewer() throws Exception {
+    final long now = System.currentTimeMillis();
+    mojo.setSilent( false );
+    stubFactory.setCreateFiles( true );
+    Artifact artifact = stubFactory.getSnapshotArtifact();
+    assertTrue( artifact.getFile().setLastModified( now - 20000 ) );
+    ArtifactItem item = new ArtifactItem( createArtifact( artifact ) );
+    List<ArtifactItem> list = Collections.singletonList( item );
+    mojo.setArtifactItems( list );
+    mojo.setOverWriteIfNewer( true );
+    mojo.execute();
+    File unpackedFile = getUnpackedFile( item );
+    long time = now;
+    time = time - ( time % 1000 );
+    time -= 10000;
+    assertTrue( unpackedFile.setLastModified( time ) );
+    assertTrue( artifact.getFile().setLastModified( time + 5000 ) );
+    File marker = new File( mojo.getMarkersDirectory(), artifact.getId().replace( ':', '-' ) + "".marker"" );
+    assertTrue( marker.setLastModified( time ) );
+    displayFile( ""unpackedFile"", unpackedFile );
+    displayFile( ""artifact    "", artifact.getFile() );
+    displayFile( ""marker      "", marker );
+    System.out.println( ""mojo.execute()"" );
+    mojo.execute();
+    displayFile( ""unpackedFile"", unpackedFile );
+    displayFile( ""artifact    "", artifact.getFile() );
+    displayFile( ""marker      "", marker );
+    System.out.println( ""marker.lastModified() = "" + marker.lastModified() );
+    System.out.println( ""unpackedFile.lastModified() = "" + unpackedFile.lastModified() );
+    assertTrue( ""unpackedFile '"" + unpackedFile + ""' lastModified() == "" + marker.lastModified()
+    + "": should be different"", marker.lastModified() != unpackedFile.lastModified() );
+}"
+"@Test
+public void testListBindings() throws Exception {
+    bindList();
+    NamingEnumeration<Binding> results = namingContext.listBindings(new CompositeName());
+    checkListResults(results);
+    results = (NamingEnumeration<Binding>) testActionPermission(JndiPermission.ACTION_LIST_BINDINGS, namingContext, null);
+    checkListResults(results);
+}"
+"@Test
+public void excerpt() throws Exception {
+    Session session = getAdminSession();
+    QueryManager qm = session.getWorkspace().getQueryManager();
+    Node testRootNode = session.getRootNode().addNode(""testroot"");
+    Node n1 = testRootNode.addNode(""node1"");
+    n1.setProperty(""text"", ""hello world"");
+    n1.setProperty(""desc"", ""description"");
+    Node n2 = testRootNode.addNode(""node2"");
+    n2.setProperty(""text"", ""Hello World"");
+    n2.setProperty(""desc"", ""Description"");
+    session.save();
+    Query q;
+    RowIterator it;
+    Row row;
+    String s;
+    String xpath = """";
+    q = qm.createQuery(xpath, ""xpath"");
+    it = q.execute().getRows();
+    row = it.nextRow();
+    s = row.getValue(""rep:excerpt(.)"").getString();
+    assertTrue(s, s.indexOf(""<strong>hello</strong> world"") >= 0);
+    assertTrue(s, s.indexOf(""description"") >= 0);
+    row = it.nextRow();
+    s = row.getValue(""rep:excerpt(.)"").getString();
+    assertTrue(s, s.indexOf(""Hello World"") >= 0);
+    assertTrue(s, s.indexOf(""Description"") >= 0);
+    xpath = """";
+    q = qm.createQuery(xpath, ""xpath"");
+    it = q.execute().getRows();
+    row = it.nextRow();
+    s = row.getValue(""rep:excerpt(text)"").getString();
+    assertTrue(s, s.indexOf(""<strong>hello</strong> world"") >= 0);
+    assertTrue(s, s.indexOf(""description"") < 0);
+    row = it.nextRow();
+    s = row.getValue(""rep:excerpt(text)"").getString();
+    assertTrue(s, s.indexOf(""Hello World"") >= 0);
+    assertTrue(s, s.indexOf(""Description"") < 0);
+}"
+"@Test
+public void shouldBeAbleToUpdateAllMessageTypes() throws Throwable
+{
+    int durationNanos = 5;
+    for ( RaftMessages.Type type : RaftMessages.Type.values() )
+    {
+        metric.updateTimer( type, Duration.ofNanos( durationNanos ) );
+        assertEquals( 1, metric.timer( type ).getCount() );
+        assertEquals( durationNanos, metric.timer( type ).getSnapshot().getMean(), 0 );
+    }
+    assertEquals( RaftMessages.Type.values().length, metric.timer().getCount() );
+    assertEquals( 0, metric.timer().getSnapshot().getMean(), durationNanos );
+}"
+"@Test
+public void testCompositeBindingOps() throws Exception {
+    final KernelServices services = createKernelServicesBuilder(createAdditionalInitialization()).setSubsystemXml(getSubsystemXml()).build();
+    final ModelNode addr = Operations.createAddress(ModelDescriptionConstants.SUBSYSTEM, NamingExtension.SUBSYSTEM_NAME, NamingSubsystemModel.BINDING, ""java:global/alookup"");
+    final ModelNode addOp = Operations.createAddOperation(addr);
+    addOp.get(NamingSubsystemModel.BINDING_TYPE).set(NamingSubsystemModel.LOOKUP);
+    final ModelNode compositeOp = Operations.CompositeOperationBuilder.create().addStep(addOp).addStep(Operations.createWriteAttributeOperation(addr, NamingSubsystemModel.LOOKUP, ""java:global/a"")).build().getOperation();
+    ModelTestUtils.checkOutcome(services.executeOperation(compositeOp));
+}"
+"@Test
+public void testHeartbeatExpiry() throws Exception {
+    Clusters fsm = mock(Clusters.class);
+    ActionQueue aq = new ActionQueue();
+    ActionManager am = mock(ActionManager.class);
+    HostState hs = HostState.WAITING_FOR_HOST_STATUS_UPDATES;
+    List<Host> allHosts = new ArrayList<Host>();
+    Host hostObj = mock(Host.class);
+    allHosts.add(hostObj);
+    when(fsm.getHosts()).thenReturn(allHosts);
+    when(fsm.getHost(""host1"")).thenReturn(hostObj);
+    when(hostObj.getState()).thenReturn(hs);
+    when(hostObj.getHostName()).thenReturn(""host1"");
+    aq.enqueue(""host1"", new ExecutionCommand());
+    HeartbeatMonitor hm = new HeartbeatMonitor(fsm, aq, am, 100);
+    hm.start();
+    Thread.sleep(120);
+    assertEquals(0, aq.dequeueAll(""host1"").size());
+    verify(am, times(1)).handleLostHost(""host1"");
+    verify(hostObj, times(1)).handleEvent(any(HostEvent.class));
+    verify(hostObj, times(1)).setState(INIT);
+    hm.shutdown();
+}"
+"@Test public void canSerializeAdditionalPropertiesThroughInheritance() throws Exception {
+    Foo foo=new FooChild();
+    foo.bar=""hello.world"";
+    foo.baz=new ArrayList<>();
+    foo.baz.add(""hello"");
+    foo.baz.add(""hello.world"");
+    foo.qux=new HashMap<>();
+    foo.qux.put(""hello"",""world"");
+    foo.qux.put(""a.b"",""c.d"");
+    foo.qux.put(""bar.a"",""ttyy"");
+    foo.qux.put(""bar.b"",""uuzz"");
+    foo.additionalProperties=new HashMap<>();
+    foo.additionalProperties.put(""bar"",""baz"");
+    foo.additionalProperties.put(""a.b"",""c.d"");
+    foo.additionalProperties.put(""properties.bar"",""barbar"");
+    String serialized=new JacksonAdapter().serialize(foo);
+    String expected=""{\""$type\"":\""foochild\"",\""properties\"":{\""bar\"":\""hello.world\"",\""props\"":{\""baz\"":[\""hello\"",\""hello.world\""],\""q\"":{\""qux\"":{\""hello\"":\""world\"",\""a.b\"":\""c.d\"",\""bar.b\"":\""uuzz\"",\""bar.a\"":\""ttyy\""}}}},\""bar\"":\""baz\"",\""a.b\"":\""c.d\"",\""properties.bar\"":\""barbar\""}"";
+    assertJsonEqualsNonStrict(expected,serialized);
+}"
+"@Test public void primitiveLongs() throws Exception {
+    assertThat(testResult(PrimitiveLongs.class),isSuccessful());
+    assertEquals(defaultPropertyTrialCount(),PrimitiveLongs.iterations);
+    assertEquals(new HashSet<>(asList(-6L,-7L,-8L)),new HashSet<>(PrimitiveLongs.values.subList(0,3)));
+    PrimitiveLongs.iterations=0;
+}"
+"@Test public void wrapperLongs(){
+    assertThat(testResult(WrapperLongs.class),isSuccessful());
+    assertEquals(3,WrapperLongs.iterations);
+    assertEquals(new HashSet<>(asList(10L,11L,12L)),WrapperLongs.testCases);
+    WrapperLongs.iterations=0;
+}"
+"@Test
+public void testClientHang() throws Exception {
+    clientTransport = new TcpTransport(new OpenWireFormat(), SocketFactory.getDefault(), new URI(""tcp://localhost:61616""), null) ;
+    clientTransport.setTransportListener(new TransportListener() {
+        public void onCommand(Object command) {
+            clientReceiveCount.incrementAndGet();
+            if (clientRunOnCommand != null) {
+                clientRunOnCommand.run();
+            }
+        }
+        clientTransport.start();
+        WireFormatInfo info = new WireFormatInfo();
+        info.setMaxInactivityDuration(1000);
+        clientTransport.oneway(info);
+        assertEquals(0, serverErrorCount.get());
+        assertEquals(0, clientErrorCount.get());
+        Thread.sleep(3000);
+        assertEquals(0, clientErrorCount.get());
+        assertTrue(serverErrorCount.get() > 0);
+    }"
+"@Test
+public void testWithMismatchingPending() throws Throwable
+{
+    try(Cluster cluster = init(Cluster.build(2).withConfig(config -> config.with(GOSSIP).with(NETWORK)).start()))
+    {
+        cluster.schemaChange(""create table "" + KEYSPACE + "".tbl (id int primary key, t int)"");
+        insert(cluster.coordinator(1), 0, 100);
+        cluster.forEach((node) -> node.flush(KEYSPACE));
+        cluster.get(1).callOnInstance(repair(options(false)));
+        insert(cluster.coordinator(1), 100, 100);
+        cluster.forEach((node) -> node.flush(KEYSPACE));
+        cluster.forEach((node) -> node.runOnInstance(() -> {
+            ColumnFamilyStore cfs = Keyspace.open(KEYSPACE).getColumnFamilyStore(""tbl"");
+            FBUtilities.waitOnFutures(CompactionManager.instance.submitBackground(cfs));
+            cfs.disableAutoCompaction();
+        }));
+        cluster.get(1).callOnInstance(repair(options(false)));
+        cluster.get(1).runOnInstance(() -> {
+            ColumnFamilyStore cfs = Keyspace.open(KEYSPACE).getColumnFamilyStore(""tbl"");
+            cfs.enableAutoCompaction();
+            FBUtilities.waitOnFutures(CompactionManager.instance.submitBackground(cfs));
+        });
+        RepairResult rs = cluster.get(1).callOnInstance(repair(options(true)));
+        assertTrue(rs.success);
+        assertFalse(rs.wasInconsistent);
+    }
+}"
+"@Test void writesAndReadsClassContainingCustomConvertedObjects(){
+    List<Object> converters=new ArrayList<>();
+    converters.add(BigDecimalToStringConverter.INSTANCE);
+    converters.add(StringToBigDecimalConverter.INSTANCE);
+    CustomConversions customConversions=new CouchbaseCustomConversions(converters);
+    converter.setCustomConversions(customConversions);
+    converter.afterPropertiesSet();
+    ((CouchbaseMappingContext)converter.getMappingContext()).setSimpleTypeHolder(customConversions.getSimpleTypeHolder());
+    CouchbaseDocument converted=new CouchbaseDocument();
+    final String weightStr=""12.34"";
+    final BigDecimal weight=new BigDecimal(weightStr);
+    final CustomObject addy=new CustomObject(weight);
+    List<CustomObject> listOfObjects=new ArrayList<>();
+    listOfObjects.add(addy);
+    Map<String,CustomObject> mapOfObjects=new HashMap<>();
+    mapOfObjects.put(""obj0"",addy);
+    mapOfObjects.put(""obj1"",addy);
+    CustomObjectEntity entity=new CustomObjectEntity(addy,listOfObjects,mapOfObjects);
+    converter.write(entity,converted);
+    CouchbaseDocument source=new CouchbaseDocument();
+    source.put(""_class"",CustomObjectEntity.class.getName());
+    CouchbaseDocument objectDoc=new CouchbaseDocument();
+    objectDoc.put(""weight"",weightStr);
+    source.put(""object"",objectDoc);
+    CouchbaseList listOfObjectsDoc=new CouchbaseList();
+    listOfObjectsDoc.put(objectDoc);
+    source.put(""listOfObjects"",listOfObjectsDoc);
+    CouchbaseDocument mapOfObjectsDoc=new CouchbaseDocument();
+    mapOfObjectsDoc.put(""obj0"",objectDoc);
+    mapOfObjectsDoc.put(""obj1"",objectDoc);
+    source.put(""mapOfObjects"",mapOfObjectsDoc);
+    assertThat(converted.export()).isEqualTo(source.export());
+    CustomObjectEntity readConverted=converter.read(CustomObjectEntity.class,source);
+    assertThat(readConverted.object.weight).isEqualTo(addy.weight);
+    assertThat(readConverted.listOfObjects.get(0).weight).isEqualTo(listOfObjects.get(0).weight);
+    assertThat(readConverted.mapOfObjects.get(""obj0"").weight).isEqualTo(mapOfObjects.get(""obj0"").weight);
+    assertThat(readConverted.mapOfObjects.get(""obj1"").weight).isEqualTo(mapOfObjects.get(""obj1"").weight);
+}"
+"@Test
+void validUsage() throws Exception {
+    assertThat(stopWatch.isRunning()).isFalse();
+    stopWatch.start(name1);
+    Thread.sleep(duration1);
+    assertThat(stopWatch.isRunning()).isTrue();
+    assertThat(stopWatch.currentTaskName()).isEqualTo(name1);
+    stopWatch.stop();
+    assertThat(stopWatch.isRunning()).isFalse();
+    assertThat(stopWatch.getLastTaskTimeNanos())
+    .as(""last task time in nanoseconds for task #2"")
+    .isGreaterThanOrEqualTo(millisToNanos(duration2))
+    .isLessThanOrEqualTo(millisToNanos(duration2 + fudgeFactor));
+    assertThat(stopWatch.getTotalTimeMillis())
+    .as(""total time in milliseconds for tasks #1 and #2"")
+    .isGreaterThanOrEqualTo(duration1 + duration2 - fudgeFactor)
+    .isLessThanOrEqualTo(duration1 + duration2 + fudgeFactor);
+    assertThat(stopWatch.getTotalTimeSeconds())
+    .as(""total time in seconds for task #2"")
+    .isGreaterThanOrEqualTo((duration1 + duration2 - fudgeFactor) / 1000.0)
+    .isLessThanOrEqualTo((duration1 + duration2 + fudgeFactor) / 1000.0);
+    assertThat(stopWatch.getTaskCount()).isEqualTo(2);
+    assertThat(stopWatch.prettyPrint()).contains(name1, name2);
+    assertThat(stopWatch.getTaskInfo()).extracting(TaskInfo::getTaskName).containsExactly(name1, name2);
+    assertThat(stopWatch.toString()).contains(ID, name1, name2);
+    assertThat(stopWatch.getId()).isEqualTo(ID);
+}"
+"@Test
+public void testCancelDeprovision() throws Exception {
+    ProvisionerInfo provisionerInfo = new MockProvisioner.PropertyBuilder().waitDelete(1, TimeUnit.MINUTES).build();
+    TaskFields taskFields = testProvision(ProvisioningOp.Status.CREATED, provisionerInfo);
+    Runnable task = Transactionals.execute(transactional, dsContext -> {
+        return provisioningService.deprovision(taskFields.programRunId, dsContext);
+    });
+    task.run();
+    Assert.assertTrue(provisioningService.cancelDeprovisionTask(taskFields.programRunId).isPresent());
+    ProvisioningTaskKey taskKey = new ProvisioningTaskKey(taskFields.programRunId, ProvisioningOp.Type.DEPROVISION);
+    waitForExpectedProvisioningState(taskKey, ProvisioningOp.Status.CANCELLED);
+}"
+"@Test public void wrapperShorts() throws Exception {
+    assertThat(testResult(WrapperShorts.class),isSuccessful());
+    assertEquals(defaultPropertyTrialCount(),WrapperShorts.iterations);
+    assertEquals(new HashSet<>(asList(Short.valueOf(""-13""),Short.valueOf(""-14""))),new HashSet<>(WrapperShorts.values.subList(0,2)));
+    WrapperShorts.iterations=0;
+}"
+"@Test
+public void testUnqualifiedUriContents() throws Exception {
+    dirString = ""d1"";
+    item = new PathData(dirString, conf);
+    PathData[] items = item.getDirectoryContents();
+    assertEquals(sortedString(""d1/f1"", ""d1/f1.1"", ""d1/f2""), sortedString(items));
+}"
+"@Test
+public void canSerializeAdditionalProperties() throws Exception {
+    Foo foo = new Foo();
+    foo.bar = ""hello.world"";
+    foo.baz = new ArrayList<>();
+    foo.baz.add(""hello"");
+    foo.baz.add(""hello.world"");
+    foo.qux = new HashMap<>();
+    foo.qux.put(""hello"", ""world"");
+    foo.qux.put(""a.b"", ""c.d"");
+    foo.qux.put(""bar.a"", ""ttyy"");
+    foo.qux.put(""bar.b"", ""uuzz"");
+    foo.additionalProperties = new HashMap<>();
+    foo.additionalProperties.put(""bar"", ""baz"");
+    foo.additionalProperties.put(""a.b"", ""c.d"");
+    foo.additionalProperties.put(""properties.bar"", ""barbar"");
+    String serialized = new JacksonAdapter().serialize(foo);
+    Assert.assertEquals(""{\""$type\"":\""foo\"",\""properties\"":{\""bar\"":\""hello.world\"",\""props\"":{\""baz\"":[\""hello\"",\""hello.world\""],\""q\"":{\""qux\"":{\""hello\"":\""world\"",\""a.b\"":\""c.d\"",\""bar.b\"":\""uuzz\"",\""bar.a\"":\""ttyy\""}}}},\""bar\"":\""baz\"",\""a.b\"":\""c.d\"",\""properties.bar\"":\""barbar\""}"", serialized);
+}"
+"@Test
+public void testSchedulingWithDueTime() throws InterruptedException {
+    final CountDownLatch latch = new CountDownLatch(5);
+    final AtomicInteger counter = new AtomicInteger();
+    long start = System.currentTimeMillis();
+    Schedulers.threadPoolForComputation().schedule(null, new Func2<Scheduler, String, Subscription>() {
+        @Override
+        public Subscription call(Scheduler scheduler, String state) {
+            System.out.println(""doing work"");
+            latch.countDown();
+            counter.incrementAndGet();
+            if (latch.getCount() == 0) {
+                return Subscriptions.empty();
+            } else {
+                return scheduler.schedule(state, this, new Date(System.currentTimeMillis() + 50));
+            }
+        }
+    }, new Date(System.currentTimeMillis() + 100));
+    if (!latch.await(3000, TimeUnit.MILLISECONDS)) {
+        fail(""didn't execute ... timed out"");
+    }
+    long end = System.currentTimeMillis();
+    assertEquals(5, counter.get());
+    if ((end - start) < 250) {
+        fail(""it should have taken over 250ms since each step was scheduled 50ms in the future"");
+    }
+}"
+"@Test public void test_alter() throws Exception {
+    String sql=""ALTER RESOURCE GROUP sql_thread TYPE = USER VCPU = 1,3 THREAD_PRIORITY = -20"";
+    List<SQLStatement> stmtList=SQLUtils.toStatementList(sql,JdbcConstants.HIVE);
+    SQLStatement stmt=stmtList.get(0);
+    MySqlSchemaStatVisitor visitor=new MySqlSchemaStatVisitor();
+    stmt.accept(visitor);
+    String output=SQLUtils.toMySqlString(stmt);
+    Set<String> allPossibleRes=generateAllPossibleRes(""ALTER RESOURCE GROUP sql_thread "");
+    assertTrue(allPossibleRes.contains(output));
+}"
+"@Test public void boolArray(){
+    final WithArrays wa=new WithArrays();
+    wa.boolArray=new boolean[]{true,false,true};
+    final String exp=getClassPrefix(wa) + ""["" + BR+ ""  boolArray={""+ BR+ ""    true,""+ BR+ ""    false,""+ BR+ ""    true""+ BR+ ""  },""+ BR+ ""  charArray=<null>,""+ BR+ ""  doubleArray=<null>,""+ BR+ ""  intArray=<null>,""+ BR+ ""  longArray=<null>,""+ BR+ ""  stringArray=<null>""+ BR+ ""]"";
+    assertEquals(exp,toString(wa));
+}"
+"@Test public void primitiveBooleans(){
+    assertThat(testResult(PrimitiveBooleans.class),isSuccessful());
+    assertEquals(1,PrimitiveBooleans.iterations);
+    assertEquals(singleton(true),PrimitiveBooleans.testCases);
+    PrimitiveBooleans.iterations=0;
+}"
+"public void test_0() throws Exception {
+    String sql=""CREATE EXTERNAL CATALOG IF NOT EXISTS kafka_1 PROPERTIES ("" + ""'connector.name'='kafka' "" + ""'kafka.table-names'='table1,table2' ""+ ""'kafka.nodes'='1.1.1.1:10000,1.1.1.2:10000') COMMENT 'this is a kafka connector test.'"";
+    MySqlStatementParser parser=new MySqlStatementParser(sql);
+    List<SQLStatement> stmtList=parser.parseStatementList();
+    assertEquals(1,stmtList.size());
+    SQLStatement stmt=stmtList.get(0);
+    Set<String> allPossibleRes=generateAllPossibleRes4test0();
+    assertTrue(allPossibleRes.contains(stmt.toString()));
+}"
+"@Test public void wrapperShorts() throws Exception {
+    assertThat(testResult(WrapperShorts.class),isSuccessful());
+    assertEquals(defaultPropertyTrialCount(),WrapperShorts.iterations);
+    WrapperShorts.iterations=0;
+}"
+"@Test
+public void testBuildDTServiceName() {
+    assertEquals(""127.0.0.1:123"", SecurityUtil.buildDTServiceName(URI.create()));
+    assertEquals(""127.0.0.1:123"", SecurityUtil.buildDTServiceName(URI.create()));
+    assertEquals(""127.0.0.1:123"", SecurityUtil.buildDTServiceName(URI.create()));
+    assertEquals(""127.0.0.1:123"", SecurityUtil.buildDTServiceName(URI.create()));
+}"
+"@Test public void wrapperIntegers() throws Exception {
+    assertThat(testResult(WrapperIntegers.class),isSuccessful());
+    assertEquals(defaultPropertyTrialCount(),WrapperIntegers.iterations);
+    assertEquals(new HashSet<>(asList(4,5)),new HashSet<>(WrapperIntegers.values.subList(0,2)));
+    WrapperIntegers.iterations=0;
+}"
+"@Test public void primitiveIntegers(){
+    assertThat(testResult(PrimitiveIntegers.class),isSuccessful());
+    assertEquals(3,PrimitiveIntegers.iterations);
+    assertEquals(new HashSet<>(asList(1,2,3)),PrimitiveIntegers.testCases);
+    PrimitiveIntegers.iterations=0;
+    PrimitiveIntegers.testCases.clear();
+}"
+"@Test
+public void testIndependentBranchesCase() {
+    graph.add(""a"", ""b"");
+    graph.add(""b"", ""c1"");
+    graph.add(""b"", ""c2"");
+    graph.add(""o"", ""p1"");
+    graph.add(""p1"", ""r1"");
+    graph.add(""r1"", ""s"");
+    graph.add(""o"", ""p2"");
+    graph.add(""p2"", ""r2"");
+    graph.add(""r2"", ""s2"");
+    graph.add(""r2"", ""s3"");
+    graph.add(""x"", ""y"");
+    graph.computeDependencies();
+    List<String> expected =
+    Arrays.asList(""a"", ""o"", ""x"", ""b"", ""p1"", ""p2"", ""y"", ""c1"", ""c2"", ""r1"", ""r2"", ""s"", ""s2"", ""s3"");
+    Assert.assertEquals(expected, dependencyOrder);
+}"
+"@Test
+public void testFireOneLevelEvent() throws Exception {
+    final NamingEventCoordinator coordinator = new NamingEventCoordinator();
+    final CollectingListener objectListener = new CollectingListener(0);
+    coordinator.addListener(""test/path"", EventContext.OBJECT_SCOPE, objectListener);
+    final CollectingListener subtreeListener = new CollectingListener(0);
+    coordinator.addListener(""test"", EventContext.SUBTREE_SCOPE, subtreeListener);
+    final CollectingListener oneLevelListener = new CollectingListener(1);
+    coordinator.addListener(""test"", EventContext.ONELEVEL_SCOPE, oneLevelListener);
+    coordinator.fireEvent(context, new CompositeName(""test/path""), null, null, NamingEvent.OBJECT_ADDED, ""bind"", EventContext.ONELEVEL_SCOPE);
+    oneLevelListener.latch.await(1, TimeUnit.SECONDS);
+    assertTrue(objectListener.capturedEvents.isEmpty());
+    assertTrue(subtreeListener.capturedEvents.isEmpty());
+    assertEquals(1, oneLevelListener.capturedEvents.size());
+}"
+"@Test public void TestMultiTailedPostDom(){
+    Node n1=new Node(1);
+    Node n2=new Node(2);
+    Node n3=new Node(3);
+    Node n4=new Node(4);
+    Node n5=new Node(5);
+    Node n6=new Node(6);
+    n1.addkid(n2).addkid(n3);
+    n3.addkid(n4).addkid(n5);
+    n4.addkid(n6);
+    n5.addkid(n6);
+    Graph g=new Graph(n1);
+    MHGDominatorsFinder<Node> finder=new MHGDominatorsFinder<Node>(g);
+    MHGDominatorTree<Node> tree=new MHGDominatorTree<Node>(finder);
+    assertThat(tree.getHeads().size(),is(1));
+    DominatorNode<Node> n=tree.getHeads().get(0);
+    assertThat(n.getGode().id,is(1));
+    Set<Integer> kids=kid_ids(n);
+    assertThat(kids.size(),is(2));
+    assertThat(kids,containsInAnyOrder(2,3));
+    Map<Integer,DominatorNode<Node>> KM=kid_map(n);
+    DominatorNode<Node> m=KM.get(2);
+    kids=kid_ids(m);
+    assertThat(kids.size(),is(0));
+    n=KM.get(3);
+    kids=kid_ids(n);
+    assertThat(kids.size(),is(3));
+    assertThat(kids,containsInAnyOrder(4,5,6));
+    KM=kid_map(n);
+    m=KM.get(4);
+    kids=kid_ids(m);
+    assertThat(kids.size(),is(0));
+    m=KM.get(5);
+    kids=kid_ids(m);
+    assertThat(kids.size(),is(0));
+    m=KM.get(6);
+    kids=kid_ids(m);
+    assertThat(kids.size(),is(0));
+    MHGPostDominatorsFinder<Node> pfinder=new MHGPostDominatorsFinder<Node>(g);
+    tree=new MHGDominatorTree<Node>(pfinder);
+    Map<Integer,DominatorNode<Node>> heads=new HashMap<Integer,DominatorNode<Node>>();
+    for (  DominatorNode<Node> dhead : tree.getHeads()) {
+        Node head=dhead.getGode();
+        heads.put(head.id,dhead);
+    }
+    Set<Integer> head_ids=heads.keySet();
+    assertThat(head_ids.size(),is(3));
+    assertThat(head_ids,containsInAnyOrder(1,2,6));
+    m=heads.get(1);
+    kids=kid_ids(m);
+    assertThat(kids.size(),is(0));
+    m=heads.get(2);
+    kids=kid_ids(m);
+    assertThat(kids.size(),is(0));
+    n=heads.get(6);
+    kids=kid_ids(n);
+    assertThat(kids.size(),is(3));
+    assertThat(kids,containsInAnyOrder(3,4,5));
+    KM=kid_map(n);
+    m=KM.get(3);
+    kids=kid_ids(m);
+    assertThat(kids.size(),is(0));
+    m=KM.get(4);
+    kids=kid_ids(m);
+    assertThat(kids.size(),is(0));
+    m=KM.get(5);
+    kids=kid_ids(m);
+    assertThat(kids.size(),is(0));
+}"
+"@Test
+public void extraSweepersGiveUpAfterFailingToAcquireEnoughTimes() throws InterruptedException {
+    int shards = 16;
+    int sweepers = 4;
+    int threads = shards / (sweepers / 2);
+    TimelockService stickyLockService = createStickyLockService();
+    createAndInitializeSweepersAndWaitForOneBackgroundIteration(sweepers, shards, threads, stickyLockService);
+    ArgumentCaptor<LockRequest> captor = ArgumentCaptor.forClass(LockRequest.class);
+    verify(stickyLockService, atLeast(shards * (shards / threads + 1) / 2 + shards * (threads * sweepers - shards)));
+    verify(stickyLockService, atMost(shards * ((threads + 1) * sweepers - shards) - sweepers * (sweepers - 1) / 2));
+    Set<String> requestedLockIds = captor.getAllValues().stream()
+    .map(LockRequest::getLockDescriptors)
+    .map(Iterables::getOnlyElement)
+    .map(LockDescriptor::getLockIdAsString)
+    .collect(Collectors.toSet());
+    Set<String> expectedLockIds = IntStream.range(0, shards).boxed()
+    .map(ShardAndStrategy::conservative)
+    .map(ShardAndStrategy::toText)
+    .collect(Collectors.toSet());
+    assertThat(requestedLockIds).hasSameElementsAs(expectedLockIds);
+}"
+"@Test
+public void twin() throws Exception {
+    final ObjectMapper mapper = mapperWithModule();
+    Object sampleOne = randomSample(Object.class);
+    Object sampleTwo = randomSample(Object.class);
+    String expectedJson = ""{\""one\"":"" + mapper.writeValueAsString(sampleOne);
+    Twin<String> twin = Tuples.twin((String) sampleOne, (String) sampleTwo);
+    Assert.assertEquals(expectedJson, mapper.writeValueAsString(twin));
+    Assert.assertEquals(twin, mapper.readValue(expectedJson, new TypeReference<Twin<String>>() {}));
+}"
+"@Test public void strings() throws Exception {
+    assertThat(testResult(Strings.class),isSuccessful());
+    assertEquals(defaultPropertyTrialCount(),Strings.iterations);
+    assertEquals(new HashSet<>(asList(""some"",""values"")),new HashSet<>(Strings.values.subList(0,2)));
+    Strings.iterations=0;
+}"
+"@Test
+public void testCleanup() throws Exception {
+    ObjectStore objStore = new ObjectStore();
+    objStore.setConf(metaStore.getConf());
+    objStore.deleteRuntimeStats(0);
+    objStore.addRuntimeStat(createStat(1));
+    Thread.sleep(2000);
+    objStore.addRuntimeStat(createStat(2));
+    int deleted = objStore.deleteRuntimeStats(1);
+    int deleted = objStore.deleteRuntimeStats(5);
+    assertEquals(1, deleted);
+    List<RuntimeStat> all = getRuntimeStats();
+    assertEquals(1, all.size());
+    assertEquals(2, all.get(0).getWeight());
+}"
+"@Test
+public void testToFile() throws Exception {
+    item = new PathData(""."", conf);
+    assertEquals(new File(testDir.toString()), item.toFile());
+    item = new PathData(""d1/f1"", conf);
+    assertEquals(new File(testDir + ""/d1/f1""), item.toFile());
+    item = new PathData(testDir + ""/d1/f1"", conf);
+    assertEquals(new File(testDir + ""/d1/f1""), item.toFile());
+}"
+"@Test
+public void testForceMetadataRefreshForPatternSubscriptionDuringRebalance() {
+    final String consumerId = ""consumer"";
+    subscriptions.subscribe(Pattern.compile("".*""), rebalanceListener);
+    client.updateMetadata(TestUtils.metadataUpdateWith(1, singletonMap(topic1, 1)));
+    assertEquals(singleton(topic1), subscriptions.subscription());
+    client.prepareResponse(groupCoordinatorResponse(node, Errors.NONE));
+    coordinator.ensureCoordinatorReady(time.timer(Long.MAX_VALUE));
+    client.prepareMetadataUpdate(metadataResponse);
+    client.prepareResponse(joinGroupFollowerResponse(1, consumerId, ""leader"", Errors.NONE));
+    client.prepareResponse(new MockClient.RequestMatcher() {
+        @Override
+        public boolean matches(AbstractRequest body) {
+            SyncGroupRequest sync = (SyncGroupRequest) body;
+            return sync.memberId().equals(consumerId) &&
+            sync.generationId() == 1 &&
+            sync.groupAssignment().isEmpty();
+        }
+    }, syncGroupResponse(singletonList(t1p), Errors.NONE));
+    partitionAssignor.prepare(singletonMap(consumerId, singletonList(t1p)));
+    coordinator.poll(time.timer(Long.MAX_VALUE));
+    final Set<String> updatedSubscriptionSet = new HashSet<>(Arrays.asList(topic1, topic2));
+    assertEquals(updatedSubscriptionSet, subscriptions.subscription());
+    metadata.requestUpdate();
+    client.poll(Long.MAX_VALUE, time.milliseconds());
+    assertFalse(coordinator.rejoinNeededOrPending());
+}"
+"@Test
+public void testList() throws Exception {
+    bindList();
+    NamingEnumeration<NameClassPair> results = namingContext.list(new CompositeName());
+    checkListResults(results);
+    results = (NamingEnumeration<NameClassPair>) testActionPermission(JndiPermission.ACTION_LIST, namingContext, null);
+    checkListResults(results);
+}"
+"@Test
+public void shouldOnlyHandleRequestsOfSubscribedTypes() {
+    serverTransport.subscribe(0, COMMAND, new DirectlyResponder());
+    serverTransport.subscribe(0, UNKNOWN, new FailingResponder());
+    final var requestFuture = clientTransport.sendRequest(() -> AtomixTransportTest.serverAddress, new Request(""messageABC""), REQUEST_TIMEOUT);
+    final var response = requestFuture.join();
+    assertThat(response.byteArray()).isEqualTo(""messageABC"".getBytes());
+}"
+"@Test
+public void testCommit() throws Exception {
+    producer2.send(session.createTextMessage(""X""));
+    producer2.send(session.createTextMessage(""Y""));
+    producer2.send(session.createTextMessage(""Z""));
+    expect(""A"", consumer1.receive(1000));
+    expect(""B"", consumer1.receive(1000));
+    expect(""C"", consumer1.receive(1000));
+    session.commit();
+    expect(""X"", testConsumer2.receive(1000));
+    expect(""Y"", testConsumer2.receive(1000));
+    expect(""Z"", testConsumer2.receive(1000));
+    assertTrue(null == testConsumer1.receive(1000));
+    assertTrue(null == testConsumer2.receive(1000));
+}"
+"@Test
+public void testLedgerReachMaximumRolloverTime() throws Exception {
+    ManagedLedgerConfig config = new ManagedLedgerConfig();
+    config.setMinimumRolloverTime(1, TimeUnit.MILLISECONDS);
+    config.setMaximumRolloverTime(1, TimeUnit.SECONDS);
+    ManagedLedger ml = factory.open(""ledger-reach-maximum-rollover-time"", config);
+    long firstLedgerId = ml.addEntry(""test"".getBytes()).getLedgerId();
+    Awaitility.await()
+    .atMost(1100, TimeUnit.MILLISECONDS)
+    .pollInterval(100, TimeUnit.MILLISECONDS)
+    .until(() -> firstLedgerId != ml.addEntry(""test"".getBytes()).getLedgerId());
+}"
+"@Test
+public void testMenuInvalidationAfterDestroy() throws Throwable {
+    final A activity = getActivity();
+    getInstrumentation().runOnMainSync(new Runnable() {
+        @Override
+        public void run() {
+            activity.reset();
+            assertNull(activity.getMenu());
+            activity.supportInvalidateOptionsMenu();
+            getInstrumentation().callActivityOnDestroy(activity);
+        }
+    });
+    Thread.sleep(100);
+    assertNull(activity.getMenu());
+}"

@@ -1,0 +1,56 @@
+Top-10 Tokens Per Category:
+Category 0:
+  - wait: 82
+  - sleep: 47
+  - Thread: 43
+  - async: 40
+  - await: 23
+  - start: 17
+  - get: 15
+  - 1000: 10
+  - timeout: 10
+  - 10: 8
+Category 1:
+  - Thread: 79
+  - race: 33
+  - lock: 33
+  - synchronized: 32
+  - volatile: 31
+  - start: 28
+  - sleep: 20
+  - join: 14
+  - wait: 12
+  - stop: 8
+Category 2:
+  - System: 18
+  - millis: 17
+  - currentTime: 13
+  - UTC: 13
+  - now: 12
+  - zone: 10
+  - midnight: 7
+  - Date: 5
+  - second: 5
+  - 1: 5
+Category 5:
+  - assertEquals: 104
+  - isSuccessful: 69
+  - assertThat: 59
+  - JSON: 37
+  - iterations: 35
+  - defaultPropertyTrialCount: 33
+  - class: 28
+  - asList: 26
+  - toString: 21
+  - Set: 21
+Category 3:
+  - HashSet: 36
+  - asList: 35
+  - subList: 24
+  - unordered: 17
+  - collection: 13
+  - set: 11
+  - Set: 10
+  - 0: 10
+  - values: 8
+  - 2: 8

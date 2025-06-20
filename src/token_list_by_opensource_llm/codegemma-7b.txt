@@ -1,0 +1,47 @@
+Top-10 Tokens Per Category:
+Category 1:
+  - Thread: 465
+  - race: 427
+  - volatile: 401
+  - synchronized: 392
+  - lock: 371
+  - sleep: 101
+  - concurrent: 27
+  - program: 22
+  - countdownlatch: 22
+  - condition: 16
+Category 4:
+  - List: 3
+  - assert: 3
+  - json: 3
+  - size: 2
+  - write: 2
+  - list: 2
+  - JSON: 2
+  - HashMap: 2
+  - equals: 2
+  - contains: 2
+Category 2:
+  - sleep: 30
+  - Thread: 27
+  - time: 19
+  - Timer: 16
+  - repetition: 16
+  - assert: 15
+  - Date: 13
+  - now: 12
+  - wait: 12
+  - 1000: 12
+Category 6:
+Category 3:
+  - HashMap: 1
+  - qux: 1
+  - put: 1
+  - get: 1
+  - key: 1
+Category 5:
+  - final: 1
+  - Person: 1
+  - p: 1
+  - new: 1
+  - assertEquals: 1
