@@ -1,2 +1,0 @@
-@Test(expected=MojoExecutionException.class) public void testMojoWithCustomManagerFactoryWithInvalidResourceAndNotIgnoreMissingResources() throws Exception {
-}

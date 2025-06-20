@@ -1,2 +1,0 @@
-@Test public void should_fail_because_date_string_representation_does_not_follow_expected_format(){
-}

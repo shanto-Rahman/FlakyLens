@@ -1,6 +1,0 @@
-@Test public void testLogbackStatusPrinterPrintStreamIsRestoredToSystemOut() throws Exception {
-  Field field=StatusPrinter.class.getDeclaredField("ps");
-  field.setAccessible(true);
-  PrintStream out=(PrintStream)field.get(null);
-  assertThat(out).isSameAs(System.out);
-}

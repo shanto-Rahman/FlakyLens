@@ -1,3 +1,0 @@
-@Test public void testSummary(){
-assertEquals("[stringField=string,summaryString=<String>]",new ReflectionToStringBuilder(this,ToStringStyle.NO_CLASS_NAME_STYLE).build());
-}

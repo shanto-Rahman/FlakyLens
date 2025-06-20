@@ -1,3 +1,0 @@
-@Test public void testSerializerTree(){
-Assert.assertThat(serTree,equalTo("GenericTypeInfo (PojoWithCollectionGeneric)\n" + "    pojos:java.util.List\n" + "    key:int\n"+ "    sqlDate:java.sql.Date\n"+ "    bigInt:java.math.BigInteger\n"+ "    bigDecimalKeepItNull:java.math.BigDecimal\n"+ "        intVal:java.math.BigInteger\n"+ "        scale:int\n"+ "    scalaBigInt:scala.math.BigInt\n"+ "        bigInteger:java.math.BigInteger\n"+ "    mixed:java.util.List\n"+ "    makeMeGeneric:org.apache.flink.test.operators.util.CollectionDataSets$PojoWithDateAndEnum\n"+ "        group:java.lang.String\n"+ "        date:java.util.Date\n"+ "        cat:org.apache.flink.test.operators.util.CollectionDataSets$Category (is enum)\n"));
-}

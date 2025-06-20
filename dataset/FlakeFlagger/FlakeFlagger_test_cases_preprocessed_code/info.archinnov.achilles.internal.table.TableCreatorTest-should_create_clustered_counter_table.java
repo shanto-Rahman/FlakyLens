@@ -1,3 +1,0 @@
-@Test public void should_create_clustered_counter_table() throws Exception {
-assertThat(stringCaptor.getValue()).isEqualTo("\n\tCREATE TABLE tableName(\n" + "\t\tindexCol bigint,\n" + "\t\tcount int,\n"+ "\t\tuuid uuid,\n"+ "\t\tcounterCol counter,\n"+ "\t\tPRIMARY KEY(indexCol, count, uuid))\n"+ "\tWITH comment = 'Create table for clustered counter entity \"entityName\"' AND CLUSTERING ORDER BY(count DESC)");
-}

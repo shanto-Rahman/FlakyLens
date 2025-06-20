@@ -1,9 +1,0 @@
-/** 
- * 主要测试删除
- */
-@Test public void testDynamicDelete(){
-Assert.assertEquals(183,mapper.selectCount(new Country()));
-Assert.assertEquals(1,mapper.deleteByPrimaryKey(100));
-Assert.assertEquals(182,mapper.selectCount(new Country()));
-Assert.assertEquals(1,mapper.insert(country));
-}

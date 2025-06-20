@@ -1,2 +1,0 @@
-@Test public void should_throw_error_if_start_date_is_null(){
-}

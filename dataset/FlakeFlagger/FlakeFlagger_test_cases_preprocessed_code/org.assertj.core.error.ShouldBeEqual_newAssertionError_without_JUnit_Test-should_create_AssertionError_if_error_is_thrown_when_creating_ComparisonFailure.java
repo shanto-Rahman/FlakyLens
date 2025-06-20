@@ -1,2 +1,0 @@
-@Test public void should_create_AssertionError_if_error_is_thrown_when_creating_ComparisonFailure() throws Exception {
-}

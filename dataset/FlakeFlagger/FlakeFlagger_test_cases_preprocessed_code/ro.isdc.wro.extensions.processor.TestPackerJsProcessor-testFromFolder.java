@@ -1,3 +1,0 @@
-@Test public void testFromFolder() throws IOException {
-final File expectedFolder=new File(url.getFile(),"expected");
-}

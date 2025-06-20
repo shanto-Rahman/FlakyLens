@@ -1,3 +1,0 @@
-@Test public void should_fail_if_second_float_is_null_but_not_the_first(){
-assertThat(e).hasMessage("The given number should not be null");
-}

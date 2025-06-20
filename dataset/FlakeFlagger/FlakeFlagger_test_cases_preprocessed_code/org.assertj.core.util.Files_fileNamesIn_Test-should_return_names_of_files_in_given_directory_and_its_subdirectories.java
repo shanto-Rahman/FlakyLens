@@ -1,2 +1,0 @@
-@Test public void should_return_names_of_files_in_given_directory_and_its_subdirectories(){
-}

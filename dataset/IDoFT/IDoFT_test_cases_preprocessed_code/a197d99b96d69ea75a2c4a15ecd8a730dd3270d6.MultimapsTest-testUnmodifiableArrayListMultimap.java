@@ -1,2 +1,0 @@
-@GwtIncompatible public void testUnmodifiableArrayListMultimap(){
-}

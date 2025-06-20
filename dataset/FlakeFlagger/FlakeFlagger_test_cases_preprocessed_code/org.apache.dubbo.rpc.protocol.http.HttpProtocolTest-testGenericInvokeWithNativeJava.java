@@ -1,5 +1,0 @@
-@Test public void testGenericInvokeWithNativeJava() throws IOException, ClassNotFoundException {
-Assert.assertFalse(server.isCalled());
-Assert.assertTrue(server.isCalled());
-Assert.assertEquals("Hello, haha",objectInput.readObject());
-}

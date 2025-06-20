@@ -1,7 +1,0 @@
-@Test public void test(){
-assertEquals(86400,TimeUtil.parseDuration("1d"));
-assertEquals(10,TimeUtil.parseDuration("10s"));
-assertEquals(2592000,TimeUtil.parseDuration("30d"));
-assertEquals(2592000,TimeUtil.parseDuration(null));
-assertTrue(catchedException);
-}

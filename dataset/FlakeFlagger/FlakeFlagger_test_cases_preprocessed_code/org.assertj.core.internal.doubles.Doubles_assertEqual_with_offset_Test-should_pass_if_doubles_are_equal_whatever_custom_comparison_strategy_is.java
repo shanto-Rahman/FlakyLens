@@ -1,2 +1,0 @@
-@Test public void should_pass_if_doubles_are_equal_whatever_custom_comparison_strategy_is(){
-}

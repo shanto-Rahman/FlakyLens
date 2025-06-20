@@ -1,2 +1,0 @@
-@Test public void should_fail_if_actual_has_some_elements_with_non_comparable_component_type(){
-}

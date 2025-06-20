@@ -1,2 +1,0 @@
-@Test public void should_throw_NullPointerException_if_array_is_null(){
-}

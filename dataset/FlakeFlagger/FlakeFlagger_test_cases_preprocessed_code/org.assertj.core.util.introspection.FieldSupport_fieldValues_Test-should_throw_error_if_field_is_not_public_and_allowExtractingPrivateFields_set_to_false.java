@@ -1,2 +1,0 @@
-@Test public void should_throw_error_if_field_is_not_public_and_allowExtractingPrivateFields_set_to_false(){
-}

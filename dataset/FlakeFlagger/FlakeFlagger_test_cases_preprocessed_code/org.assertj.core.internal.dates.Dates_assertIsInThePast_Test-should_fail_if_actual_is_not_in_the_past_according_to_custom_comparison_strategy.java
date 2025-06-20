@@ -1,2 +1,0 @@
-@Test public void should_fail_if_actual_is_not_in_the_past_according_to_custom_comparison_strategy(){
-}

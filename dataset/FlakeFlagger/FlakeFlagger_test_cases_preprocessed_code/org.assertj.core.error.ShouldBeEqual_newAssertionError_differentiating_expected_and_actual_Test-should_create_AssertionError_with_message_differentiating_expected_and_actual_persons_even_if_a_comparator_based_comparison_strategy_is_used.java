@@ -1,3 +1,0 @@
-@Test public void should_create_AssertionError_with_message_differentiating_expected_and_actual_persons_even_if_a_comparator_based_comparison_strategy_is_used(){
-assertThat(error.getMessage()).isEqualTo("[my test] \n" + "Expecting:\n" + " <\"Person[name=Jake] (Person@" + toHexString(actual.hashCode()) + ")\">\n"+ "to be equal to:\n <\"Person[name=Jake] (Person@"+ toHexString(expected.hashCode())+ ")\">\n"+ "when comparing values using 'PersonComparator' but was not.");
-}

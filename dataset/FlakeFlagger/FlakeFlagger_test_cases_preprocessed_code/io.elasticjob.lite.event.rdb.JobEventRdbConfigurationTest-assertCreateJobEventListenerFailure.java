@@ -1,2 +1,0 @@
-@Test(expected=JobEventListenerConfigurationException.class) public void assertCreateJobEventListenerFailure() throws JobEventListenerConfigurationException {
-}

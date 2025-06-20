@@ -1,3 +1,0 @@
-@Test public void testConstantExpression(){
-assertEquals("new Object[] {\n" + "  1,\n" + "  new Object[] {\n"+ "    (byte)1,\n"+ "    (short)2,\n"+ "    3,\n"+ "    4L,\n"+ "    5.0F,\n"+ "    6.0D,\n"+ "    (char)7,\n"+ "    true,\n"+ "    \"string\",\n"+ "    null},\n"+ "  new net.hydromatic.linq4j.test.ExpressionTest.AllType(\n"+ "    true,\n"+ "    (byte)100,\n"+ "    (char)101,\n"+ "    (short)102,\n"+ "    103,\n"+ "    104L,\n"+ "    105.0F,\n"+ "    106.0D,\n"+ "    new java.math.BigDecimal(107L),\n"+ "    new java.math.BigInteger(\"108\"),\n"+ "    \"109\",\n"+ "    null)}",constant.toString());
-}

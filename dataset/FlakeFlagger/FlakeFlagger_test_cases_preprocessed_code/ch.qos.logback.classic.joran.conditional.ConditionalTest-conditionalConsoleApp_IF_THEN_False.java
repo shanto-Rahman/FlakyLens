@@ -1,4 +1,0 @@
-@SuppressWarnings("rawtypes") @Test public void conditionalConsoleApp_IF_THEN_False() throws JoranException, IOException, InterruptedException {
-assertNotNull(fileAppender);
-assertNull(consoleAppender);
-}

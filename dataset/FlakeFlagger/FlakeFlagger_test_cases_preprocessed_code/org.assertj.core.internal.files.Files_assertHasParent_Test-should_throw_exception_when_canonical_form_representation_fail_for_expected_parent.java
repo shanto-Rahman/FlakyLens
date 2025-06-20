@@ -1,2 +1,0 @@
-@Test public void should_throw_exception_when_canonical_form_representation_fail_for_expected_parent() throws Exception {
-}

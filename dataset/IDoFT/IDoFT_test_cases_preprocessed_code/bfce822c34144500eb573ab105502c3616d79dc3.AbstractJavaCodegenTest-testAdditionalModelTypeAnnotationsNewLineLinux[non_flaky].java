@@ -1,3 +1,0 @@
-@Test public void testAdditionalModelTypeAnnotationsNewLineLinux() throws Exception {
-Assert.assertEquals(sortedCodegenAdditionalModelTypeAnnotations,sortedAdditionalModelTypeAnnotations);
-}

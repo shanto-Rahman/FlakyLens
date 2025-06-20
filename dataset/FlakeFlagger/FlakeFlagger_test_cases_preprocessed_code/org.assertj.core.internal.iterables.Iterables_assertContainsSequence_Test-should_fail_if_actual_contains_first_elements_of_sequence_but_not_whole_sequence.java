@@ -1,2 +1,0 @@
-@Test public void should_fail_if_actual_contains_first_elements_of_sequence_but_not_whole_sequence(){
-}
