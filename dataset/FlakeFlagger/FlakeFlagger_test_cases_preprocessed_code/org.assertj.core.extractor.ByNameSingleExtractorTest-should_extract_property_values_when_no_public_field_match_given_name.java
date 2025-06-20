@@ -1,0 +1,3 @@
+@Test public void should_extract_property_values_when_no_public_field_match_given_name(){
+assertThat(extractedValues).isEqualTo(800);
+}

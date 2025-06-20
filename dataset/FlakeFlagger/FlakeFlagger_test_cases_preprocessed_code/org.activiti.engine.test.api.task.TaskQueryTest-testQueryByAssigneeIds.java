@@ -1,0 +1,17 @@
+public void testQueryByAssigneeIds(){
+assertEquals(1,query.count());
+assertEquals(1,query.list().size());
+assertNotNull(query.singleResult());
+assertEquals(0,query.count());
+assertEquals(0,query.list().size());
+assertNull(query.singleResult());
+if (processEngineConfiguration.getHistoryLevel().isAtLeast(HistoryLevel.AUDIT)) {
+assertEquals(1,historyService.createHistoricTaskInstanceQuery().taskAssigneeIds(Arrays.asList(GONZO,KERMIT)).count());
+assertEquals(0,historyService.createHistoricTaskInstanceQuery().taskAssigneeIds(Arrays.asList(KERMIT,"kermit2")).count());
+}
+assertEquals(2,query.count());
+assertEquals(2,query.list().size());
+if (processEngineConfiguration.getHistoryLevel().isAtLeast(HistoryLevel.AUDIT)) {
+assertEquals(2,historyService.createHistoricTaskInstanceQuery().taskAssigneeIds(Arrays.asList(GONZO,"testAssignee")).count());
+}
+}

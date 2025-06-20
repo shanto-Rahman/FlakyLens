@@ -1,0 +1,3 @@
+@Test public void testCompleteDecode() throws Exception {
+assertEquals("(01)98898765432106(3202)012345(15)991231",result.getText());
+}

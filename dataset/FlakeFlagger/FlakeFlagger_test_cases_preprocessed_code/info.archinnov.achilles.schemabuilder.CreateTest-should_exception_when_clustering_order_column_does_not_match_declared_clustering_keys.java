@@ -1,0 +1,2 @@
+@Test(expected=IllegalArgumentException.class) public void should_exception_when_clustering_order_column_does_not_match_declared_clustering_keys() throws Exception {
+}

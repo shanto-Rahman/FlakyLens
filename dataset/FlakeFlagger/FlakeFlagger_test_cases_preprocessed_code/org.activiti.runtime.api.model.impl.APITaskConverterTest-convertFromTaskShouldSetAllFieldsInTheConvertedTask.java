@@ -1,0 +1,3 @@
+@Test public void convertFromTaskShouldSetAllFieldsInTheConvertedTask(){
+assertThat(convertedTask).isNotNull().extracting(Task::getId,Task::getAssignee,Task::getName,Task::getDescription,Task::getCreatedDate,Task::getClaimedDate,Task::getDueDate,Task::getPriority,Task::getProcessDefinitionId,Task::getProcessInstanceId,Task::getParentTaskId,Task::getStatus).containsExactly("testTaskId","testUser","testTaskName","testTaskDescription",now,now,now,112,"testProcessDefinitionId","testProcessInstanceId","testParentTaskId",ASSIGNED);
+}

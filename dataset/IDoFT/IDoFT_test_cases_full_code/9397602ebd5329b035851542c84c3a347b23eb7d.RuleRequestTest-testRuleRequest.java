@@ -1,0 +1,35 @@
+@Test public void testRuleRequest() throws Throwable {
+  RuleTargetAttribute ruleTargetAttributeModel=new RuleTargetAttribute.Builder().name("resource_id").operator("string_equals").value("f0f8f7994e754ff38f9d370201966561").build();
+  assertEquals(ruleTargetAttributeModel.name(),"resource_id");
+  assertEquals(ruleTargetAttributeModel.operator(),"string_equals");
+  assertEquals(ruleTargetAttributeModel.value(),"f0f8f7994e754ff38f9d370201966561");
+  TargetResource targetResourceModel=new TargetResource.Builder().serviceName("iam-groups").resourceKind("zone").additionalTargetAttributes(new java.util.ArrayList<RuleTargetAttribute>(java.util.Arrays.asList(ruleTargetAttributeModel))).build();
+  assertEquals(targetResourceModel.serviceName(),"iam-groups");
+  assertEquals(targetResourceModel.resourceKind(),"zone");
+  assertEquals(targetResourceModel.additionalTargetAttributes(),new java.util.ArrayList<RuleTargetAttribute>(java.util.Arrays.asList(ruleTargetAttributeModel)));
+  RuleRequiredConfigSingleProperty ruleRequiredConfigModel=new RuleRequiredConfigSingleProperty.Builder().description("testString").property("public_access_enabled").operator("is_true").value("testString").build();
+  assertEquals(ruleRequiredConfigModel.description(),"testString");
+  assertEquals(ruleRequiredConfigModel.property(),"public_access_enabled");
+  assertEquals(ruleRequiredConfigModel.operator(),"is_true");
+  assertEquals(ruleRequiredConfigModel.value(),"testString");
+  EnforcementAction enforcementActionModel=new EnforcementAction.Builder().action("disallow").build();
+  assertEquals(enforcementActionModel.action(),"disallow");
+  RuleRequest ruleRequestModel=new RuleRequest.Builder().accountId("testString").name("testString").description("testString").ruleType("user_defined").target(targetResourceModel).requiredConfig(ruleRequiredConfigModel).enforcementActions(new java.util.ArrayList<EnforcementAction>(java.util.Arrays.asList(enforcementActionModel))).labels(new java.util.ArrayList<String>(java.util.Arrays.asList("testString"))).build();
+  assertEquals(ruleRequestModel.accountId(),"testString");
+  assertEquals(ruleRequestModel.name(),"testString");
+  assertEquals(ruleRequestModel.description(),"testString");
+  assertEquals(ruleRequestModel.ruleType(),"user_defined");
+  assertEquals(ruleRequestModel.target(),targetResourceModel);
+  assertEquals(ruleRequestModel.requiredConfig(),ruleRequiredConfigModel);
+  assertEquals(ruleRequestModel.enforcementActions(),new java.util.ArrayList<EnforcementAction>(java.util.Arrays.asList(enforcementActionModel)));
+  assertEquals(ruleRequestModel.labels(),new java.util.ArrayList<String>(java.util.Arrays.asList("testString")));
+  String json=TestUtilities.serialize(ruleRequestModel);
+  RuleRequest ruleRequestModelNew=TestUtilities.deserialize(json,RuleRequest.class);
+  assertTrue(ruleRequestModelNew instanceof RuleRequest);
+  assertEquals(ruleRequestModelNew.accountId(),"testString");
+  assertEquals(ruleRequestModelNew.name(),"testString");
+  assertEquals(ruleRequestModelNew.description(),"testString");
+  assertEquals(ruleRequestModelNew.ruleType(),"user_defined");
+  assertEquals(ruleRequestModelNew.target().toString(),targetResourceModel.toString());
+  assertEquals(ruleRequestModelNew.requiredConfig().toString(),ruleRequiredConfigModel.toString());
+}

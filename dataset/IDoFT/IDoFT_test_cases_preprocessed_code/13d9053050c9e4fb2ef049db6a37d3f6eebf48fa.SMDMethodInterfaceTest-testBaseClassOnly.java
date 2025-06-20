@@ -1,0 +1,12 @@
+/** 
+ * Asserts that the SMDMethod annotation is only detected on the classes when ignoreSMDMethodInterfaces is true
+ */
+public void testBaseClassOnly(){
+assertEquals(2,smdMethodsA.length);
+assertEquals("getZ",smdMethodsA[0].getName());
+assertEquals("getX",smdMethodsA[1].getName());
+assertEquals(1,smdMethodsB.length);
+assertEquals("getX",smdMethodsB[0].getName());
+assertEquals(1,smdMethodsC.length);
+assertEquals("getX",smdMethodsC[0].getName());
+}

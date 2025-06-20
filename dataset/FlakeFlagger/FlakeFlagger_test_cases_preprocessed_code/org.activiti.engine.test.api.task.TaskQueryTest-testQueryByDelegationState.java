@@ -1,0 +1,20 @@
+public void testQueryByDelegationState(){
+assertEquals(12,query.count());
+assertEquals(12,query.list().size());
+assertEquals(0,query.count());
+assertEquals(0,query.list().size());
+assertEquals(0,query.count());
+assertEquals(0,query.list().size());
+assertEquals(11,query.count());
+assertEquals(11,query.list().size());
+assertEquals(1,query.count());
+assertEquals(1,query.list().size());
+assertEquals(0,query.count());
+assertEquals(0,query.list().size());
+assertEquals(11,query.count());
+assertEquals(11,query.list().size());
+assertEquals(0,query.count());
+assertEquals(0,query.list().size());
+assertEquals(1,query.count());
+assertEquals(1,query.list().size());
+}

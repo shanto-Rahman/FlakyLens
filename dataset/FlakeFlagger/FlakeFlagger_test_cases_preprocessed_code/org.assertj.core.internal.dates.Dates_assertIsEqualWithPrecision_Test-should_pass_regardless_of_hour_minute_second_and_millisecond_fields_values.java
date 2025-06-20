@@ -1,0 +1,2 @@
+@Test public void should_pass_regardless_of_hour_minute_second_and_millisecond_fields_values(){
+}

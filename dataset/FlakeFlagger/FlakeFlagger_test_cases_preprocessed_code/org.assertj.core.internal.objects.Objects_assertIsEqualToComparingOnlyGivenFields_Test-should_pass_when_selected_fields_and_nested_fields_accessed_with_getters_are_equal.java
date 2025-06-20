@@ -1,0 +1,2 @@
+@Test public void should_pass_when_selected_fields_and_nested_fields_accessed_with_getters_are_equal(){
+}

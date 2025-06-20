@@ -1,0 +1,2 @@
+@Test public void setVariablesSnapshots_should_set_all_source_local_variables_in_the_snapshot_holder() throws Exception {
+}

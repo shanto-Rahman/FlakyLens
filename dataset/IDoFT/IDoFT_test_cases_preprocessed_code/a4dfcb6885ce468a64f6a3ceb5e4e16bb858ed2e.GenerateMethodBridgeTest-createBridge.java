@@ -1,0 +1,5 @@
+@Test public void createBridge() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+in.method1("method1");//IT
+in.method3("method3");//IT
+assertEquals("gmba.method1[method1]\n" + "gmbz.method1[method1]\n" + "gmba.method2[!net.openhft.chronicle.wire.MyTypes {\n"+ "  text: \"\",\n"+ "  flag: false,\n"+ "  b: 0,\n"+ "  s: 0,\n"+ "  ch: \"\\0\",\n"+ "  i: 0,\n"+ "  f: 0.0,\n"+ "  d: 0.0,\n"+ "  l: 0\n"+ "}\n"+ "]\n"+ "gmbb.method2[!net.openhft.chronicle.wire.MyTypes {\n"+ "  text: \"\",\n"+ "  flag: false,\n"+ "  b: 0,\n"+ "  s: 0,\n"+ "  ch: \"\\0\",\n"+ "  i: 0,\n"+ "  f: 0.0,\n"+ "  d: 0.0,\n"+ "  l: 0\n"+ "}\n"+ "]\n"+ "gmbz.method2[!net.openhft.chronicle.wire.MyTypes {\n"+ "  text: \"\",\n"+ "  flag: false,\n"+ "  b: 0,\n"+ "  s: 0,\n"+ "  ch: \"\\0\",\n"+ "  i: 0,\n"+ "  f: 0.0,\n"+ "  d: 0.0,\n"+ "  l: 0\n"+ "}\n"+ "]\n"+ "gmbb.method3[method3]\n"+ "gmbz.method3[method3]\n",sw.toString().replace("\r",""));
+}

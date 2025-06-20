@@ -1,0 +1,35 @@
+@Test public void testJavaxAnnotations() throws Exception {
+  Field[] fields=JavaxAnno.class.getDeclaredFields();
+  assertTrue(fields.length >= 7);
+  assertNull(DatabaseFieldConfig.fromField(databaseType,"foo",fields[0]));
+  DatabaseFieldConfig config=DatabaseFieldConfig.fromField(databaseType,"foo",fields[1]);
+  assertNotNull(config);
+  assertFalse(config.isId());
+  assertTrue(config.isGeneratedId());
+  assertFalse(config.isUseGetSet());
+  assertEquals(fields[1].getName(),config.getFieldName());
+  config=DatabaseFieldConfig.fromField(databaseType,"foo",fields[2]);
+  assertNotNull(config);
+  assertFalse(config.isUseGetSet());
+  assertEquals(STUFF_FIELD_NAME,config.getColumnName());
+  config=DatabaseFieldConfig.fromField(databaseType,"foo",fields[3]);
+  assertNotNull(config);
+  assertEquals(LENGTH_LENGTH,config.getWidth());
+  assertFalse(config.isUseGetSet());
+  assertEquals(fields[3].getName(),config.getFieldName());
+  config=DatabaseFieldConfig.fromField(databaseType,"foo",fields[4]);
+  assertNotNull(config);
+  assertFalse(config.isCanBeNull());
+  assertFalse(config.isUseGetSet());
+  assertEquals(fields[4].getName(),config.getFieldName());
+  config=DatabaseFieldConfig.fromField(databaseType,"foo",fields[5]);
+  assertNotNull(config);
+  assertTrue(config.isForeign());
+  assertNull(config.getDataPersister());
+  assertEquals(fields[5].getName(),config.getFieldName());
+  config=DatabaseFieldConfig.fromField(databaseType,"foo",fields[6]);
+  assertNotNull(config);
+  assertTrue(config.isForeign());
+  assertNull(config.getDataPersister());
+  assertEquals(fields[6].getName(),config.getFieldName());
+}

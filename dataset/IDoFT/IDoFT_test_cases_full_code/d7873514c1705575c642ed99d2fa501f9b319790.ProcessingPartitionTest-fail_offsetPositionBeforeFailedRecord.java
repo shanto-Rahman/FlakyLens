@@ -1,0 +1,19 @@
+@Test public void fail_offsetPositionBeforeFailedRecord(){
+  partition.load(Arrays.asList(record(1L),record(2L)));
+  assertRecordsAreEqual(partition.nextRecord(),record(1L));
+  assertThat(partition.pendingOffsets.keySet(),contains(1L));
+  assertThat(partition.offsetPosition,is(2L));
+  assertRecordsAreEqual(partition.nextRecord(),record(2L));
+  assertThat(partition.pendingOffsets.keySet(),contains(1L,2L));
+  assertThat(partition.offsetPosition,is(3L));
+  assertThat(partition.fail(1L),is(true));
+  assertThat(partition.pendingOffsets.keySet(),contains(2L));
+  assertThat(partition.completedOffsets,empty());
+  verify(consumer).seek(topicPartition,0L);
+  assertThat(partition.offsetPosition,is(0L));
+  assertThat(partition.fail(2L),is(true));
+  assertThat(partition.pendingOffsets.keySet(),empty());
+  assertThat(partition.completedOffsets,empty());
+  verify(consumer).seek(topicPartition,0L);
+  assertThat(partition.offsetPosition,is(0L));
+}

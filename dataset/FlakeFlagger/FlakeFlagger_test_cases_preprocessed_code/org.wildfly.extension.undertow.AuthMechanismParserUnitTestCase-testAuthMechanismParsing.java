@@ -1,0 +1,35 @@
+@Test public void testAuthMechanismParsing(){
+Assert.assertEquals(1,res.size());
+Assert.assertEquals(0,res.get(0).getProperties().size());
+Assert.assertEquals("BASIC",res.get(0).getName());
+Assert.assertEquals(1,res.size());
+Assert.assertEquals(1,res.get(0).getProperties().size());
+Assert.assertEquals("BASIC",res.get(0).getName());
+Assert.assertEquals("true",res.get(0).getProperties().get("silent"));
+Assert.assertEquals(2,res.size());
+Assert.assertEquals(1,res.get(0).getProperties().size());
+Assert.assertEquals("BASIC",res.get(0).getName());
+Assert.assertEquals("true",res.get(0).getProperties().get("silent"));
+Assert.assertEquals(0,res.get(1).getProperties().size());
+Assert.assertEquals("FORM",res.get(1).getName());
+Assert.assertEquals(2,res.size());
+Assert.assertEquals(1,res.get(0).getProperties().size());
+Assert.assertEquals("BASIC",res.get(0).getName());
+Assert.assertEquals("true",res.get(0).getProperties().get("silent"));
+Assert.assertEquals(0,res.get(1).getProperties().size());
+Assert.assertEquals("FORM",res.get(1).getName());
+Assert.assertEquals(2,res.size());
+Assert.assertEquals(1,res.get(0).getProperties().size());
+Assert.assertEquals("BASIC",res.get(0).getName());
+Assert.assertEquals("true",res.get(0).getProperties().get("silent"));
+Assert.assertEquals(0,res.get(1).getProperties().size());
+Assert.assertEquals("FORM",res.get(1).getName());
+Assert.assertEquals(2,res.size());
+Assert.assertEquals(1,res.get(0).getProperties().size());
+Assert.assertEquals("BASIC",res.get(0).getName());
+Assert.assertEquals("true",res.get(0).getProperties().get("silent"));
+Assert.assertEquals(2,res.get(1).getProperties().size());
+Assert.assertEquals("FORM",res.get(1).getName());
+Assert.assertEquals("b c",res.get(1).getProperties().get("a"));
+Assert.assertEquals("e f",res.get(1).getProperties().get("d"));
+}

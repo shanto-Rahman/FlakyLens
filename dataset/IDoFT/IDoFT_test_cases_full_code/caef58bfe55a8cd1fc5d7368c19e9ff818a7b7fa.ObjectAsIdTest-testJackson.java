@@ -1,0 +1,33 @@
+@Test public void testJackson() throws JsonProcessingException {
+  final TestObjectA testObjectA=new TestObjectA();
+  final TestObjectB testObjectB=new TestObjectB();
+  final TestObjectC<String> testObjectC=new TestObjectC<>("valueC");
+  final TestObjectD testObjectD=new TestObjectD();
+  final TestObjectE testObjectE=new TestObjectE();
+  final Wrapper wrapper=new Wrapper();
+  wrapper.testObjectA1=testObjectA;
+  wrapper.testObjectA2=testObjectA;
+  wrapper.testObjectB1=testObjectB;
+  wrapper.testObjectB2=testObjectB;
+  wrapper.testObjectC1=testObjectC;
+  wrapper.testObjectC2=testObjectC;
+  wrapper.testObjectD1=testObjectD;
+  wrapper.testObjectD2=testObjectD;
+  wrapper.testObjectE1=testObjectE;
+  wrapper.testObjectE2=testObjectE;
+  wrapper.testObjectE3=testObjectE;
+  final ObjectMapper objectMapper=Utils.getObjectMapper();
+  objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+  final String json=objectMapper.writeValueAsString(wrapper);
+  Assert.assertTrue(json.contains("\"testObjectA1\": \"id1\""));
+  Assert.assertTrue(json.contains("\"testObjectA2\": \"id1\""));
+  Assert.assertTrue(json.contains("\"testObjectB1\": {"));
+  Assert.assertTrue(json.contains("\"testObjectB2\": \"id2\""));
+  Assert.assertTrue(json.contains("\"testObjectC1\": {"));
+  Assert.assertTrue(json.contains("\"testObjectC2\": \"id3\""));
+  Assert.assertTrue(json.contains("\"testObjectD1\": \"id4\""));
+  Assert.assertTrue(json.contains("\"testObjectD2\": \"id4\""));
+  Assert.assertTrue(json.contains("\"testObjectE1\": \"id5\""));
+  Assert.assertTrue(json.contains("\"testObjectE2\": {"));
+  Assert.assertTrue(json.contains("\"testObjectE3\": {"));
+}

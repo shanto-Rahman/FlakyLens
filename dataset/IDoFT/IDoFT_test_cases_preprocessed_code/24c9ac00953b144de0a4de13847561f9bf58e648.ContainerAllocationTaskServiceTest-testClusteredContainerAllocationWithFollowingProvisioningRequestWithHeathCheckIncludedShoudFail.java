@@ -1,0 +1,3 @@
+@Test public void testClusteredContainerAllocationWithFollowingProvisioningRequestWithHeathCheckIncludedShoudFail() throws Throwable {
+assertNotNull(provisioningRequest);
+}

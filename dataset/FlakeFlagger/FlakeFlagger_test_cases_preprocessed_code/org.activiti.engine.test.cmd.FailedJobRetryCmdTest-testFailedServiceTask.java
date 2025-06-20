@@ -1,0 +1,19 @@
+@Deployment(resources={"org/activiti/engine/test/cmd/FailedJobRetryCmdTest.testFailedServiceTask.bpmn20.xml"}) public void testFailedServiceTask(){
+assertNotNull(pi);
+assertNotNull(job);
+assertEquals(pi.getProcessInstanceId(),job.getProcessInstanceId());
+assertEquals(4,job.getRetries());
+assertEquals("failingServiceTask",execution.getActivityId());
+assertEquals(3,job.getRetries());
+assertEquals("failingServiceTask",execution.getActivityId());
+assertEquals(2,job.getRetries());
+assertEquals("failingServiceTask",execution.getActivityId());
+assertEquals(1,job.getRetries());
+assertEquals("failingServiceTask",execution.getActivityId());
+assertEquals(0,job.getRetries());
+assertEquals(1,managementService.createDeadLetterJobQuery().withException().count());
+assertEquals(0,managementService.createJobQuery().count());
+assertEquals(0,managementService.createTimerJobQuery().count());
+assertEquals(1,managementService.createDeadLetterJobQuery().count());
+assertEquals("failingServiceTask",execution.getActivityId());
+}

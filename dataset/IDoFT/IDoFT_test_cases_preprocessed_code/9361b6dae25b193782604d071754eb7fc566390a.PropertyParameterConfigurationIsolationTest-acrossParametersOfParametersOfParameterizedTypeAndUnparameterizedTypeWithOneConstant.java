@@ -1,0 +1,4 @@
+@Test public void acrossParametersOfParametersOfParameterizedTypeAndUnparameterizedTypeWithOneConstant() throws Exception {
+assertThat(testResult(ParametersOfParameterizedTypeAndUnparameterizedTypeWithOneConstant.class),isSuccessful());
+assertEquals(defaultPropertyTrialCount(),ParametersOfParameterizedTypeAndUnparameterizedTypeWithOneConstant.iterations);//RW
+}

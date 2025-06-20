@@ -1,0 +1,26 @@
+@Test public void nextRecord_skipPendingAndCompletedRecords(){
+assertThat(partition.hasNextRecord(),is(false));
+assertThat(partition.offsetPosition,is(3L));
+assertThat(partition.pendingOffsets.keySet(),contains(0L,1L,2L));
+assertThat(partition.completedOffsets,empty());
+assertThat(partition.ack(0L),is(true));
+assertThat(partition.pendingOffsets.keySet(),contains(1L,2L));
+assertThat(partition.completedOffsets,contains(0L));
+assertThat(partition.committableOffset,is(1L));
+assertThat(partition.lastCommittedOffset,is(0L));
+assertThat(partition.getCommittableOffsetsSize(),is(1L));
+assertThat(partition.fail(2L),is(true));
+assertThat(partition.pendingOffsets.keySet(),contains(1L));
+assertThat(partition.completedOffsets,contains(0L));
+assertThat(partition.committableOffset,is(1L));
+assertThat(partition.lastCommittedOffset,is(0L));
+assertThat(partition.getCommittableOffsetsSize(),is(1L));
+assertThat(partition.offsetPosition,is(0L));
+assertThat(partition.hasNextRecord(),is(false));
+assertThat(partition.offsetPosition,is(3L));
+assertThat(partition.pendingOffsets.keySet(),contains(1L,2L));
+assertThat(partition.completedOffsets,contains(0L));
+assertThat(partition.committableOffset,is(1L));
+assertThat(partition.lastCommittedOffset,is(0L));
+assertThat(partition.getCommittableOffsetsSize(),is(1L));
+}

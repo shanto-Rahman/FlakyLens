@@ -1,0 +1,5 @@
+@Test public void resourceHandlerMapping() throws Exception {
+assertThat(mappingLocations.get("/**").size(),equalTo(5));
+assertThat(mappingLocations.get("/webjars/**").size(),equalTo(1));
+assertThat(mappingLocations.get("/webjars/**").get(0),equalTo((Resource)new ClassPathResource("/META-INF/resources/webjars/")));
+}

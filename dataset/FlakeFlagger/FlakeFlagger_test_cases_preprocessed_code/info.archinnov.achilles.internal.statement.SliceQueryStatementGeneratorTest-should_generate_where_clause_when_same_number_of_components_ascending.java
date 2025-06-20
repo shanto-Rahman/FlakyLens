@@ -1,0 +1,16 @@
+@Test public void should_generate_where_clause_when_same_number_of_components_ascending() throws Exception {
+assertThat(statement.getStatement().getQueryString()).isEqualTo("SELECT test FROM table WHERE id=11 AND a=? AND b=? AND c>=1 AND c<=2;");
+assertThat(statement.getValues()).contains(uuid1,"author");
+assertThat(statement.getStatement().getFetchSize()).isEqualTo(99);
+assertThat(statement.getStatement().getQueryString()).isEqualTo("SELECT test FROM table WHERE id=11 AND a=? AND b=? AND c>1 AND c<2;");
+assertThat(statement.getValues()).contains(uuid1,"author");
+assertThat(statement.getStatement().getFetchSize()).isEqualTo(99);
+assertThat(statement.getStatement().getQueryString()).isEqualTo("SELECT test FROM table WHERE id=11 AND a=? AND b=? AND c>=1 AND c<2;");
+assertThat(statement.getValues()).contains(uuid1,"author");
+assertThat(statement.getStatement().getFetchSize()).isEqualTo(99);
+assertThat(statement.getStatement().getQueryString()).isEqualTo("SELECT test FROM table WHERE id=11 AND a=? AND b=? AND c>1 AND c<=2;");
+assertThat(statement.getValues()).contains(uuid1,"author");
+assertThat(statement.getStatement().getFetchSize()).isEqualTo(99);
+assertThat(statement.getStatement().getConsistencyLevel()).isEqualTo(EACH_QUORUM);
+assertThat(statement.getStatement().getSerialConsistencyLevel()).isNull();
+}

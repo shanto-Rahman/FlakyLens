@@ -1,0 +1,26 @@
+@Deployment public void testHistoricTaskInstanceQueryProcessVariableValueEquals() throws Exception {
+assertEquals(7,historyService.createHistoricDetailQuery().variableUpdates().processInstanceId(processInstance.getId()).count());
+assertEquals(1,historyService.createHistoricTaskInstanceQuery().processVariableValueEquals("longVar",12345L).count());
+assertEquals(1,historyService.createHistoricTaskInstanceQuery().processVariableValueEquals("shortVar",(short)123).count());
+assertEquals(1,historyService.createHistoricTaskInstanceQuery().processVariableValueEquals("integerVar",1234).count());
+assertEquals(1,historyService.createHistoricTaskInstanceQuery().processVariableValueEquals("stringVar","stringValue").count());
+assertEquals(1,historyService.createHistoricTaskInstanceQuery().processVariableValueEquals("booleanVar",true).count());
+assertEquals(1,historyService.createHistoricTaskInstanceQuery().processVariableValueEquals("dateVar",date).count());
+assertEquals(1,historyService.createHistoricTaskInstanceQuery().processVariableValueEquals("nullVar",null).count());
+assertEquals(14,historyService.createHistoricDetailQuery().variableUpdates().processInstanceId(processInstance.getId()).count());
+assertEquals(0,historyService.createHistoricTaskInstanceQuery().processVariableValueEquals("longVar",12345L).count());
+assertEquals(0,historyService.createHistoricTaskInstanceQuery().processVariableValueEquals("shortVar",(short)123).count());
+assertEquals(0,historyService.createHistoricTaskInstanceQuery().processVariableValueEquals("integerVar",1234).count());
+assertEquals(0,historyService.createHistoricTaskInstanceQuery().processVariableValueEquals("stringVar","stringValue").count());
+assertEquals(0,historyService.createHistoricTaskInstanceQuery().processVariableValueEquals("booleanVar",true).count());
+assertEquals(0,historyService.createHistoricTaskInstanceQuery().processVariableValueEquals("dateVar",date).count());
+assertEquals(1,historyService.createHistoricTaskInstanceQuery().processVariableValueEquals("longVar",67890L).count());
+assertEquals(1,historyService.createHistoricTaskInstanceQuery().processVariableValueEquals("shortVar",(short)456).count());
+assertEquals(1,historyService.createHistoricTaskInstanceQuery().processVariableValueEquals("integerVar",5678).count());
+assertEquals(1,historyService.createHistoricTaskInstanceQuery().processVariableValueEquals("stringVar","updatedStringValue").count());
+assertEquals(1,historyService.createHistoricTaskInstanceQuery().processVariableValueEquals("booleanVar",false).count());
+assertEquals(1,historyService.createHistoricTaskInstanceQuery().processVariableValueEquals("dateVar",otherDate).count());
+assertEquals(1,historyService.createHistoricTaskInstanceQuery().processVariableValueEquals("nullVar",null).count());
+assertEquals(0,historyService.createHistoricTaskInstanceQuery().processVariableValueEquals("longVar",9999L).count());
+assertEquals(1,historyService.createHistoricTaskInstanceQuery().processVariableValueEquals("longVar",67890L).count());
+}

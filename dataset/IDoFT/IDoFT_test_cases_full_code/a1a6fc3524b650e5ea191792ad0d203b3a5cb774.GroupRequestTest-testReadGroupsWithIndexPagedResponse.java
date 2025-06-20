@@ -1,0 +1,3 @@
+@TestFactory public Collection<DynamicTest> testReadGroupsWithIndexPagedResponse(){
+  return Arrays.asList(dynamicTest("read All Groups",getGroupsIndexPagingExecutable("/Groups?startIndex=1&count=100",GroupRequest::readAllGroups)),dynamicTest("read multiple Groups default index paging",getGroupsIndexPagingExecutable("/Groups?startIndex=1&count=100",GroupRequest::readMultipleGroups)),dynamicTest("read multiple Groups custom index paging",getGroupsIndexPagingExecutable("/Groups?startIndex=3&count=40",scimGroupRequest -> scimGroupRequest.readMultipleGroups(indexPageQuery().withStartIndex(3).withCount(40)))),dynamicTest("read multiple Groups without adding page parameters",getGroupsIndexPagingExecutable("/Groups",GroupRequest::readMultipleGroupsWithoutPaging)));
+}

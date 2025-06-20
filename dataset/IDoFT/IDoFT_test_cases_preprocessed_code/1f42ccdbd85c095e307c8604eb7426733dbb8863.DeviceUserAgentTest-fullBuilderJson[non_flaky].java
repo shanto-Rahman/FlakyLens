@@ -1,0 +1,11 @@
+@Test public void fullBuilderJson(){
+Assertions.assertThat(parser.parse(payloadJson)).isEqualTo(parser.parse(expected));
+Assert.assertEquals(userAgent.getBrowser(),DeviceUtils.USER_AGENT_BROWSER);
+Assert.assertEquals(userAgent.getDevice(),DeviceUtils.USER_AGENT_DEVICE);
+Assert.assertEquals(userAgent.getFamily(),DeviceUtils.USER_AGENT_FAMILY);
+Assert.assertEquals(userAgent.isMobile(),DeviceUtils.USER_AGENT_MOBILE);
+Assert.assertEquals(userAgent.getOs(),DeviceUtils.USER_AGENT_OS);
+Assert.assertEquals(userAgent.getPlatform(),DeviceUtils.USER_AGENT_PLATFORM);
+Assert.assertEquals(userAgent.getRaw(),DeviceUtils.USER_AGENT_PLATFORM);
+Assert.assertEquals(userAgent.getVersion(),DeviceUtils.USER_AGENT_PLATFORM);
+}

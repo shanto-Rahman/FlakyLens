@@ -1,0 +1,20 @@
+public void testStringArrayWithName() throws Exception {
+assertNotNull(bytes);
+assertEquals(19,bytes.length);
+assertNotNull(result);
+assertEquals(input.name,result.name);
+assertNotNull(result.values);
+assertEquals(input.values.length,result.values.length);
+assertEquals(input.values[i],result.values[i]);
+assertEquals("name",p.currentName());
+assertEquals(input.name,p.getText());
+assertEquals("values",p.currentName());
+assertFalse(p.hasTextCharacters());
+assertEquals(input.values[0],p.getText());
+assertEquals(input.values[1],p.getText());
+assertEquals(input.values[2],p.getText());
+assertEquals(input.values[3],p.getText());
+assertEquals("name",p.currentName());
+assertEquals(count,b.size());
+assertEquals(18,count);
+}

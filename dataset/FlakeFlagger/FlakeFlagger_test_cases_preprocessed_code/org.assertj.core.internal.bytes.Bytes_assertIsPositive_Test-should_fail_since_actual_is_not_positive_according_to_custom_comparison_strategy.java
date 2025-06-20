@@ -1,0 +1,2 @@
+@Test public void should_fail_since_actual_is_not_positive_according_to_custom_comparison_strategy(){
+}

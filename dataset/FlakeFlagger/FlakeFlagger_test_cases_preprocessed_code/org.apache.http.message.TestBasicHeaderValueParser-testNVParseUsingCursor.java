@@ -1,0 +1,36 @@
+@Test public void testNVParseUsingCursor(){
+Assert.assertEquals("test",param.getName());
+Assert.assertEquals(null,param.getValue());
+Assert.assertEquals(s.length(),cursor.getPos());
+Assert.assertTrue(cursor.atEnd());
+Assert.assertEquals("test",param.getName());
+Assert.assertEquals(null,param.getValue());
+Assert.assertEquals(s.length(),cursor.getPos());
+Assert.assertTrue(cursor.atEnd());
+Assert.assertEquals("test",param.getName());
+Assert.assertEquals(null,param.getValue());
+Assert.assertEquals(s.length() - 2,cursor.getPos());
+Assert.assertFalse(cursor.atEnd());
+Assert.assertEquals("test",param.getName());
+Assert.assertEquals("stuff",param.getValue());
+Assert.assertEquals(s.length(),cursor.getPos());
+Assert.assertTrue(cursor.atEnd());
+Assert.assertEquals("test",param.getName());
+Assert.assertEquals("stuff",param.getValue());
+Assert.assertEquals(s.length(),cursor.getPos());
+Assert.assertTrue(cursor.atEnd());
+Assert.assertEquals("test",param.getName());
+Assert.assertEquals("stuff",param.getValue());
+Assert.assertEquals(s.length() - 4,cursor.getPos());
+Assert.assertFalse(cursor.atEnd());
+Assert.assertEquals("test",param.getName());
+Assert.assertEquals("stuff",param.getValue());
+Assert.assertEquals("test",param.getName());
+Assert.assertEquals("  stuff\\\"",param.getValue());
+Assert.assertEquals("test",param.getName());
+Assert.assertEquals(null,param.getValue());
+Assert.assertEquals("",param.getName());
+Assert.assertEquals(null,param.getValue());
+Assert.assertEquals("",param.getName());
+Assert.assertEquals("stuff",param.getValue());
+}

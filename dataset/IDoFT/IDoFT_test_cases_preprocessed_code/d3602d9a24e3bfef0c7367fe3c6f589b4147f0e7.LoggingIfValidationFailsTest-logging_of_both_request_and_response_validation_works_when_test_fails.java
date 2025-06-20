@@ -1,0 +1,4 @@
+@Test public void logging_of_both_request_and_response_validation_works_when_test_fails(){
+fail("Should throw AssertionError");
+assertThat(writer.toString(),equalTo(String.format("Request method:\tPOST%n" + "Request URI:\thttp://localhost:8080/greetingPost%n" + "Proxy:\t\t\t<none>%n"+ "Request params:\tname=Johan%n"+ "Query params:\t<none>%n"+ "Form params:\t<none>%n"+ "Path params:\t<none>%n"+ "Headers:\t\tContent-Type=application/x-www-form-urlencoded;charset=%s%n"+ "Cookies:\t\t<none>%n"+ "Multiparts:\t\t<none>%n"+ "Body:\t\t\t<none>%n"+ "%n"+ "200%n"+ "Content-Type: application/json;charset=UTF-8%n"+ "Content-Length: 34%n"+ "%n"+ "{\n"+ "    \"id\": 1,\n"+ "    \"content\": \"Hello, Johan!\"\n"+ "}%n",config().getEncoderConfig().defaultContentCharset())));
+}

@@ -1,0 +1,10 @@
+@Test public void test_combinedWith_noClash(){
+  Map<MarketDataId<?>,Object> dataMap1=ImmutableMap.of(ID1,VAL1);
+  MarketData test1=MarketData.of(VAL_DATE,dataMap1);
+  Map<MarketDataId<?>,Object> dataMap2=ImmutableMap.of(ID2,VAL2);
+  MarketData test2=MarketData.of(VAL_DATE,dataMap2);
+  MarketData test=test1.combinedWith(test2);
+  assertThat(test.getValue(ID1)).isEqualTo(VAL1);
+  assertThat(test.getValue(ID2)).isEqualTo(VAL2);
+  assertThat(test.getIds()).containsExactly(ID1,ID2);
+}

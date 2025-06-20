@@ -1,0 +1,34 @@
+@Test public void testPutRemove1(){
+  MetadataKey key1=new FieldMetadataKey("s",1,"sfn","f");
+  MetadataKey key7=new SchemaMetadataKey("s",7);
+  MetadataKey key4=new SchemaMetadataKey("s",4);
+  MetadataValue value1=MetadataValue.builder().doc("doc1").attributes(null).updatedAt(new Date()).updatedBy("me").build();
+  MetadataValue value4=MetadataValue.builder().doc("doc4").attributes(null).updatedAt(new Date()).updatedBy("me").build();
+  MetadataValue value7=MetadataValue.builder().doc("doc7").attributes(null).updatedAt(new Date()).updatedBy("me").build();
+  InheritingMetadataContainer container=new InheritingMetadataContainer("s");
+  container.put(key1,value1);
+  container.put(key4,value4);
+  container.put(key7,value7);
+  Map<MetadataKey,MetadataValue> byVersion1=container.getCollection(1);
+  Assert.assertTrue(byVersion1.size() == 1);
+  Assert.assertEquals(byVersion1.get(key1),value1);
+  Map<MetadataKey,MetadataValue> byVersion4=container.getCollection(4);
+  Assert.assertTrue(byVersion4.size() == 2);
+  Assert.assertEquals(byVersion4.get(key1),value1);
+  Assert.assertEquals(byVersion4.get(key4),value4);
+  Map<MetadataKey,MetadataValue> byVersion7=container.getCollection(7);
+  Assert.assertTrue(byVersion7.size() == 2);
+  Assert.assertEquals(byVersion7.get(key1),value1);
+  Assert.assertEquals(byVersion7.get(key7),value7);
+  container.remove(key4);
+  byVersion1=container.getCollection(1);
+  Assert.assertTrue(byVersion1.size() == 1);
+  Assert.assertEquals(byVersion1.get(key1),value1);
+  byVersion4=container.getCollection(4);
+  Assert.assertTrue(byVersion4.size() == 1);
+  Assert.assertEquals(byVersion4.get(key1),value1);
+  byVersion7=container.getCollection(7);
+  Assert.assertTrue(byVersion7.size() == 2);
+  Assert.assertEquals(byVersion7.get(key1),value1);
+  Assert.assertEquals(byVersion7.get(key7),value7);
+}

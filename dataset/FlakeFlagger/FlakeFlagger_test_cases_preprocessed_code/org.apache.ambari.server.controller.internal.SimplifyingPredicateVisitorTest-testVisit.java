@@ -1,0 +1,24 @@
+@Test public void testVisit(){
+Assert.assertEquals(1,simplifiedPredicates.size());
+Assert.assertEquals(PREDICATE_1,simplifiedPredicates.get(0));
+Assert.assertEquals(1,simplifiedPredicates.size());
+Assert.assertEquals(PREDICATE_3,simplifiedPredicates.get(0));
+Assert.assertEquals(2,simplifiedPredicates.size());
+Assert.assertEquals(PREDICATE_1,simplifiedPredicates.get(0));
+Assert.assertEquals(PREDICATE_2,simplifiedPredicates.get(1));
+Assert.assertEquals(3,simplifiedPredicates.size());
+Assert.assertEquals(PREDICATE_5,simplifiedPredicates.get(0));
+Assert.assertEquals(PREDICATE_1,simplifiedPredicates.get(1));
+Assert.assertEquals(PREDICATE_2,simplifiedPredicates.get(2));
+Assert.assertEquals(4,simplifiedPredicates.size());
+Assert.assertEquals(PREDICATE_5,simplifiedPredicates.get(0));
+Assert.assertEquals(PREDICATE_1,simplifiedPredicates.get(1));
+Assert.assertEquals(PREDICATE_2,simplifiedPredicates.get(2));
+Assert.assertEquals(PREDICATE_7,simplifiedPredicates.get(3));
+Assert.assertEquals(4,simplifiedPredicates.size());
+Assert.assertEquals(4,simplifiedPredicates.size());
+Assert.assertEquals(1,simplifiedPredicates.size());
+Assert.assertEquals(PREDICATE_1,simplifiedPredicates.get(0));
+Assert.assertEquals(1,simplifiedPredicates.size());
+Assert.assertEquals(PREDICATE_1,simplifiedPredicates.get(0));
+}

@@ -1,0 +1,3 @@
+@Test public void encodesObject(){
+JSONAssert.assertEquals("{\"a\":\"b\",\"c\":1}",new String(requestTemplate.body(),UTF_8),false);
+}

@@ -1,0 +1,37 @@
+@Test public void testDoGetConfigV1() throws Exception {
+  final MockedStatic<DiskUtil> diskUtil=Mockito.mockStatic(DiskUtil.class);
+  final MockedStatic<ConfigCacheService> configCacheService=Mockito.mockStatic(ConfigCacheService.class);
+  final MockedStatic<PropertyUtil> propertyUtil=Mockito.mockStatic(PropertyUtil.class);
+  when(ConfigCacheService.tryReadLock(anyString())).thenReturn(1);
+  CacheItem cacheItem=new CacheItem("test");
+  cacheItem.setBeta(true);
+  List<String> ips4Beta=new ArrayList<>();
+  ips4Beta.add("localhost");
+  cacheItem.setIps4Beta(ips4Beta);
+  when(ConfigCacheService.getContentCache(anyString())).thenReturn(cacheItem);
+  when(PropertyUtil.isDirectRead()).thenReturn(true);
+  ConfigInfoBetaWrapper configInfoBetaWrapper=new ConfigInfoBetaWrapper();
+  configInfoBetaWrapper.setDataId("test");
+  configInfoBetaWrapper.setGroup("test");
+  configInfoBetaWrapper.setContent("isBeta:true, direct read: true");
+  when(persistService.findConfigInfo4Beta(anyString(),anyString(),anyString())).thenReturn(configInfoBetaWrapper);
+  MockHttpServletRequest request=new MockHttpServletRequest();
+  request.setRemoteAddr("localhost:8080");
+  request.addHeader(CLIENT_APPNAME_HEADER,"test");
+  MockHttpServletResponse response=new MockHttpServletResponse();
+  String actualValue=configServletInner.doGetConfig(request,response,"test","test","test","","true","localhost");
+  Assert.assertEquals(HttpServletResponse.SC_OK + "",actualValue);
+  Assert.assertEquals("true",response.getHeader("isBeta"));
+  Assert.assertEquals("isBeta:true, direct read: true",response.getContentAsString());
+  when(PropertyUtil.isDirectRead()).thenReturn(false);
+  File file=tempFolder.newFile("test.txt");
+  when(DiskUtil.targetBetaFile(anyString(),anyString(),anyString())).thenReturn(file);
+  response=new MockHttpServletResponse();
+  actualValue=configServletInner.doGetConfig(request,response,"test","test","test","","true","localhost");
+  Assert.assertEquals(HttpServletResponse.SC_OK + "",actualValue);
+  Assert.assertEquals("true",response.getHeader("isBeta"));
+  Assert.assertEquals("",response.getContentAsString());
+  diskUtil.close();
+  configCacheService.close();
+  propertyUtil.close();
+}

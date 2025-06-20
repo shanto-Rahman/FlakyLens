@@ -1,0 +1,35 @@
+@Deployment(resources={"org/activiti/engine/test/api/runtime/oneTaskProcess.bpmn20.xml"}) public void testProcessInstanceVariableEvents() throws Exception {
+assertNotNull(processInstance);
+assertEquals(1,listener.getEventsReceived().size());
+assertEquals(ActivitiEventType.VARIABLE_CREATED,event.getType());
+assertEquals(processInstance.getProcessDefinitionId(),event.getProcessDefinitionId());
+assertEquals(processInstance.getId(),event.getExecutionId());
+assertEquals(processInstance.getId(),event.getProcessInstanceId());
+assertNull(event.getTaskId());
+assertEquals("testVariable",event.getVariableName());
+assertEquals("The value",event.getVariableValue());
+assertEquals(1,listener.getEventsReceived().size());
+assertEquals(ActivitiEventType.VARIABLE_UPDATED,event.getType());
+assertEquals(processInstance.getProcessDefinitionId(),event.getProcessDefinitionId());
+assertEquals(processInstance.getId(),event.getExecutionId());
+assertEquals(processInstance.getId(),event.getProcessInstanceId());
+assertNull(event.getTaskId());
+assertEquals("testVariable",event.getVariableName());
+assertEquals("Updated value",event.getVariableValue());
+assertEquals(1,listener.getEventsReceived().size());
+assertEquals(ActivitiEventType.VARIABLE_DELETED,event.getType());
+assertEquals(processInstance.getProcessDefinitionId(),event.getProcessDefinitionId());
+assertEquals(processInstance.getId(),event.getExecutionId());
+assertEquals(processInstance.getId(),event.getProcessInstanceId());
+assertNull(event.getTaskId());
+assertEquals("testVariable",event.getVariableName());
+assertEquals(null,event.getVariableValue());
+assertEquals(6,listener.getEventsReceived().size());
+assertEquals(ActivitiEventType.VARIABLE_CREATED,listener.getEventsReceived().get(0).getType());
+assertEquals(ActivitiEventType.VARIABLE_CREATED,listener.getEventsReceived().get(1).getType());
+assertEquals(ActivitiEventType.VARIABLE_UPDATED,listener.getEventsReceived().get(2).getType());
+assertEquals(ActivitiEventType.VARIABLE_UPDATED,listener.getEventsReceived().get(3).getType());
+assertEquals(ActivitiEventType.VARIABLE_DELETED,listener.getEventsReceived().get(4).getType());
+assertEquals(ActivitiEventType.VARIABLE_DELETED,listener.getEventsReceived().get(5).getType());
+assertTrue(listener.getEventsReceived().isEmpty());
+}

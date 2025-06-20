@@ -1,0 +1,5 @@
+@Test public void primitiveChars() throws Exception {
+  assertThat(testResult(PrimitiveChars.class),isSuccessful());
+  assertEquals(defaultPropertyTrialCount(),PrimitiveChars.iterations);
+  assertEquals(new HashSet<>(asList('Z','z')),new HashSet<>(PrimitiveChars.values.subList(0,2)));
+}

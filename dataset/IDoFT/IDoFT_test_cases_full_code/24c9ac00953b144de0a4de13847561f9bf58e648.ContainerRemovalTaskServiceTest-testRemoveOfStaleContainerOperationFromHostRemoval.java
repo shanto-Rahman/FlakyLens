@@ -1,0 +1,3 @@
+@Test public void testRemoveOfStaleContainerOperationFromHostRemoval() throws Throwable {
+  testRemoveOfStaleContainerOperationFromContainerRemovalTask(ManagementUriParts.REQUEST_HOST_REMOVAL_OPERATIONS);
+}

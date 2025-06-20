@@ -1,0 +1,34 @@
+@Test public void testConnectionRedistributionOnTotalMaxLimit() throws Exception {
+Assert.assertTrue(future1.isDone());
+LocalPoolEntry entry1=future1.get();
+Assert.assertNotNull(entry1);
+Assert.assertTrue(future2.isDone());
+LocalPoolEntry entry2=future2.get();
+Assert.assertNotNull(entry2);
+Assert.assertFalse(future3.isDone());
+Assert.assertFalse(future4.isDone());
+Assert.assertEquals(0,totals.getAvailable());
+Assert.assertEquals(2,totals.getLeased());
+Assert.assertEquals(0,totals.getPending());
+Assert.assertTrue(future3.isDone());
+LocalPoolEntry entry3=future3.get();
+Assert.assertNotNull(entry3);
+Assert.assertTrue(future4.isDone());
+LocalPoolEntry entry4=future4.get();
+Assert.assertNotNull(entry4);
+Assert.assertEquals(0,totals.getAvailable());
+Assert.assertEquals(2,totals.getLeased());
+Assert.assertEquals(0,totals.getPending());
+Assert.assertTrue(future5.isDone());
+LocalPoolEntry entry5=future5.get();
+Assert.assertNotNull(entry5);
+Assert.assertTrue(future6.isDone());
+LocalPoolEntry entry6=future6.get();
+Assert.assertNotNull(entry6);
+Assert.assertEquals(0,totals.getAvailable());
+Assert.assertEquals(2,totals.getLeased());
+Assert.assertEquals(0,totals.getPending());
+Assert.assertEquals(2,totals.getAvailable());
+Assert.assertEquals(0,totals.getLeased());
+Assert.assertEquals(0,totals.getPending());
+}

@@ -1,0 +1,77 @@
+@Test(timeout=20000) public void testConcurrentUpdates() throws IOException, InterruptedException {
+  final TestTaskSchedulerServiceWrapper tsWrapper=new TestTaskSchedulerServiceWrapper();
+  try {
+    Priority highPri=Priority.newInstance(1), lowPri=Priority.newInstance(2);
+    TezTaskAttemptID task1=TestTaskSchedulerServiceWrapper.generateTaskAttemptId(), task2=TestTaskSchedulerServiceWrapper.generateTaskAttemptId();
+    tsWrapper.ts.updateGuaranteedCount(0);
+    tsWrapper.controlScheduler(true);
+    tsWrapper.allocateTask(task1,null,highPri,new Object());
+    tsWrapper.allocateTask(task2,null,lowPri,new Object());
+    tsWrapper.awaitTotalTaskAllocations(2);
+    TaskInfo ti1=tsWrapper.ts.getTaskInfo(task1), ti2=tsWrapper.ts.getTaskInfo(task2);
+    assertFalse(ti1.isGuaranteed() || ti2.isGuaranteed());
+    tsWrapper.ts.updateGuaranteedCount(1);
+    tsWrapper.ts.waitForMessagesSent(1);
+    assertTrue(ti1.isGuaranteed());
+    assertFalse(ti1.getLastSetGuaranteed());
+    assertFalse(ti2.isGuaranteed());
+    tsWrapper.ts.updateGuaranteedCount(2);
+    tsWrapper.ts.waitForMessagesSent(1);
+    assertTrue(ti1.isGuaranteed());
+    assertTrue(ti2.isGuaranteed());
+    tsWrapper.ts.handleUpdateResult(ti1,true);
+    tsWrapper.ts.handleUpdateResult(ti2,true);
+    assertTrue(ti1.isGuaranteed());
+    assertTrue(ti2.isGuaranteed());
+    assertTrue(ti1.getLastSetGuaranteed());
+    assertTrue(ti2.getLastSetGuaranteed());
+    tsWrapper.ts.updateGuaranteedCount(1);
+    tsWrapper.ts.waitForMessagesSent(1);
+    assertTrue(ti1.isGuaranteed());
+    assertFalse(ti2.isGuaranteed());
+    assertTrue(ti2.getLastSetGuaranteed());
+    tsWrapper.ts.updateGuaranteedCount(0);
+    tsWrapper.ts.waitForMessagesSent(1);
+    assertFalse(ti1.isGuaranteed());
+    assertFalse(ti2.isGuaranteed());
+    tsWrapper.ts.handleUpdateResult(ti1,true);
+    tsWrapper.ts.handleUpdateResult(ti2,true);
+    assertFalse(ti1.isGuaranteed());
+    assertFalse(ti2.isGuaranteed());
+    assertFalse(ti1.getLastSetGuaranteed());
+    assertFalse(ti2.getLastSetGuaranteed());
+    tsWrapper.ts.updateGuaranteedCount(1);
+    tsWrapper.ts.waitForMessagesSent(1);
+    assertTrue(ti1.isGuaranteed());
+    assertFalse(ti1.getLastSetGuaranteed());
+    assertTrue(ti1.isUpdateInProgress());
+    tsWrapper.ts.updateGuaranteedCount(0);
+    tsWrapper.ts.assertNoMessagesSent();
+    assertFalse(ti1.isGuaranteed());
+    tsWrapper.ts.handleUpdateResult(ti1,true);
+    tsWrapper.ts.waitForMessagesSent(1);
+    assertFalse(ti1.isGuaranteed());
+    assertTrue(ti1.getLastSetGuaranteed());
+    assertTrue(ti1.isUpdateInProgress());
+    tsWrapper.ts.updateGuaranteedCount(1);
+    tsWrapper.ts.assertNoMessagesSent();
+    assertTrue(ti1.isGuaranteed());
+    assertTrue(ti1.getLastSetGuaranteed());
+    tsWrapper.ts.handleUpdateResult(ti1,true);
+    tsWrapper.ts.waitForMessagesSent(1);
+    assertTrue(ti1.isGuaranteed());
+    assertFalse(ti1.getLastSetGuaranteed());
+    assertTrue(ti1.isUpdateInProgress());
+    tsWrapper.ts.handleUpdateResult(ti1,true);
+    tsWrapper.ts.assertNoMessagesSent();
+    assertTrue(ti1.isGuaranteed());
+    assertTrue(ti1.getLastSetGuaranteed());
+    assertFalse(ti1.isUpdateInProgress());
+    tsWrapper.deallocateTask(task1,true,TaskAttemptEndReason.CONTAINER_EXITED);
+    tsWrapper.deallocateTask(task2,true,TaskAttemptEndReason.CONTAINER_EXITED);
+    assertEquals(1,tsWrapper.ts.getUnusedGuaranteedCount());
+  }
+  finally {
+    tsWrapper.shutdown();
+  }
+}

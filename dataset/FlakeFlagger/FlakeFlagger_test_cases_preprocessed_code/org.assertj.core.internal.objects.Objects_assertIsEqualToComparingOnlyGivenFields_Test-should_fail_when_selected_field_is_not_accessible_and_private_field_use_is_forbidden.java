@@ -1,0 +1,2 @@
+@Test public void should_fail_when_selected_field_is_not_accessible_and_private_field_use_is_forbidden(){
+}

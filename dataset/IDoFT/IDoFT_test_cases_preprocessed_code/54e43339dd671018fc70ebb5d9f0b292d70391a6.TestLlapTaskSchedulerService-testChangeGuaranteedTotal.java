@@ -1,0 +1,32 @@
+@Test(timeout=10000) public void testChangeGuaranteedTotal() throws IOException, InterruptedException {
+tsWrapper.controlScheduler(true);//IT
+tsWrapper.awaitTotalTaskAllocations(3);//IT
+assertFalse(ti1.isGuaranteed() || ti2.isGuaranteed() || ti3.isGuaranteed());
+assertEquals(0,tsWrapper.ts.getUnusedGuaranteedCount());
+assertTrue(ti1.isGuaranteed());
+assertTrue(ti23High.isGuaranteed());
+assertFalse(ti23Low.isGuaranteed());
+assertEquals(0,tsWrapper.ts.getUnusedGuaranteedCount());
+assertTrue(ti1.isGuaranteed());
+assertTrue(ti23High.isGuaranteed());
+assertTrue(ti23Low.isGuaranteed());
+assertEquals(1,tsWrapper.ts.getUnusedGuaranteedCount());
+assertTrue(ti1.isGuaranteed());
+assertTrue(ti23High.isGuaranteed());
+assertTrue(ti23Low.isGuaranteed());
+assertEquals(3,tsWrapper.ts.getUnusedGuaranteedCount());
+assertTrue(ti1.isGuaranteed());
+assertTrue(ti23High.isGuaranteed());
+assertTrue(ti23Low.isGuaranteed());
+assertEquals(2,tsWrapper.ts.getUnusedGuaranteedCount());
+assertTrue(ti1.isGuaranteed());
+assertFalse(ti23High.isGuaranteed());
+assertFalse(ti23Low.isGuaranteed());
+assertEquals(0,tsWrapper.ts.getUnusedGuaranteedCount());
+assertFalse(ti1.isGuaranteed());
+assertFalse(ti23High.isGuaranteed());
+assertFalse(ti23Low.isGuaranteed());
+assertEquals(0,tsWrapper.ts.getUnusedGuaranteedCount());
+assertEquals(0,tsWrapper.ts.getUnusedGuaranteedCount());
+tsWrapper.shutdown();//IT
+}

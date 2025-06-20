@@ -1,0 +1,50 @@
+@Test public void testSnapshotRestoreAsync() throws Exception {
+listState1.add(MutableType.of(42));//IT
+listState1.add(MutableType.of(4711));//IT
+listState2.add(MutableType.of(7));//IT
+listState2.add(MutableType.of(13));//IT
+listState2.add(MutableType.of(23));//IT
+listState3.add(MutableType.of(17));//IT
+listState3.add(MutableType.of(18));//IT
+listState3.add(MutableType.of(19));//IT
+listState3.add(MutableType.of(20));//IT
+broadcastState1.put(MutableType.of(1),MutableType.of(2));//IT
+broadcastState1.put(MutableType.of(2),MutableType.of(5));//IT
+broadcastState2.put(MutableType.of(2),MutableType.of(5));//IT
+ExecutorService executorService=Executors.newFixedThreadPool(1);
+executorService.submit(runnableFuture);
+listState1.add(MutableType.of(77));//IT
+broadcastState1.put(MutableType.of(32),MutableType.of(97));//IT
+if (++n == 2) {
+}
+mutableType.setValue(mutableType.getValue() + 10);//IT
+assertEquals(3,operatorStateBackend.getRegisteredStateNames().size());
+assertEquals(3,operatorStateBackend.getRegisteredBroadcastStateNames().size());
+assertEquals(3,operatorStateBackend.getRegisteredStateNames().size());
+assertEquals(3,operatorStateBackend.getRegisteredBroadcastStateNames().size());
+assertEquals(42,it.next().value);
+assertEquals(4711,it.next().value);
+assertFalse(it.hasNext());
+assertEquals(7,it.next().value);
+assertEquals(13,it.next().value);
+assertEquals(23,it.next().value);
+assertFalse(it.hasNext());
+assertEquals(17,it.next().value);
+assertEquals(18,it.next().value);
+assertEquals(19,it.next().value);
+assertEquals(20,it.next().value);
+assertFalse(it.hasNext());
+assertTrue(bIt.hasNext());
+assertEquals(1,entry.getKey().value);
+assertEquals(2,entry.getValue().value);
+assertTrue(bIt.hasNext());
+assertEquals(2,entry.getKey().value);
+assertEquals(5,entry.getValue().value);
+assertFalse(bIt.hasNext());
+assertTrue(bIt.hasNext());
+assertEquals(2,entry.getKey().value);
+assertEquals(5,entry.getValue().value);
+assertFalse(bIt.hasNext());
+assertFalse(bIt.hasNext());
+executorService.shutdown();
+}

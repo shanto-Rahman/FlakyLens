@@ -1,0 +1,7 @@
+/** 
+ * Ignored because it fails when running the test from command line.
+ */
+@Test public void testFromFolder() throws Exception {
+final File testFolder=new File(url.getFile(),"test");
+final File expectedFolder=new File(url.getFile(),"expected");
+}

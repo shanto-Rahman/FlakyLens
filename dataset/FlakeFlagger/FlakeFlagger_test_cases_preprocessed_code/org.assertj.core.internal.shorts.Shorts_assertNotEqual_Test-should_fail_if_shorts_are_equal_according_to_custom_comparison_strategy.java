@@ -1,0 +1,2 @@
+@Test public void should_fail_if_shorts_are_equal_according_to_custom_comparison_strategy(){
+}

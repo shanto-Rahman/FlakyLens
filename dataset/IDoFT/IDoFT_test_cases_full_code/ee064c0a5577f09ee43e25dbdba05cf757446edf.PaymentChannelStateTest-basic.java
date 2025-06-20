@@ -1,0 +1,73 @@
+@Test public void basic() throws Exception {
+  Utils.setMockClock();
+  final long EXPIRE_TIME=Utils.currentTimeSeconds() + 60 * 60 * 24;
+  serverState=new PaymentChannelServerState(mockBroadcaster,serverWallet,serverKey,EXPIRE_TIME);
+  assertEquals(PaymentChannelServerState.State.WAITING_FOR_REFUND_TRANSACTION,serverState.getState());
+  clientState=new PaymentChannelClientState(wallet,myKey,new ECKey(null,serverKey.getPubKey()),halfCoin,EXPIRE_TIME);
+  assertEquals(PaymentChannelClientState.State.NEW,clientState.getState());
+  clientState.initiate();
+  assertEquals(PaymentChannelClientState.State.INITIATED,clientState.getState());
+  Transaction refund=new Transaction(params,clientState.getIncompleteRefundTransaction().bitcoinSerialize());
+  byte[] refundSig=serverState.provideRefundTransaction(refund,myKey.getPubKey());
+  assertEquals(PaymentChannelServerState.State.WAITING_FOR_MULTISIG_CONTRACT,serverState.getState());
+  clientState.provideRefundSignature(refundSig);
+  assertEquals(PaymentChannelClientState.State.SAVE_STATE_IN_WALLET,clientState.getState());
+  clientState.fakeSave();
+  assertEquals(PaymentChannelClientState.State.PROVIDE_MULTISIG_CONTRACT_TO_SERVER,clientState.getState());
+  Transaction multisigContract=new Transaction(params,clientState.getMultisigContract().bitcoinSerialize());
+  assertEquals(PaymentChannelClientState.State.READY,clientState.getState());
+  assertEquals(2,multisigContract.getOutputs().size());
+  Script script=multisigContract.getOutput(0).getScriptPubKey();
+  assertTrue(script.isSentToMultiSig());
+  script=multisigContract.getOutput(1).getScriptPubKey();
+  assertTrue(script.isSentToAddress());
+  assertTrue(wallet.getPendingTransactions().contains(multisigContract));
+  serverState.provideMultiSigContract(multisigContract);
+  assertEquals(PaymentChannelServerState.State.WAITING_FOR_MULTISIG_ACCEPTANCE,serverState.getState());
+  final TxFuturePair pair=broadcasts.take();
+  pair.future.set(pair.tx);
+  assertEquals(PaymentChannelServerState.State.READY,serverState.getState());
+  assertEquals(2,wallet.getTransactions(false).size());
+  Iterator<Transaction> walletTransactionIterator=wallet.getTransactions(false).iterator();
+  Transaction clientWalletMultisigContract=walletTransactionIterator.next();
+  assertFalse(clientWalletMultisigContract.getHash().equals(clientState.getCompletedRefundTransaction().getHash()));
+  if (!clientWalletMultisigContract.getHash().equals(multisigContract.getHash())) {
+    clientWalletMultisigContract=walletTransactionIterator.next();
+    assertFalse(clientWalletMultisigContract.getHash().equals(clientState.getCompletedRefundTransaction().getHash()));
+  }
+ else   assertFalse(walletTransactionIterator.next().getHash().equals(clientState.getCompletedRefundTransaction().getHash()));
+  assertEquals(multisigContract.getHash(),clientWalletMultisigContract.getHash());
+  assertFalse(clientWalletMultisigContract.getInput(0).getConnectedOutput().getSpentBy().getParentTransaction().getHash().equals(refund.getHash()));
+  BigInteger size=halfCoin.divide(BigInteger.TEN).divide(BigInteger.TEN);
+  BigInteger totalPayment=BigInteger.ZERO;
+  for (int i=0; i < 4; i++) {
+    byte[] signature=clientState.incrementPaymentBy(size).signature.encodeToBitcoin();
+    totalPayment=totalPayment.add(size);
+    serverState.incrementPayment(halfCoin.subtract(totalPayment),signature);
+  }
+  chain.add(makeSolvedTestBlock(blockStore.getChainHead().getHeader(),multisigContract));
+  byte[] signature=clientState.incrementPaymentBy(size).signature.encodeToBitcoin();
+  totalPayment=totalPayment.add(size);
+  serverState.incrementPayment(halfCoin.subtract(totalPayment),signature);
+  serverState.close();
+  assertEquals(PaymentChannelServerState.State.CLOSING,serverState.getState());
+  final TxFuturePair pair2=broadcasts.take();
+  Transaction closeTx=pair2.tx;
+  pair2.future.set(closeTx);
+  final Transaction reserializedCloseTx=new Transaction(params,closeTx.bitcoinSerialize());
+  assertEquals(PaymentChannelServerState.State.CLOSED,serverState.getState());
+  wallet.receivePending(reserializedCloseTx,null);
+  assertEquals(PaymentChannelClientState.State.CLOSED,clientState.getState());
+  chain.add(makeSolvedTestBlock(blockStore.getChainHead().getHeader(),reserializedCloseTx));
+  assertEquals(size.multiply(BigInteger.valueOf(5)),serverWallet.getBalance());
+  assertEquals(0,serverWallet.getPendingTransactions().size());
+  assertEquals(Utils.COIN.subtract(size.multiply(BigInteger.valueOf(5))),wallet.getBalance());
+  assertEquals(0,wallet.getPendingTransactions().size());
+  assertEquals(3,wallet.getTransactions(false).size());
+  walletTransactionIterator=wallet.getTransactions(false).iterator();
+  Transaction clientWalletCloseTransaction=walletTransactionIterator.next();
+  if (!clientWalletCloseTransaction.getHash().equals(closeTx.getHash()))   clientWalletCloseTransaction=walletTransactionIterator.next();
+  if (!clientWalletCloseTransaction.getHash().equals(closeTx.getHash()))   clientWalletCloseTransaction=walletTransactionIterator.next();
+  assertEquals(closeTx.getHash(),clientWalletCloseTransaction.getHash());
+  assertNotNull(clientWalletCloseTransaction.getInput(0).getConnectedOutput());
+}

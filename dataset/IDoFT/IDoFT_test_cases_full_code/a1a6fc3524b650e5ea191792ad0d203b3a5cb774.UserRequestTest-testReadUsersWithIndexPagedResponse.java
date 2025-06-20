@@ -1,0 +1,3 @@
+@TestFactory public Collection<DynamicTest> testReadUsersWithIndexPagedResponse() throws IOException {
+  return Arrays.asList(dynamicTest("read All Users",getUsersIndexPagingExecutable("/Users?startIndex=1&count=100",UserRequest::readAllUsers)),dynamicTest("read multiple Users default index paging",getUsersIndexPagingExecutable("/Users?startIndex=1&count=100",UserRequest::readMultipleUsers)),dynamicTest("read multiple Users custom index paging",getUsersIndexPagingExecutable("/Users?startIndex=3&count=40",scimUserRequest -> scimUserRequest.readMultipleUsers(indexPageQuery().withStartIndex(3).withCount(40)))),dynamicTest("read multiple Users without adding page parameters",getUsersIndexPagingExecutable("/Users",UserRequest::readMultipleUsersWithoutPaging)));
+}

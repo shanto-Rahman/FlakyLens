@@ -1,0 +1,3 @@
+@Test public void testAdditionalModelTypeAnnotationsNewLineWindows() throws Exception {
+Assert.assertEquals(sortedCodegenAdditionalModelTypeAnnotations,sortedAdditionalModelTypeAnnotations);
+}

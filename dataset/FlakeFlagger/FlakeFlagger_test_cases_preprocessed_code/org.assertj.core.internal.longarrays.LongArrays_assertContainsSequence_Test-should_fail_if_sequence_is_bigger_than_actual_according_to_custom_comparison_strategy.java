@@ -1,0 +1,2 @@
+@Test public void should_fail_if_sequence_is_bigger_than_actual_according_to_custom_comparison_strategy(){
+}

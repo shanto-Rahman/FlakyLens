@@ -1,0 +1,2 @@
+@Test(expected=InvalidDataAccessApiUsageException.class) public void persistOfNullThrowsInvalidDataAccessApiUsageExceptionWithExceptionTranslation(){
+}

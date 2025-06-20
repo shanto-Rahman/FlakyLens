@@ -1,0 +1,36 @@
+@Deployment(resources={"org/activiti/engine/test/api/runtime/oneTaskProcess.bpmn20.xml"}) public void testExecutionEvents() throws Exception {
+assertNotNull(processInstance);
+assertEquals(5,listener.getEventsReceived().size());
+assertTrue(listener.getEventsReceived().get(0) instanceof ActivitiEntityEvent);
+assertEquals(ActivitiEventType.ENTITY_CREATED,event.getType());
+assertEquals(processInstance.getId(),((Execution)event.getEntity()).getProcessInstanceId());
+assertEquals(ActivitiEventType.ENTITY_INITIALIZED,event.getType());
+assertEquals(processInstance.getId(),((Execution)event.getEntity()).getProcessInstanceId());
+assertEquals(ActivitiEventType.ENTITY_CREATED,event.getType());
+assertEquals(processInstance.getId(),((Execution)event.getEntity()).getProcessInstanceId());
+assertEquals(ActivitiEventType.ENTITY_INITIALIZED,event.getType());
+assertEquals(processInstance.getId(),((Execution)event.getEntity()).getProcessInstanceId());
+assertEquals(4,listener.getEventsReceived().size());
+assertEquals(processInstance.getId(),((Execution)event.getEntity()).getProcessInstanceId());
+assertEquals(ActivitiEventType.ENTITY_SUSPENDED,event.getType());
+assertEquals(processInstance.getId(),((Execution)event.getEntity()).getProcessInstanceId());
+assertEquals(ActivitiEventType.ENTITY_SUSPENDED,event.getType());
+assertEquals(ActivitiEventType.ENTITY_ACTIVATED,event.getType());
+assertEquals(processInstance.getId(),((Execution)event.getEntity()).getProcessInstanceId());
+assertEquals(ActivitiEventType.ENTITY_ACTIVATED,event.getType());
+assertEquals(processInstance.getId(),((Execution)event.getEntity()).getProcessInstanceId());
+assertEquals(4,listener.getEventsReceived().size());
+assertEquals(processInstance.getId(),((Execution)event.getEntity()).getProcessInstanceId());
+assertEquals(ActivitiEventType.ENTITY_SUSPENDED,event.getType());
+assertEquals(processInstance.getId(),((Execution)event.getEntity()).getProcessInstanceId());
+assertEquals(ActivitiEventType.ENTITY_SUSPENDED,event.getType());
+assertEquals(ActivitiEventType.ENTITY_ACTIVATED,event.getType());
+assertEquals(processInstance.getId(),((Execution)event.getEntity()).getProcessInstanceId());
+assertEquals(ActivitiEventType.ENTITY_ACTIVATED,event.getType());
+assertEquals(processInstance.getId(),((Execution)event.getEntity()).getProcessInstanceId());
+assertEquals(1,listener.getEventsReceived().size());
+assertEquals(processInstance.getId(),((Execution)event.getEntity()).getId());
+assertEquals(ActivitiEventType.ENTITY_UPDATED,event.getType());
+assertEquals(ActivitiEventType.ENTITY_DELETED,event.getType());
+assertEquals(processInstance.getId(),((Execution)event.getEntity()).getProcessInstanceId());
+}

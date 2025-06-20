@@ -1,0 +1,5 @@
+@Test @DisplayName("should add fields that are excluded from source") void shouldAddFieldsThatAreExcludedFromSource() throws JSONException {
+  String expected="{\n" + "  \"properties\": {\n" + "    \"_class\": {\n"+ "      \"type\": \"keyword\",\n"+ "      \"index\": false,\n"+ "      \"doc_values\": false\n"+ "    },\n"+ "    \"excluded-date\": {\n"+ "      \"type\": \"date\",\n"+ "      \"format\": \"date\"\n"+ "    },\n"+ "    \"nestedEntity\": {\n"+ "      \"type\": \"nested\",\n"+ "      \"properties\": {\n"+ "        \"_class\": {\n"+ "          \"type\": \"keyword\",\n"+ "          \"index\": false,\n"+ "          \"doc_values\": false\n"+ "        },\n"+ "        \"excluded-text\": {\n"+ "          \"type\": \"text\"\n"+ "        }\n"+ "      }\n"+ "    }\n"+ "  },\n"+ "  \"_source\": {\n"+ "    \"excludes\": [\n"+ "      \"excluded-date\",\n"+ "      \"nestedEntity.excluded-text\"\n"+ "    ]\n"+ "  }\n"+ "}\n";
+  String mapping=getMappingBuilder().buildPropertyMapping(ExcludedFieldEntity.class);
+  assertEquals(expected,mapping,true);
+}

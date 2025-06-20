@@ -1,0 +1,22 @@
+public void testUpdate_CompareDeletes(){
+assertEquals(DeleteTracker.DeleteCompare.INCLUDE_OLD_NEXT_BOTH,res);
+assertEquals(DeleteTracker.DeleteCompare.INCLUDE_OLD_NEXT_OLD,res);
+assertEquals(DeleteTracker.DeleteCompare.INCLUDE_NEW_NEXT_NEW,res);
+assertEquals(DeleteTracker.DeleteCompare.INCLUDE_NEW_NEXT_NEW,res);
+assertEquals(DeleteTracker.DeleteCompare.INCLUDE_OLD_NEXT_OLD,res);
+assertEquals(DeleteTracker.DeleteCompare.INCLUDE_OLD_NEXT_BOTH,res);
+assertEquals(DeleteTracker.DeleteCompare.INCLUDE_OLD_NEXT_OLD,res);
+assertEquals(DeleteTracker.DeleteCompare.INCLUDE_NEW_NEXT_NEW,res);
+assertEquals(DeleteTracker.DeleteCompare.INCLUDE_NEW_NEXT_BOTH,res);
+assertEquals(DeleteTracker.DeleteCompare.INCLUDE_OLD_NEXT_BOTH,res);
+assertEquals(DeleteTracker.DeleteCompare.NEXT_OLD,res);
+assertEquals(DeleteTracker.DeleteCompare.NEXT_NEW,res);
+assertEquals(DeleteTracker.DeleteCompare.INCLUDE_OLD_NEXT_OLD,res);
+assertEquals(DeleteTracker.DeleteCompare.INCLUDE_NEW_NEXT_NEW,res);
+assertEquals(DeleteTracker.DeleteCompare.INCLUDE_NEW_NEXT_NEW,res);
+assertEquals(DeleteTracker.DeleteCompare.INCLUDE_OLD_NEXT_OLD,res);
+assertEquals(DeleteTracker.DeleteCompare.INCLUDE_OLD_NEXT_OLD,res);
+assertEquals(DeleteTracker.DeleteCompare.INCLUDE_NEW_NEXT_NEW,res);
+assertEquals(DeleteTracker.DeleteCompare.NEXT_OLD,res);
+assertEquals(DeleteTracker.DeleteCompare.NEXT_NEW,res);
+}

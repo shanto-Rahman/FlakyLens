@@ -1,0 +1,21 @@
+@Test public void nextRecord_manyRecords(){
+  partition.load(Arrays.asList(record(1L),record(2L),record(3L)));
+  assertThat(partition.hasNextRecord(),is(true));
+  assertRecordsAreEqual(partition.nextRecord(),record(1L));
+  assertThat(partition.pendingOffsets.keySet(),contains(1L));
+  assertThat(partition.offsetPosition,is(2L));
+  assertThat(partition.hasNextRecord(),is(true));
+  assertRecordsAreEqual(partition.nextRecord(),record(2L));
+  assertThat(partition.pendingOffsets.keySet(),contains(1L,2L));
+  assertThat(partition.offsetPosition,is(3L));
+  assertThat(partition.hasNextRecord(),is(true));
+  assertRecordsAreEqual(partition.nextRecord(),record(3L));
+  assertThat(partition.pendingOffsets.keySet(),contains(1L,2L,3L));
+  assertThat(partition.offsetPosition,is(4L));
+  assertThat(partition.hasNextRecord(),is(false));
+  assertThat(partition.nextRecord(),is(nullValue()));
+  assertThat(partition.pendingOffsets.keySet(),contains(1L,2L,3L));
+  assertThat(partition.offsetPosition,is(4L));
+  assertThat(partition.committableOffset,is(nullValue()));
+  assertThat(partition.getCommittableOffsetsSize(),is(0L));
+}

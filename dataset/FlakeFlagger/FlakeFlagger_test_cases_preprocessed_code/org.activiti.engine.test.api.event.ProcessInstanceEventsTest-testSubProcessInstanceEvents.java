@@ -1,0 +1,41 @@
+@Deployment(resources={"org/activiti/engine/test/api/runtime/nestedSubProcess.bpmn20.xml","org/activiti/engine/test/api/runtime/subProcess.bpmn20.xml"}) public void testSubProcessInstanceEvents() throws Exception {
+assertNotNull(processInstance);
+assertEquals(9,listener.getEventsReceived().size());
+assertTrue(listener.getEventsReceived().get(0) instanceof ActivitiEntityEvent);
+assertEquals(ActivitiEventType.ENTITY_CREATED,event.getType());
+assertEquals(processInstance.getId(),((ProcessInstance)event.getEntity()).getId());
+assertEquals(processInstance.getId(),event.getProcessInstanceId());
+assertEquals(processInstance.getId(),event.getExecutionId());
+assertEquals(processDefinitionId,event.getProcessDefinitionId());
+assertEquals(ActivitiEventType.ENTITY_INITIALIZED,event.getType());
+assertEquals(processInstance.getId(),event.getProcessInstanceId());
+assertEquals(processInstance.getId(),processExecutionId);
+assertEquals(processDefinitionId,event.getProcessDefinitionId());
+assertEquals(ActivitiEventType.ENTITY_CREATED,event.getType());
+assertEquals(processInstance.getId(),event.getProcessInstanceId());
+assertEquals(processDefinitionId,event.getProcessDefinitionId());
+assertEquals(ActivitiEventType.ENTITY_INITIALIZED,event.getType());
+assertEquals(processInstance.getId(),event.getProcessInstanceId());
+assertEquals(ActivitiEventType.PROCESS_STARTED,event.getType());
+assertEquals(processInstance.getId(),event.getProcessInstanceId());
+assertEquals(processInstance.getProcessDefinitionId(),event.getProcessDefinitionId());
+assertTrue(event instanceof ActivitiProcessStartedEvent);
+assertNull(((ActivitiProcessStartedEvent)event).getNestedProcessDefinitionId());
+assertNull(((ActivitiProcessStartedEvent)event).getNestedProcessInstanceId());
+assertEquals(ActivitiEventType.ENTITY_CREATED,event.getType());
+assertEquals(processExecutionId,subProcessEntity.getSuperExecutionId());
+assertEquals(ActivitiEventType.ENTITY_CREATED,event.getType());
+assertEquals(subProcessInstanceId,event.getProcessInstanceId());
+assertNotNull(subProcessDefinitionId);
+assertEquals("simpleSubProcess",subProcessDefinition.getKey());
+assertEquals(ActivitiEventType.ENTITY_INITIALIZED,event.getType());
+assertEquals(subProcessInstanceId,event.getProcessInstanceId());
+assertNotNull(subProcessDefinitionId);
+assertEquals(ActivitiEventType.PROCESS_STARTED,event.getType());
+assertEquals(subProcessInstanceId,event.getProcessInstanceId());
+assertEquals(subProcessDefinitionId,event.getProcessDefinitionId());
+assertTrue(event instanceof ActivitiProcessStartedEvent);
+assertEquals(processDefinitionId,((ActivitiProcessStartedEvent)event).getNestedProcessDefinitionId());
+assertEquals(processInstance.getId(),((ActivitiProcessStartedEvent)event).getNestedProcessInstanceId());
+listener.clearEventsReceived();//IT
+}

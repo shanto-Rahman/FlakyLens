@@ -1,0 +1,5 @@
+/** 
+ * <pre> 'spring.cloud.kubernetes.config.includeProfileSpecificSources=false' 'spring.cloud.kubernetes.config.sources[1].includeProfileSpecificSources=false' 'spring.cloud.kubernetes.config.sources[1].name=config-map-two' We define config-map 'config-map-two', but we also define 'config-map-two-dev'. This tests proves that data will be read from 'config-map-two' _only_, even if 'config-map-two-dev' also exists. This happens because of the 'includeProfileSpecificSources=false' property defined at the source level. If this would be incorrect, the value we read from '/profile-specific/two' would have been 'twoDev' and _not_ 'two', simply because 'config-map-two-dev' would override the property value. As such: @ConfigurationProperties("two") must be resolved from 'config-map-two' </pre>
+ */
+@Test public void testTwo(){
+}

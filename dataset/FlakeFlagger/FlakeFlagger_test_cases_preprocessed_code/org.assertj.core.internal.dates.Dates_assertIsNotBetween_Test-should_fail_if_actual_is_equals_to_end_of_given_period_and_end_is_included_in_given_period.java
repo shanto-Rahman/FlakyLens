@@ -1,0 +1,2 @@
+@Test public void should_fail_if_actual_is_equals_to_end_of_given_period_and_end_is_included_in_given_period(){
+}

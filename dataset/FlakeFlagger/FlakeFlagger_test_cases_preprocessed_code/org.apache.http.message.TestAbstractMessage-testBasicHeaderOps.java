@@ -1,0 +1,24 @@
+@Test public void testBasicHeaderOps(){
+Assert.assertFalse(message.containsHeader("whatever"));
+Assert.assertNotNull(headers);
+Assert.assertEquals(2,headers.length);
+Assert.assertNotNull(h);
+Assert.assertEquals("1",h.getValue());
+Assert.assertNotNull(h);
+Assert.assertEquals("3",h.getValue());
+Assert.assertNotNull(h);
+Assert.assertEquals("2",h.getValue());
+Assert.assertNotNull(headers);
+Assert.assertEquals(2,headers.length);
+Assert.assertEquals("3",headers[0].getValue());
+Assert.assertEquals("2",headers[1].getValue());
+Assert.assertNotNull(headers);
+Assert.assertEquals(2,headers.length);
+Assert.assertEquals("3",headers[0].getValue());
+Assert.assertEquals("5",headers[1].getValue());
+Assert.assertNotNull(headers);
+Assert.assertEquals(1,headers.length);
+Assert.assertEquals(null,headers[0].getValue());
+Assert.assertNotNull(headers);
+Assert.assertEquals(0,headers.length);
+}

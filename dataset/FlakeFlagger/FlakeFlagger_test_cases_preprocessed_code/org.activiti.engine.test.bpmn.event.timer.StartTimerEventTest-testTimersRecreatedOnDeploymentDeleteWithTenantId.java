@@ -1,0 +1,24 @@
+public void testTimersRecreatedOnDeploymentDeleteWithTenantId(){
+assertEquals(1,repositoryService.createDeploymentQuery().deploymentTenantId(testTenant).count());
+assertEquals(1,repositoryService.createProcessDefinitionQuery().processDefinitionTenantId(testTenant).count());
+assertEquals(1,managementService.createTimerJobQuery().jobTenantId(testTenant).count());
+assertEquals(2,repositoryService.createDeploymentQuery().deploymentTenantId(testTenant).count());
+assertEquals(2,repositoryService.createProcessDefinitionQuery().processDefinitionTenantId(testTenant).count());
+assertEquals(0,managementService.createTimerJobQuery().jobTenantId(testTenant).count());
+assertEquals(3,repositoryService.createDeploymentQuery().deploymentTenantId(testTenant).count());
+assertEquals(3,repositoryService.createProcessDefinitionQuery().processDefinitionTenantId(testTenant).count());
+assertEquals(0,managementService.createTimerJobQuery().jobTenantId(testTenant).count());
+assertEquals(4,repositoryService.createDeploymentQuery().deploymentTenantId(testTenant).count());
+assertEquals(4,repositoryService.createProcessDefinitionQuery().processDefinitionTenantId(testTenant).count());
+assertEquals(1,managementService.createTimerJobQuery().jobTenantId(testTenant).count());
+assertEquals(3,repositoryService.createDeploymentQuery().deploymentTenantId(testTenant).count());
+assertEquals(3,repositoryService.createProcessDefinitionQuery().processDefinitionTenantId(testTenant).count());
+assertEquals(0,managementService.createTimerJobQuery().jobTenantId(testTenant).count());
+assertEquals(2,repositoryService.createDeploymentQuery().deploymentTenantId(testTenant).count());
+assertEquals(2,repositoryService.createProcessDefinitionQuery().processDefinitionTenantId(testTenant).count());
+assertEquals(0,managementService.createTimerJobQuery().jobTenantId(testTenant).count());
+assertEquals(1,repositoryService.createDeploymentQuery().deploymentTenantId(testTenant).count());
+assertEquals(1,repositoryService.createProcessDefinitionQuery().processDefinitionTenantId(testTenant).count());
+assertEquals(1,managementService.createTimerJobQuery().jobTenantId(testTenant).count());
+assertEquals(0,managementService.createTimerJobQuery().count());
+}

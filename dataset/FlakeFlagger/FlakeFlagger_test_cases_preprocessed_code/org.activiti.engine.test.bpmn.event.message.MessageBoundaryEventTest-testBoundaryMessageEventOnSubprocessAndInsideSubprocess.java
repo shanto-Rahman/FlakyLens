@@ -1,0 +1,25 @@
+@Deployment public void testBoundaryMessageEventOnSubprocessAndInsideSubprocess(){
+assertEquals(5,runtimeService.createExecutionQuery().count());
+assertNotNull(userTask);
+assertNotNull(execution1);
+assertNotNull(execution2);
+assertNotSame(execution1.getId(),execution2.getId());
+assertNotNull(userTask);
+assertEquals("taskAfterTask",userTask.getTaskDefinitionKey());
+assertNull(execution);
+assertNotNull(execution);
+assertNull(execution);
+assertNotNull(userTask);
+assertEquals("taskAfterSubprocess",userTask.getTaskDefinitionKey());
+assertNotNull(userTask);
+assertEquals("taskAfterMessage",userTask.getTaskDefinitionKey());
+assertNull(execution);
+assertNotNull(execution);
+assertNull(execution);
+assertNotNull(userTask);
+assertEquals("taskAfterSubprocess",userTask.getTaskDefinitionKey());
+assertNotNull(userTask);
+assertEquals("taskAfterOuterMessageBoundary",userTask.getTaskDefinitionKey());
+assertNull(execution);
+assertNull(execution);
+}

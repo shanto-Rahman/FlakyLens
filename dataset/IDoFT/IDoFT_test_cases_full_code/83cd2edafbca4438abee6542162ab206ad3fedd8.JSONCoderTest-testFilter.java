@@ -1,0 +1,32 @@
+@Test public void testFilter(){
+  TestBean2 bean=new TestBean2();
+  bean.enumField2=TestBean2.IdentifiableEnum.value1;
+  bean.setStrField("str1");
+  bean.setInts(new int[]{1,2});
+  bean.testBean=new TestBean();
+  bean.testBean.setStrField("str2");
+  bean.testBean.publicStrField="publicStr";
+  JSONCoderOption opt=JSONCoderOption.ofIndentFactor(2);
+  opt.addFilterFor(TestBean2.class,include("ints","enumField2","testBean","strField"));
+  opt.addFilterFor(TestBean.class,exclude("publicStrField"));
+  opt.addFilterFor(Object.class,exclude("fieldInAnyClass"));
+  String result=JSONCoder.encode(bean,opt);
+  assertMatchesSnapshot(result);
+  assertTrue("should contain 'str1'",result.contains("str1"));
+  assertTrue("should include 'testBean'",result.contains("testBean"));
+  assertTrue("should include 'ints'",result.contains("ints"));
+  assertTrue("should contain 'enumField2'",result.contains("enumField2"));
+  assertTrue("should 'str2'",result.contains("str2"));
+  assertTrue("shouldn't contain 'publicStrField'",!result.contains("publicStrField"));
+  opt.addFilterFor(TestBean2.class,mask(str -> "hash:" + str.hashCode(),"strField"));
+  result=JSONCoder.encode(bean,opt);
+  log("result(masked) =" + result);
+  assertTrue("should include str1 hashCode'",result.contains("\"strField\":\"hash:3541024\""));
+  result=JSONCoder.encode(bean,JSONCoderOption.ofIndentFactor(2).addFilterFor(TestBean2.class,mask("strField")));
+  log("result(masked default) =" + result);
+  assertTrue("should include str1 hashCode and len'",result.contains("\"strField\":\"[Masked:len=4,360820]\""));
+  opt.addSkippedClasses(TestBean.class);
+  result=JSONCoder.encode(bean,opt);
+  log("result=(skipClasses)" + result);
+  assertTrue("shouldn't contain class TestBean",!result.contains("testBean"));
+}

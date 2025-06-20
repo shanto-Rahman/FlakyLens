@@ -1,0 +1,45 @@
+public void testOrQuery(){
+if (processEngineConfiguration.getHistoryLevel().isAtLeast(HistoryLevel.ACTIVITY)) {
+assertEquals(1,variableMap.size());
+assertEquals(123,variableMap.get("anothertest"));
+processInstance=historyService.createHistoricProcessInstanceQuery().includeProcessVariables().or().variableValueEquals("anothertest",123).processDefinitionId("undefined").endOr().or().processDefinitionKey(PROCESS_DEFINITION_KEY_2).processDefinitionId("undefined").endOr().singleResult();//RW
+assertEquals(1,variableMap.size());
+assertEquals(123,variableMap.get("anothertest"));
+processInstance=historyService.createHistoricProcessInstanceQuery().includeProcessVariables().or().variableValueEquals("anothertest",123).processDefinitionId("undefined").endOr().or().processDefinitionKey(PROCESS_DEFINITION_KEY).processDefinitionId("undefined").endOr().singleResult();//RW
+assertNull(processInstance);
+assertNotNull(processInstance);
+assertEquals(1,variableMap.size());
+assertEquals("MyTest",variableMap.get("casetest"));
+List<HistoricProcessInstance> instanceList=historyService.createHistoricProcessInstanceQuery().includeProcessVariables().or().processDefinitionKey(PROCESS_DEFINITION_KEY).processDefinitionId("undefined").endOr().list();//RW
+assertEquals(4,instanceList.size());
+assertEquals(2,variableMap.size());
+assertEquals("test",variableMap.get("test"));
+assertEquals("test2",variableMap.get("test2"));
+processInstance=historyService.createHistoricProcessInstanceQuery().includeProcessVariables().or().processDefinitionKey(PROCESS_DEFINITION_KEY_2).processDefinitionId("undefined").endOr().singleResult();//RW
+assertEquals(1,variableMap.size());
+assertEquals(123,variableMap.get("anothertest"));
+assertEquals(2,variableMap.size());
+assertEquals("test",variableMap.get("test"));
+assertEquals("test2",variableMap.get("test2"));
+assertEquals(4,instanceList.size());
+assertEquals(1,instanceList.size());
+assertEquals(2,variableMap.size());
+assertEquals("test",variableMap.get("test"));
+assertEquals("test2",variableMap.get("test2"));
+instanceList=historyService.createHistoricProcessInstanceQuery().includeProcessVariables().or().processDefinitionKey(PROCESS_DEFINITION_KEY).processDefinitionId("undefined").endOr().listPage(1,2);//RW
+assertEquals(2,instanceList.size());
+assertEquals(2,variableMap.size());
+assertEquals("test",variableMap.get("test"));
+assertEquals("test2",variableMap.get("test2"));
+instanceList=historyService.createHistoricProcessInstanceQuery().includeProcessVariables().or().processDefinitionKey(PROCESS_DEFINITION_KEY).processDefinitionId("undefined").endOr().listPage(3,4);//RW
+assertEquals(1,instanceList.size());
+assertEquals(2,variableMap.size());
+assertEquals("test",variableMap.get("test"));
+assertEquals("test2",variableMap.get("test2"));
+instanceList=historyService.createHistoricProcessInstanceQuery().includeProcessVariables().or().processDefinitionKey(PROCESS_DEFINITION_KEY).processDefinitionId("undefined").endOr().listPage(4,2);//RW
+assertEquals(0,instanceList.size());
+assertEquals(4,instanceList.size());
+instanceList=historyService.createHistoricProcessInstanceQuery().or().variableValueEquals("test","test").processDefinitionId("undefined").endOr().or().processDefinitionKey(PROCESS_DEFINITION_KEY).processDefinitionId("undefined").endOr().includeProcessVariables().orderByProcessInstanceId().asc().listPage(0,50);//RW
+assertEquals(4,instanceList.size());
+}
+}

@@ -1,0 +1,28 @@
+@Test public void testSendData() throws IOException, InitializationException {
+  PrometheusRecordSink sink=initTask();
+  List<RecordField> recordFields=Arrays.asList(new RecordField("field1",RecordFieldType.INT.getDataType()),new RecordField("field2",RecordFieldType.DECIMAL.getDecimalDataType(30,10)),new RecordField("field3",RecordFieldType.STRING.getDataType()));
+  RecordSchema recordSchema=new SimpleRecordSchema(recordFields);
+  Map<String,Object> row1=new HashMap<>();
+  row1.put("field1",15);
+  row1.put("field2",BigDecimal.valueOf(12.34567D));
+  row1.put("field3","Hello");
+  Map<String,Object> row2=new HashMap<>();
+  row2.put("field1",6);
+  row2.put("field2",BigDecimal.valueOf(0.1234567890123456789D));
+  row2.put("field3","World!");
+  RecordSet recordSet=new ListRecordSet(recordSchema,Arrays.asList(new MapRecord(recordSchema,row1),new MapRecord(recordSchema,row2)));
+  Map<String,String> attributes=new HashMap<>();
+  attributes.put("a","Hello");
+  WriteResult writeResult=sink.sendData(recordSet,attributes,true);
+  assertNotNull(writeResult);
+  assertEquals(2,writeResult.getRecordCount());
+  assertEquals("Hello",writeResult.getAttributes().get("a"));
+  final String content=getMetrics();
+  assertTrue(content.contains("field1{field3=\"Hello\",} 15.0\nfield1{field3=\"World!\",} 6.0\n"));
+  assertTrue(content.contains("field2{field3=\"Hello\",} 12.34567\nfield2{field3=\"World!\",} 0.12345678901234568\n"));
+  try {
+    sink.onStopped();
+  }
+ catch (  Exception e) {
+  }
+}

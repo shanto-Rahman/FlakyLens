@@ -1,0 +1,25 @@
+@Test public void TestMultiTailedPostDom(){
+n1.addkid(n2).addkid(n3);//IT
+n3.addkid(n4).addkid(n5);//IT
+n4.addkid(n6);//IT
+n5.addkid(n6);//IT
+assertThat(tree.getHeads().size(),is(1));
+assertThat(n.getGode().id,is(1));
+assertThat(kids.size(),is(2));
+assertThat(kids,contains(2,3));
+assertThat(kids.size(),is(0));
+assertThat(kids.size(),is(3));
+assertThat(kids,contains(4,5,6));
+assertThat(kids.size(),is(0));
+assertThat(kids.size(),is(0));
+assertThat(kids.size(),is(0));
+assertThat(head_ids.size(),is(3));
+assertThat(head_ids,contains(1,2,6));
+assertThat(kids.size(),is(0));
+assertThat(kids.size(),is(0));
+assertThat(kids.size(),is(3));
+assertThat(kids,contains(3,4,5));
+assertThat(kids.size(),is(0));
+assertThat(kids.size(),is(0));
+assertThat(kids.size(),is(0));
+}

@@ -1,0 +1,34 @@
+@Test public void testLeaderSelection() throws Exception {
+  MockLeader currentLeader=getCurrentLeader();
+  assertNotNull("Leader should exist",currentLeader);
+  LOG.debug("Current leader index is " + currentLeader.getIndex());
+  byte[] znodeData=ZKUtil.getData(currentLeader.getWatcher(),LEADER_ZNODE);
+  assertNotNull("Leader znode should contain leader index",znodeData);
+  assertTrue("Leader znode should not be empty",znodeData.length > 0);
+  int storedIndex=Bytes.toInt(znodeData);
+  LOG.debug("Stored leader index in ZK is " + storedIndex);
+  assertEquals("Leader znode should match leader index",currentLeader.getIndex(),storedIndex);
+  currentLeader.abdicate();
+  currentLeader=getCurrentLeader();
+  assertNotNull("New leader should exist after abdication",currentLeader);
+  LOG.debug("New leader index is " + currentLeader.getIndex());
+  znodeData=ZKUtil.getData(currentLeader.getWatcher(),LEADER_ZNODE);
+  assertNotNull("Leader znode should contain leader index",znodeData);
+  assertTrue("Leader znode should not be empty",znodeData.length > 0);
+  storedIndex=Bytes.toInt(znodeData);
+  LOG.debug("Stored leader index in ZK is " + storedIndex);
+  assertEquals("Leader znode should match leader index",currentLeader.getIndex(),storedIndex);
+  currentLeader.stop("Stopping for test");
+  currentLeader=getCurrentLeader();
+  assertNotNull("New leader should exist after stop",currentLeader);
+  LOG.debug("New leader index is " + currentLeader.getIndex());
+  znodeData=ZKUtil.getData(currentLeader.getWatcher(),LEADER_ZNODE);
+  assertNotNull("Leader znode should contain leader index",znodeData);
+  assertTrue("Leader znode should not be empty",znodeData.length > 0);
+  storedIndex=Bytes.toInt(znodeData);
+  LOG.debug("Stored leader index in ZK is " + storedIndex);
+  assertEquals("Leader znode should match leader index",currentLeader.getIndex(),storedIndex);
+  currentLeader.stop("Stopping for test");
+  currentLeader=getCurrentLeader();
+  assertNotNull("New leader should exist",currentLeader);
+}

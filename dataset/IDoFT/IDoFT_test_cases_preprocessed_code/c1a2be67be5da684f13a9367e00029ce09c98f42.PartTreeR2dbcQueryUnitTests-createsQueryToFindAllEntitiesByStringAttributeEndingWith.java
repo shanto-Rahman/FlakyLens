@@ -1,0 +1,3 @@
+@Test void createsQueryToFindAllEntitiesByStringAttributeEndingWith() throws Exception {
+assertThat(preparedOperation.get()).isEqualTo("SELECT " + ALL_FIELDS + " FROM "+ TABLE+ " WHERE "+ TABLE+ ".first_name LIKE $1");
+}

@@ -1,0 +1,33 @@
+@Test public void execute2() throws IOException {
+  process(HibernateAnnotationProcessor.class,CLASSES,"HibernateAnnotationProcessor");
+  GenericExporter exporter=new GenericExporter();
+  exporter.setKeywords(Keywords.JPA);
+  exporter.setEntityAnnotation(Entity.class);
+  exporter.setEmbeddableAnnotation(Embeddable.class);
+  exporter.setEmbeddedAnnotation(Embedded.class);
+  exporter.setSupertypeAnnotation(MappedSuperclass.class);
+  exporter.setSkipAnnotation(Transient.class);
+  exporter.setTargetFolder(new File("target/GenericExporterTest2"));
+  exporter.addStopClass(ForwardingSet.class);
+  exporter.setStrictMode(true);
+  exporter.setPropertyHandling(PropertyHandling.JPA);
+  exporter.export(AbstractEntityTest.class.getPackage(),A.class.getPackage());
+  List<String> expected=new ArrayList<String>();
+  expected.add("QCustomCollection_MyCustomCollection2.java");
+  expected.add("QTemporalTest_MyEntity.java");
+  expected.add("QTemporal2Test_Cheque.java");
+  expected.add("QQueryProjectionTest_DTOWithProjection.java");
+  expected.add("QQueryProjectionTest_EntityWithProjection.java");
+  expected.add("QEmbeddable3Test_EmbeddableClass.java");
+  expected.add("QGeneric4Test_HidaBez.java");
+  expected.add("QGeneric4Test_HidaBezGruppe.java");
+  expected.add("QInterfaceType2Test_UserImpl.java");
+  expected.add("QOrderTest_Order.java");
+  expected.add("QManagedEmailTest_ManagedEmails.java");
+  expected.add("QGeneric12Test_ChannelRole.java");
+  expected.add("QManyToManyTest_Person.java");
+  expected.add("QOneToOneTest_Person.java");
+  expected.add("QGeneric16Test_HidaBez.java");
+  expected.add("QGeneric16Test_HidaBezGruppe.java");
+  execute(expected,"GenericExporterTest2","HibernateAnnotationProcessor");
+}

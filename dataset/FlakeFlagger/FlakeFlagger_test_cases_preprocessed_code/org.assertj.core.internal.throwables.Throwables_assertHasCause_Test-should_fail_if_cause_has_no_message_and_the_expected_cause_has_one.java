@@ -1,0 +1,2 @@
+@Test public void should_fail_if_cause_has_no_message_and_the_expected_cause_has_one(){
+}

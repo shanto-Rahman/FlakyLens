@@ -1,0 +1,35 @@
+public void testLocalizeProcess() throws Exception {
+assertEquals(1,processes.size());
+assertNull(processes.get(0).getName());
+assertNull(processes.get(0).getDescription());
+assertEquals(1,processes.size());
+assertNull(processes.get(0).getName());
+assertNull(processes.get(0).getDescription());
+assertEquals(1,processes.size());
+assertEquals("Nombre del proceso",processes.get(0).getName());
+assertEquals("Descripción del proceso",processes.get(0).getDescription());
+assertEquals(1,processes.size());
+assertEquals("The One Task Process 'en-GB' localized name",processes.get(0).getName());
+assertEquals("The One Task Process 'en-GB' localized description",processes.get(0).getDescription());
+assertEquals(1,processes.size());
+assertNull(processes.get(0).getName());
+assertNull(processes.get(0).getDescription());
+assertEquals(1,processes.size());
+assertEquals("Nombre del proceso",processes.get(0).getName());
+assertEquals("Descripción del proceso",processes.get(0).getDescription());
+assertEquals(1,processes.size());
+assertEquals("The One Task Process 'en-GB' localized name",processes.get(0).getName());
+assertEquals("The One Task Process 'en-GB' localized description",processes.get(0).getDescription());
+assertNull(processInstance.getName());
+assertNull(processInstance.getDescription());
+assertEquals("Nombre del proceso",processInstance.getName());
+assertEquals("Descripción del proceso",processInstance.getDescription());
+assertEquals("The One Task Process 'en-GB' localized name",processInstance.getName());
+assertEquals("The One Task Process 'en-GB' localized description",processInstance.getDescription());
+assertNull(processInstance.getName());
+assertNull(processInstance.getDescription());
+assertEquals("The One Task Process 'en' localized name",processInstance.getName());
+assertEquals("The One Task Process 'en' localized description",processInstance.getDescription());
+assertEquals("The One Task Process 'en' localized name",processInstance.getName());
+assertEquals("The One Task Process 'en' localized description",processInstance.getDescription());
+}

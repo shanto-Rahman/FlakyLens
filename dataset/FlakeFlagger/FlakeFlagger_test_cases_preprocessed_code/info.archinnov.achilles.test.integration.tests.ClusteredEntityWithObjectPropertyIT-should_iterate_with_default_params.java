@@ -1,0 +1,24 @@
+@Test public void should_iterate_with_default_params() throws Exception {
+assertThat(iter.hasNext()).isTrue();
+assertThat(next.getId().getId()).isEqualTo(partitionKey);
+assertThat(next.getId().getName()).isEqualTo("name1");
+assertThat(next.getValue().getContent()).isEqualTo("name1");
+assertThat(iter.hasNext()).isTrue();
+assertThat(iter.hasNext()).isTrue();
+assertThat(next.getId().getId()).isEqualTo(partitionKey);
+assertThat(next.getId().getName()).isEqualTo("name2");
+assertThat(next.getValue().getContent()).isEqualTo("name2");
+assertThat(iter.hasNext()).isTrue();
+assertThat(next.getId().getId()).isEqualTo(partitionKey);
+assertThat(next.getId().getName()).isEqualTo("name3");
+assertThat(next.getValue().getContent()).isEqualTo("name3");
+assertThat(iter.hasNext()).isTrue();
+assertThat(next.getId().getId()).isEqualTo(partitionKey);
+assertThat(next.getId().getName()).isEqualTo("name4");
+assertThat(next.getValue().getContent()).isEqualTo("name4");
+assertThat(iter.hasNext()).isTrue();
+assertThat(next.getId().getId()).isEqualTo(partitionKey);
+assertThat(next.getId().getName()).isEqualTo("name5");
+assertThat(next.getValue().getContent()).isEqualTo("name5");
+assertThat(iter.hasNext()).isFalse();
+}

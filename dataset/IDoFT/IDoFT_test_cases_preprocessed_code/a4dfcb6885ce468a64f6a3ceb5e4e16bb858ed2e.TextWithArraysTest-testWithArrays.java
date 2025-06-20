@@ -1,0 +1,4 @@
+@Test public void testWithArrays(){
+assertEquals("!net.openhft.chronicle.wire.TextWithArraysTest$WithArrays {\n" + "  booleans: !!null \"\",\n" + "  bytes: !!null \"\",\n"+ "  shorts: !!null \"\",\n"+ "  chars: !!null \"\",\n"+ "  ints: !!null \"\",\n"+ "  longs: !!null \"\",\n"+ "  floats: !!null \"\",\n"+ "  doubles: !!null \"\",\n"+ "  words: !!null \"\"\n"+ "}\n",new WithArrays().toString());
+assertEquals("!net.openhft.chronicle.wire.TextWithArraysTest$WithArrays {\n" + "  booleans: [ true, false ],\n" + "  bytes: [ -1, 0, 1 ],\n"+ "  shorts: [ -1, 0, 1 ],\n"+ "  chars: [ H, e, l, l, o ],\n"+ "  ints: [ -1, 0, 1 ],\n"+ "  longs: [ -1, 0, 1 ],\n"+ "  floats: [ -1.0, 0.0, 1.0 ],\n"+ "  doubles: [ -1.0, 0.0, 1.0 ],\n"+ "  words: [ Hello, World, Bye, for, now ]\n"+ "}\n",wa.toString());
+}

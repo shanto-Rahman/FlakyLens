@@ -1,0 +1,20 @@
+@Test public void testBeanSerialize() throws Exception {
+Assert.assertTrue(descriptor.isBeanType());
+Assert.assertTrue(((JavaBeanDescriptor)descriptor.getProperty("type")).isClassType());
+Assert.assertEquals(Bean.class.getName(),((JavaBeanDescriptor)descriptor.getProperty("type")).getClassNameProperty());
+Assert.assertTrue(((JavaBeanDescriptor)descriptor.getProperty("array")).isArrayType());
+Assert.assertEquals(0,((JavaBeanDescriptor)descriptor.getProperty("array")).propertySize());
+Assert.assertTrue(property.isCollectionType());
+Assert.assertEquals(1,property.propertySize());
+Assert.assertTrue(property.isBeanType());
+Assert.assertEquals(Phone.class.getName(),property.getClassName());
+Assert.assertEquals(0,property.propertySize());
+Assert.assertTrue(property.isMapType());
+Assert.assertEquals(bean.getAddresses().getClass().getName(),property.getClassName());
+Assert.assertEquals(1,property.propertySize());
+Assert.assertTrue(((JavaBeanDescriptor)entry.getKey()).isPrimitiveType());
+Assert.assertEquals("first",((JavaBeanDescriptor)entry.getKey()).getPrimitiveProperty());
+Assert.assertTrue(((JavaBeanDescriptor)entry.getValue()).isBeanType());
+Assert.assertEquals(FullAddress.class.getName(),((JavaBeanDescriptor)entry.getValue()).getClassName());
+Assert.assertEquals(0,((JavaBeanDescriptor)entry.getValue()).propertySize());
+}

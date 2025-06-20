@@ -1,0 +1,3 @@
+public void test_for_issue() throws Exception {
+assertEquals("{\"distinct\":false,\"oredCriteria\":[{\"allCriteria\":[{\"listValue\":false,\"noValue\":false,\"condition\":\"area_id =\",\"betweenValue\":false,\"singleValue\":true,\"value\":917477670000000000},{\"listValue\":false,\"noValue\":false,\"condition\":\"cabinet_id =\",\"betweenValue\":false,\"singleValue\":true,\"value\":500036},{\"listValue\":false,\"noValue\":false,\"condition\":\"status =\",\"betweenValue\":false,\"singleValue\":true,\"value\":0}],\"criteria\":[{\"$ref\":\"$.oredCriteria[0].allCriteria[0]\"},{\"$ref\":\"$.oredCriteria[0].allCriteria[1]\"},{\"$ref\":\"$.oredCriteria[0].allCriteria[2]\"}],\"valid\":true}],\"page\":true,\"pageIndex\":0,\"pageSize\":1,\"pageStart\":1}",jsonString);
+}

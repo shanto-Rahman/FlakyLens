@@ -1,0 +1,21 @@
+@Deployment public void testDoubleBoundaryMessageEventMultiInstance(){
+assertEquals(9,runtimeService.createExecutionQuery().count());
+assertEquals(5,taskService.createTaskQuery().count());
+assertFalse(execution1.getId().equals(execution2.getId()));
+fail();
+assertEquals(2,runtimeService.createExecutionQuery().count());
+assertNotNull(userTask);
+assertEquals("taskAfterMessage_1",userTask.getTaskDefinitionKey());
+assertEquals(9,runtimeService.createExecutionQuery().count());
+assertEquals(5,taskService.createTaskQuery().count());
+assertFalse(execution1.getId().equals(execution2.getId()));
+assertNotNull(userTasks);
+assertEquals(5,userTasks.size());
+assertNotNull(execution1);
+assertNotNull(execution2);
+assertNotNull(userTask);
+assertNull(execution1);
+assertNull(execution2);
+assertNotNull(userTask);
+assertEquals("taskAfterTask",userTask.getTaskDefinitionKey());
+}

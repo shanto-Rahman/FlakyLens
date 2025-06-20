@@ -1,0 +1,2 @@
+@Test public void should_pass_when_private_fields_differ_but_are_not_compared(){
+}

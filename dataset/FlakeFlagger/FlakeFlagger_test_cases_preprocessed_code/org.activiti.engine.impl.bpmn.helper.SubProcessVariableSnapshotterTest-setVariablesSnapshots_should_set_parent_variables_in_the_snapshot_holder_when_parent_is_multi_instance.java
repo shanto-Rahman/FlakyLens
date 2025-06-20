@@ -1,0 +1,2 @@
+@Test public void setVariablesSnapshots_should_set_parent_variables_in_the_snapshot_holder_when_parent_is_multi_instance() throws Exception {
+}

@@ -1,0 +1,44 @@
+@Test public void should_be_able_to_catch_exceptions_thrown_by_all_proxied_methods(){
+softly.then(new File("a")).overridingErrorMessage("expected:<File(b)> but was:<File(a)>").isEqualTo(new File("b"));//RO
+fail("Should not reach here");
+assertThat(errors).hasSize(39);
+assertThat(errors.get(0)).isEqualTo("expected:<[1]> but was:<[0]>");
+assertThat(errors.get(1)).isEqualTo("expected:<[tru]e> but was:<[fals]e>");
+assertThat(errors.get(2)).isEqualTo("expected:<[tru]e> but was:<[fals]e>");
+assertThat(errors.get(3)).isEqualTo("expected:<[[tru]e]> but was:<[[fals]e]>");
+assertThat(errors.get(4)).isEqualTo("expected:<[1]> but was:<[0]>");
+assertThat(errors.get(5)).isEqualTo("expected:<0x0[3]> but was:<0x0[2]>");
+assertThat(errors.get(6)).isEqualTo("expected:<[[5]]> but was:<[[4]]>");
+assertThat(errors.get(7)).isEqualTo("expected:<'[B]'> but was:<'[A]'>");
+assertThat(errors.get(8)).isEqualTo("expected:<'[D]'> but was:<'[C]'>");
+assertThat(errors.get(9)).isEqualTo("expected:<['[F]']> but was:<['[E]']>");
+assertThat(errors.get(10)).isEqualTo("expected:<[b]> but was:<[a]>");
+assertThat(errors.get(11)).isEqualTo("expected:<java.lang.[String]> but was:<java.lang.[Object]>");
+assertThat(errors.get(12)).isEqualTo("expected:<[2000-01-01T00:00:01]> but was:<[1999-12-31T23:59:59]>");
+assertThat(errors.get(13)).isEqualTo("expected:<[7].0> but was:<[6].0>");
+assertThat(errors.get(14)).isEqualTo("expected:<[9].0> but was:<[8].0>");
+assertThat(errors.get(15)).isEqualTo("expected:<[1[1].0]> but was:<[1[0].0]>");
+assertThat(errors.get(16)).isEqualTo("expected:<File(b)> but was:<File(a)>");
+assertThat(errors.get(17)).isEqualTo("expected:<1[3].0f> but was:<1[2].0f>");
+assertThat(errors.get(18)).isEqualTo("expected:<1[5].0f> but was:<1[4].0f>");
+assertThat(errors.get(19)).isEqualTo("expected:<[1[7].0f]> but was:<[1[6].0f]>");
+assertThat(errors.get(20)).isEqualTo("\nInputStreams do not have same content:" + System.getProperty("line.separator") + "line:<1>, expected:<B> but was:<A>");
+assertThat(errors.get(21)).isEqualTo("expected:<2[1]> but was:<2[0]>");
+assertThat(errors.get(22)).isEqualTo("expected:<2[3]> but was:<2[2]>");
+assertThat(errors.get(23)).isEqualTo("expected:<[2[5]]> but was:<[2[4]]>");
+assertThat(errors.get(24)).isEqualTo("expected:<[\"2[7]\"]> but was:<[\"2[6]\"]>");
+assertThat(errors.get(25)).isEqualTo("\nExpecting:\n" + " <[\"28\"]>\n" + "to contain:\n"+ " <[\"29\"]>\n"+ "but could not find:\n"+ " <[\"29\"]>\n");
+assertThat(errors.get(26)).isEqualTo("expected:<[\"3[1]\"]> but was:<[\"3[0]\"]>");
+assertThat(errors.get(27)).isEqualTo("expected:<3[3]L> but was:<3[2]L>");
+assertThat(errors.get(28)).isEqualTo("expected:<3[5]L> but was:<3[4]L>");
+assertThat(errors.get(29)).isEqualTo("expected:<[3[7]L]> but was:<[3[6]L]>");
+assertThat(errors.get(30)).isEqualTo("expected:<{\"[40\"=\"41]\"}> but was:<{\"[38\"=\"39]\"}>");
+assertThat(errors.get(31)).isEqualTo("expected:<4[3]> but was:<4[2]>");
+assertThat(errors.get(32)).isEqualTo("expected:<4[5]> but was:<4[4]>");
+assertThat(errors.get(33)).isEqualTo("expected:<[4[7]]> but was:<[4[6]]>");
+assertThat(errors.get(34)).isEqualTo("expected:<\"4[9]\"> but was:<\"4[8]\">");
+assertThat(errors.get(35)).isEqualTo("expected:<5[1]> but was:<5[0]>");
+assertThat(errors.get(36)).isEqualTo("expected:<[5[3]]> but was:<[5[2]]>");
+assertThat(errors.get(37)).isEqualTo("\nExpecting message:\n" + " <\"NullPointerException message\">\n" + "but was:\n"+ " <\"IllegalArgumentException message\">");
+assertThat(errors.get(38)).isEqualTo("\nExpecting message:\n" + " <\"something was good\">\n" + "but was:\n"+ " <\"something was wrong\">");
+}

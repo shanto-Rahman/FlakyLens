@@ -1,0 +1,30 @@
+@Deployment(resources={"org/activiti/engine/test/api/runtime/oneTaskProcess.bpmn20.xml"}) public void testTaskIdentityLinks() throws Exception {
+assertNotNull(task);
+assertEquals(6,listener.getEventsReceived().size());
+assertEquals(ActivitiEventType.ENTITY_CREATED,event.getType());
+assertTrue(event.getEntity() instanceof IdentityLink);
+assertEquals("kermit",link.getUserId());
+assertEquals("candidate",link.getType());
+assertEquals(task.getId(),link.getTaskId());
+assertEquals(task.getExecutionId(),event.getExecutionId());
+assertEquals(task.getProcessDefinitionId(),event.getProcessDefinitionId());
+assertEquals(task.getProcessInstanceId(),event.getProcessInstanceId());
+assertEquals(ActivitiEventType.ENTITY_INITIALIZED,event.getType());
+assertEquals("kermit",link.getUserId());
+assertEquals("candidate",link.getType());
+assertEquals(ActivitiEventType.ENTITY_CREATED,event.getType());
+assertTrue(event.getEntity() instanceof IdentityLink);
+assertEquals("sales",link.getGroupId());
+assertEquals("candidate",link.getType());
+assertEquals(task.getId(),link.getTaskId());
+assertEquals(task.getExecutionId(),event.getExecutionId());
+assertEquals(task.getProcessDefinitionId(),event.getProcessDefinitionId());
+assertEquals(task.getProcessInstanceId(),event.getProcessInstanceId());
+assertEquals(ActivitiEventType.ENTITY_INITIALIZED,event.getType());
+assertEquals("sales",link.getGroupId());
+assertEquals("candidate",link.getType());
+assertEquals(3,listener.getEventsReceived().size());
+assertEquals(ActivitiEventType.ENTITY_DELETED,event.getType());
+assertEquals(ActivitiEventType.ENTITY_DELETED,event.getType());
+assertEquals(ActivitiEventType.ENTITY_DELETED,event.getType());
+}

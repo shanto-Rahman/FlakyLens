@@ -1,0 +1,16 @@
+@Test public void testInstanceGroupManagerActionPrototypeScheduledActionPrototypeByRunAtByManager() throws Throwable {
+  InstanceGroupManagerScheduledActionManagerPrototypeAutoScalePrototypeById instanceGroupManagerScheduledActionManagerPrototypeModel=new InstanceGroupManagerScheduledActionManagerPrototypeAutoScalePrototypeById.Builder().maxMembershipCount(Long.valueOf("10")).minMembershipCount(Long.valueOf("10")).id("1e09281b-f177-46fb-baf1-bc152b2e391a").build();
+  assertEquals(instanceGroupManagerScheduledActionManagerPrototypeModel.maxMembershipCount(),Long.valueOf("10"));
+  assertEquals(instanceGroupManagerScheduledActionManagerPrototypeModel.minMembershipCount(),Long.valueOf("10"));
+  assertEquals(instanceGroupManagerScheduledActionManagerPrototypeModel.id(),"1e09281b-f177-46fb-baf1-bc152b2e391a");
+  InstanceGroupManagerActionPrototypeScheduledActionPrototypeByRunAtByManager instanceGroupManagerActionPrototypeScheduledActionPrototypeByRunAtByManagerModel=new InstanceGroupManagerActionPrototypeScheduledActionPrototypeByRunAtByManager.Builder().name("my-instance-group-manager-action").runAt(DateUtils.parseAsDateTime("2019-01-01T12:00:00.000Z")).manager(instanceGroupManagerScheduledActionManagerPrototypeModel).build();
+  assertEquals(instanceGroupManagerActionPrototypeScheduledActionPrototypeByRunAtByManagerModel.name(),"my-instance-group-manager-action");
+  assertEquals(instanceGroupManagerActionPrototypeScheduledActionPrototypeByRunAtByManagerModel.runAt(),DateUtils.parseAsDateTime("2019-01-01T12:00:00.000Z"));
+  assertEquals(instanceGroupManagerActionPrototypeScheduledActionPrototypeByRunAtByManagerModel.manager(),instanceGroupManagerScheduledActionManagerPrototypeModel);
+  String json=TestUtilities.serialize(instanceGroupManagerActionPrototypeScheduledActionPrototypeByRunAtByManagerModel);
+  InstanceGroupManagerActionPrototypeScheduledActionPrototypeByRunAtByManager instanceGroupManagerActionPrototypeScheduledActionPrototypeByRunAtByManagerModelNew=TestUtilities.deserialize(json,InstanceGroupManagerActionPrototypeScheduledActionPrototypeByRunAtByManager.class);
+  assertTrue(instanceGroupManagerActionPrototypeScheduledActionPrototypeByRunAtByManagerModelNew instanceof InstanceGroupManagerActionPrototypeScheduledActionPrototypeByRunAtByManager);
+  assertEquals(instanceGroupManagerActionPrototypeScheduledActionPrototypeByRunAtByManagerModelNew.name(),"my-instance-group-manager-action");
+  assertEquals(instanceGroupManagerActionPrototypeScheduledActionPrototypeByRunAtByManagerModelNew.runAt(),DateUtils.parseAsDateTime("2019-01-01T12:00:00.000Z"));
+  assertEquals(JsonParser.parseString(instanceGroupManagerActionPrototypeScheduledActionPrototypeByRunAtByManagerModelNew.manager().toString()),JsonParser.parseString(instanceGroupManagerScheduledActionManagerPrototypeModel.toString()));
+}

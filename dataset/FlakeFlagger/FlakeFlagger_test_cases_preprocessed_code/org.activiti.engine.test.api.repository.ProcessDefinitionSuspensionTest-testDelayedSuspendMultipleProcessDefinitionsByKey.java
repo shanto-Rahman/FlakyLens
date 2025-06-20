@@ -1,0 +1,23 @@
+public void testDelayedSuspendMultipleProcessDefinitionsByKey(){
+assertEquals(nrOfProcessDefinitions,repositoryService.createProcessDefinitionQuery().count());
+assertEquals(nrOfProcessDefinitions,repositoryService.createProcessDefinitionQuery().active().count());
+assertEquals(0,repositoryService.createProcessDefinitionQuery().suspended().count());
+assertEquals(nrOfProcessDefinitions,repositoryService.createProcessDefinitionQuery().count());
+assertEquals(nrOfProcessDefinitions,repositoryService.createProcessDefinitionQuery().active().count());
+assertEquals(0,repositoryService.createProcessDefinitionQuery().suspended().count());
+assertEquals(1,runtimeService.createProcessInstanceQuery().active().count());
+assertEquals(nrOfProcessDefinitions,managementService.createTimerJobQuery().count());
+assertEquals(1,managementService.createTimerJobQuery().processDefinitionId(processDefinition.getId()).count());
+assertEquals(nrOfProcessDefinitions,repositoryService.createProcessDefinitionQuery().count());
+assertEquals(0,repositoryService.createProcessDefinitionQuery().active().count());
+assertEquals(nrOfProcessDefinitions,repositoryService.createProcessDefinitionQuery().suspended().count());
+assertEquals(1,runtimeService.createProcessInstanceQuery().suspended().count());
+assertEquals(nrOfProcessDefinitions,repositoryService.createProcessDefinitionQuery().count());
+assertEquals(0,repositoryService.createProcessDefinitionQuery().active().count());
+assertEquals(nrOfProcessDefinitions,repositoryService.createProcessDefinitionQuery().suspended().count());
+assertEquals(1,runtimeService.createProcessInstanceQuery().suspended().count());
+assertEquals(nrOfProcessDefinitions,repositoryService.createProcessDefinitionQuery().count());
+assertEquals(nrOfProcessDefinitions,repositoryService.createProcessDefinitionQuery().active().count());
+assertEquals(0,repositoryService.createProcessDefinitionQuery().suspended().count());
+assertEquals(1,runtimeService.createProcessInstanceQuery().active().count());
+}

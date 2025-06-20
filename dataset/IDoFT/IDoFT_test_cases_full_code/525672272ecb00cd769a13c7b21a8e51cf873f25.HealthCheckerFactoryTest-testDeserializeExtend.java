@@ -1,0 +1,5 @@
+@Test public void testDeserializeExtend(){
+  String tcpString="{\"type\":\"TEST\",\"testValue\":null}";
+  AbstractHealthChecker actual=HealthCheckerFactory.deserialize(tcpString);
+  assertEquals(TestChecker.class,actual.getClass());
+}

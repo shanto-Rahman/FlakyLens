@@ -1,0 +1,3 @@
+@TestFactory public Collection<DynamicTest> readResourcesTests(){
+  return Arrays.asList(readAllUsersInvocation(),readAllUsersWithFilterInvocation(),readMultipleUsersInvocationDefaultPaging(),readMultipleUsersInvocationDefaultPagingAndFilter(),readMultipleUsersInvocationWithIndexPaging(),readMultipleUsersInvocationWithIndexPagingAndFilter(),readMultipleUsersInvocationWithIdentityPaging(),readMultipleUsersInvocationWithIdentityPagingAndFilter(),readMultipleUsersInvocationWithoutPaging(),readMultipleUsersInvocationWithFilterAndWithoutPaging(),readMultipleUsersInvocationWithRequestedAttributes());
+}

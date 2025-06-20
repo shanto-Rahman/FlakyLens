@@ -1,0 +1,32 @@
+@Test public void CustomDataParametersTest(){
+  APIContext context=new APIContext("ACCESS_TOKEN").enableDebug(true);
+  UserData userData=new UserData().email("abc@eg.com");
+  HashMap<String,String> customProperties=new HashMap<String,String>();
+  customProperties.put("Key1","Value1");
+  customProperties.put("Key2","Value2");
+  List<Content> contents=new ArrayList<Content>();
+  contents.add(new Content().productId("1").brand("brandA"));
+  contents.add(new Content().productId("2").brand("brandB"));
+  List<String> contentIds=new ArrayList<String>();
+  contentIds.add("123");
+  contentIds.add("456");
+  String contentCategory="content_categoryA";
+  String contentName="content_nameA";
+  String currency="USD";
+  CustomData customData=new CustomData().contentIds(contentIds).customProperties(customProperties).contents(contents).contentCategory(contentCategory).contentName(contentName).currency(currency).deliveryCategory(DeliveryCategory.curbside).value(123.45F);
+  Event testEvent=new Event();
+  testEvent.eventName("Purchase").eventTime(System.currentTimeMillis() / 1000L).userData(userData).dataProcessingOptions(new String[]{}).customData(customData);
+  EventRequest eventRequest=new EventRequest("123",context);
+  eventRequest.addDataItem(testEvent);
+  String serializedPayload=eventRequest.getSerializedPayload();
+  String serializedContents=(new Gson()).toJson(contents);
+  String serializedContentIds=(new Gson()).toJson(contentIds);
+  Map<String,String> mp=customProperties;
+  mp.forEach((key,value) -> Assert.assertTrue(serializedPayload.contains("\"" + key + "\":"+ "\""+ value+ "\"")));
+  Assert.assertTrue(serializedPayload.contains(serializedContents));
+  Assert.assertTrue(serializedPayload.contains(serializedContentIds));
+  Assert.assertTrue(serializedPayload.contains(currency.toLowerCase()));
+  Assert.assertTrue(serializedPayload.contains(contentCategory));
+  Assert.assertTrue(serializedPayload.contains(contentName));
+  Assert.assertTrue(serializedPayload.contains(DeliveryCategory.curbside.toString()));
+}

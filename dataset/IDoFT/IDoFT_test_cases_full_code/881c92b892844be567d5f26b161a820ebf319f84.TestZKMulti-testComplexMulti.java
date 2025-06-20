@@ -1,0 +1,32 @@
+@Test public void testComplexMulti() throws Exception {
+  String path1=ZNodePaths.joinZNode(zkw.getZNodePaths().baseZNode,"testComplexMulti1");
+  String path2=ZNodePaths.joinZNode(zkw.getZNodePaths().baseZNode,"testComplexMulti2");
+  String path3=ZNodePaths.joinZNode(zkw.getZNodePaths().baseZNode,"testComplexMulti3");
+  String path4=ZNodePaths.joinZNode(zkw.getZNodePaths().baseZNode,"testComplexMulti4");
+  String path5=ZNodePaths.joinZNode(zkw.getZNodePaths().baseZNode,"testComplexMulti5");
+  String path6=ZNodePaths.joinZNode(zkw.getZNodePaths().baseZNode,"testComplexMulti6");
+  LinkedList<ZKUtilOp> create4Nodes=new LinkedList<>();
+  create4Nodes.add(ZKUtilOp.createAndFailSilent(path1,Bytes.toBytes(path1)));
+  create4Nodes.add(ZKUtilOp.createAndFailSilent(path2,Bytes.toBytes(path2)));
+  create4Nodes.add(ZKUtilOp.createAndFailSilent(path3,Bytes.toBytes(path3)));
+  create4Nodes.add(ZKUtilOp.createAndFailSilent(path4,Bytes.toBytes(path4)));
+  ZKUtil.multiOrSequential(zkw,create4Nodes,false);
+  assertTrue(Bytes.equals(ZKUtil.getData(zkw,path1),Bytes.toBytes(path1)));
+  assertTrue(Bytes.equals(ZKUtil.getData(zkw,path2),Bytes.toBytes(path2)));
+  assertTrue(Bytes.equals(ZKUtil.getData(zkw,path3),Bytes.toBytes(path3)));
+  assertTrue(Bytes.equals(ZKUtil.getData(zkw,path4),Bytes.toBytes(path4)));
+  LinkedList<ZKUtilOp> ops=new LinkedList<>();
+  ops.add(ZKUtilOp.setData(path1,Bytes.add(Bytes.toBytes(path1),Bytes.toBytes(path1))));
+  ops.add(ZKUtilOp.setData(path2,Bytes.add(Bytes.toBytes(path2),Bytes.toBytes(path2))));
+  ops.add(ZKUtilOp.deleteNodeFailSilent(path3));
+  ops.add(ZKUtilOp.deleteNodeFailSilent(path4));
+  ops.add(ZKUtilOp.createAndFailSilent(path5,Bytes.toBytes(path5)));
+  ops.add(ZKUtilOp.createAndFailSilent(path6,Bytes.toBytes(path6)));
+  ZKUtil.multiOrSequential(zkw,ops,false);
+  assertTrue(Bytes.equals(ZKUtil.getData(zkw,path1),Bytes.add(Bytes.toBytes(path1),Bytes.toBytes(path1))));
+  assertTrue(Bytes.equals(ZKUtil.getData(zkw,path2),Bytes.add(Bytes.toBytes(path2),Bytes.toBytes(path2))));
+  assertEquals(-1,ZKUtil.checkExists(zkw,path3));
+  assertEquals(-1,ZKUtil.checkExists(zkw,path4));
+  assertTrue(Bytes.equals(ZKUtil.getData(zkw,path5),Bytes.toBytes(path5)));
+  assertTrue(Bytes.equals(ZKUtil.getData(zkw,path6),Bytes.toBytes(path6)));
+}

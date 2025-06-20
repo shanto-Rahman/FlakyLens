@@ -1,0 +1,3 @@
+@Test public void shouldReturnFormattedRequestInToString(){
+TestCase.assertEquals("{" + NEW_LINE + "  \"delay\" : {"+ NEW_LINE+ "    \"timeUnit\" : \"HOURS\","+ NEW_LINE+ "    \"value\" : 1"+ NEW_LINE+ "  },"+ NEW_LINE+ "  \"host\" : \"some_host\","+ NEW_LINE+ "  \"port\" : 9090,"+ NEW_LINE+ "  \"scheme\" : \"HTTPS\""+ NEW_LINE+ "}",forward().withHost("some_host").withPort(9090).withScheme(HttpForward.Scheme.HTTPS).withDelay(TimeUnit.HOURS,1).toString());
+}

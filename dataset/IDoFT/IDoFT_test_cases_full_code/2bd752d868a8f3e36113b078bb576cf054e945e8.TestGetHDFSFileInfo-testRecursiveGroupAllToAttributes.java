@@ -1,0 +1,30 @@
+@Test public void testRecursiveGroupAllToAttributes() throws Exception {
+  setFileSystemBasicTree(proc.fileSystem);
+  runner.setIncomingConnection(false);
+  runner.setProperty(GetHDFSFileInfo.FULL_PATH,"/some/home/mydir");
+  runner.setProperty(GetHDFSFileInfo.RECURSE_SUBDIRS,"true");
+  runner.setProperty(GetHDFSFileInfo.IGNORE_DOTTED_DIRS,"true");
+  runner.setProperty(GetHDFSFileInfo.IGNORE_DOTTED_FILES,"true");
+  runner.setProperty(GetHDFSFileInfo.DESTINATION,GetHDFSFileInfo.DESTINATION_ATTRIBUTES);
+  runner.setProperty(GetHDFSFileInfo.GROUPING,GetHDFSFileInfo.GROUP_ALL);
+  runner.run();
+  runner.assertTransferCount(GetHDFSFileInfo.REL_ORIGINAL,0);
+  runner.assertTransferCount(GetHDFSFileInfo.REL_SUCCESS,1);
+  runner.assertTransferCount(GetHDFSFileInfo.REL_FAILURE,0);
+  runner.assertTransferCount(GetHDFSFileInfo.REL_NOT_FOUND,0);
+  final MockFlowFile mff=runner.getFlowFilesForRelationship(GetHDFSFileInfo.REL_SUCCESS).get(0);
+  mff.assertAttributeEquals("hdfs.objectName","mydir");
+  mff.assertAttributeEquals("hdfs.path","/some/home");
+  mff.assertAttributeEquals("hdfs.type","directory");
+  mff.assertAttributeEquals("hdfs.owner","owner");
+  mff.assertAttributeEquals("hdfs.group","group");
+  mff.assertAttributeEquals("hdfs.lastModified","" + 1523456000000L);
+  mff.assertAttributeEquals("hdfs.length","" + 900);
+  mff.assertAttributeEquals("hdfs.count.files","" + 9);
+  mff.assertAttributeEquals("hdfs.count.dirs","" + 10);
+  mff.assertAttributeEquals("hdfs.replication","" + 3);
+  mff.assertAttributeEquals("hdfs.permissions","rwxr-xr-x");
+  mff.assertAttributeNotExists("hdfs.status");
+  final String expected=new String(Files.readAllBytes(Paths.get("src/test/resources/TestGetHDFSFileInfo/testRecursiveGroupAllToAttributes.json")));
+  mff.assertAttributeEquals("hdfs.full.tree",expected);
+}

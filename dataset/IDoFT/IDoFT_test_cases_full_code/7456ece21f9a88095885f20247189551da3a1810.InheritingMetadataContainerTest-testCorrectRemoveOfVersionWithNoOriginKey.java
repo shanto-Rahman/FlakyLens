@@ -1,0 +1,26 @@
+@Test public void testCorrectRemoveOfVersionWithNoOriginKey(){
+  MetadataKey aKey=new FieldMetadataKey("s",1,"sfn","1");
+  MetadataKey bKey=new FieldMetadataKey("s",2,"sfn","2");
+  MetadataKey cKey=new FieldMetadataKey("s",3,"sfn","3");
+  MetadataKey dKey=new FieldMetadataKey("s",5,"sfn","1");
+  MetadataValue aValue=MetadataValue.builder().doc("a").attributes(null).updatedAt(new Date()).updatedBy("me").build();
+  MetadataValue bValue=MetadataValue.builder().doc("b").attributes(null).updatedAt(new Date()).updatedBy("me").build();
+  MetadataValue cValue=MetadataValue.builder().doc("c").attributes(null).updatedAt(new Date()).updatedBy("me").build();
+  MetadataValue dValue=MetadataValue.builder().doc("d").attributes(null).updatedAt(new Date()).updatedBy("me").build();
+  InheritingMetadataContainer container=new InheritingMetadataContainer("s");
+  container.put(aKey,aValue);
+  container.put(bKey,bValue);
+  container.put(cKey,cValue);
+  container.put(dKey,dValue);
+  Map<MetadataKey,MetadataValue> byVersion=container.getCollection(6);
+  Assert.assertEquals(3,byVersion.size());
+  Assert.assertEquals(bValue,byVersion.get(bKey));
+  Assert.assertEquals(cValue,byVersion.get(cKey));
+  Assert.assertEquals(dValue,byVersion.get(dKey));
+  container.remove(dKey);
+  byVersion=container.getCollection(6);
+  Assert.assertEquals(3,byVersion.size());
+  Assert.assertEquals(aValue,byVersion.get(aKey));
+  Assert.assertEquals(bValue,byVersion.get(bKey));
+  Assert.assertEquals(cValue,byVersion.get(cKey));
+}

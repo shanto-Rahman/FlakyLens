@@ -1,0 +1,3 @@
+private static void testStuffBits(int wordSize,String bits,String expected){
+assertEquals("stuffBits() failed for input string: " + bits,expected.replace(" ",""),stuffed.toString().replace(" ",""));
+}

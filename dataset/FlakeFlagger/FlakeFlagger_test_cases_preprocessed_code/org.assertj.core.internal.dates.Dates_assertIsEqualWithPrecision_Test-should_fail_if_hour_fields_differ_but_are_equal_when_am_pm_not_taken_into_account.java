@@ -1,0 +1,2 @@
+@Test public void should_fail_if_hour_fields_differ_but_are_equal_when_am_pm_not_taken_into_account(){
+}

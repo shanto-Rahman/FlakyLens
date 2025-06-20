@@ -1,0 +1,31 @@
+@Test public void testPartitionDiscoveryNonDefaultCatalog() throws TException, IOException {
+  String catName="cat3";
+  String dbName="db3";
+  String tableName="tbl3";
+  Map<String,Column> colMap=buildAllColumns();
+  List<String> partKeys=Lists.newArrayList("state","dt");
+  List<String> partKeyTypes=Lists.newArrayList("string","date");
+  List<List<String>> partVals=Lists.newArrayList(Lists.newArrayList("__HIVE_DEFAULT_PARTITION__","1990-01-01"),Lists.newArrayList("CA","1986-04-28"),Lists.newArrayList("MN","2018-11-31"));
+  createMetadata(catName,dbName,tableName,partKeys,partKeyTypes,partVals,colMap,false);
+  Table table=client.getTable(catName,dbName,tableName);
+  List<Partition> partitions=client.listPartitions(catName,dbName,tableName,(short)-1);
+  assertEquals(3,partitions.size());
+  String tableLocation=table.getSd().getLocation();
+  URI location=URI.create(tableLocation);
+  Path tablePath=new Path(location);
+  FileSystem fs=FileSystem.get(location,conf);
+  Path newPart1=new Path(tablePath,"state=WA/dt=2018-12-01");
+  Path newPart2=new Path(tablePath,"state=UT/dt=2018-12-02");
+  fs.mkdirs(newPart1);
+  fs.mkdirs(newPart2);
+  assertEquals(5,fs.listStatus(tablePath).length);
+  table.getParameters().put(PartitionManagementTask.DISCOVER_PARTITIONS_TBLPROPERTY,"true");
+  client.alter_table(catName,dbName,tableName,table);
+  runPartitionManagementTask(conf);
+  partitions=client.listPartitions(catName,dbName,tableName,(short)-1);
+  assertEquals(3,partitions.size());
+  conf.set(MetastoreConf.ConfVars.PARTITION_MANAGEMENT_CATALOG_NAME.getVarname(),catName);
+  runPartitionManagementTask(conf);
+  partitions=client.listPartitions(catName,dbName,tableName,(short)-1);
+  assertEquals(5,partitions.size());
+}

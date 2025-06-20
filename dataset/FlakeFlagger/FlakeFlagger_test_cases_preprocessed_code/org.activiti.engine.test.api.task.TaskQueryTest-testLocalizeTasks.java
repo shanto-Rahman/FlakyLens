@@ -1,0 +1,38 @@
+@Deployment(resources={"org/activiti/engine/test/api/task/TaskQueryTest.testProcessDefinition.bpmn20.xml"}) public void testLocalizeTasks() throws Exception {
+assertEquals(1,tasks.size());
+assertEquals("my task",tasks.get(0).getName());
+assertEquals("My Task Description",tasks.get(0).getDescription());
+assertEquals(1,tasks.size());
+assertEquals("Mi Tarea",tasks.get(0).getName());
+assertEquals("Mi Tarea Descripción",tasks.get(0).getDescription());
+assertEquals(1,tasks.size());
+assertEquals("my task",tasks.get(0).getName());
+assertEquals("My Task Description",tasks.get(0).getDescription());
+assertEquals(1,tasks.size());
+assertEquals("Mi Tarea",tasks.get(0).getName());
+assertEquals("Mi Tarea Descripción",tasks.get(0).getDescription());
+assertEquals(1,tasks.size());
+assertEquals("My 'en-GB' localized name",tasks.get(0).getName());
+assertEquals("My 'en-GB' localized description",tasks.get(0).getDescription());
+assertEquals(1,tasks.size());
+assertEquals("my task",tasks.get(0).getName());
+assertEquals("My Task Description",tasks.get(0).getDescription());
+assertEquals(1,tasks.size());
+assertEquals("Mi Tarea",tasks.get(0).getName());
+assertEquals("Mi Tarea Descripción",tasks.get(0).getDescription());
+assertEquals(1,tasks.size());
+assertEquals("My 'en-GB' localized name",tasks.get(0).getName());
+assertEquals("My 'en-GB' localized description",tasks.get(0).getDescription());
+assertEquals("my task",task.getName());
+assertEquals("My Task Description",task.getDescription());
+assertEquals("Mi Tarea",task.getName());
+assertEquals("Mi Tarea Descripción",task.getDescription());
+assertEquals("My 'en-GB' localized name",task.getName());
+assertEquals("My 'en-GB' localized description",task.getDescription());
+assertEquals("my task",task.getName());
+assertEquals("My Task Description",task.getDescription());
+assertEquals("My 'en' localized name",task.getName());
+assertEquals("My 'en' localized description",task.getDescription());
+assertEquals("My 'en' localized name",task.getName());
+assertEquals("My 'en' localized description",task.getDescription());
+}

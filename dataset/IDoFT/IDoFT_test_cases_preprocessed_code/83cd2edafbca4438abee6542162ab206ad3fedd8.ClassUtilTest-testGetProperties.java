@@ -1,0 +1,32 @@
+@SneakyThrows @Test public void testGetProperties(){
+assertArrayEquals(exp,properties.keySet().toArray());
+assertEquals("fieldB6",prop.getName());
+assertEquals(true,prop.get(b));
+assertFalse(prop.isImmutable(false));
+assertTrue(prop.isReadable(false));
+assertEquals(Boolean.TYPE,prop.getType());
+assertEquals(Boolean.TYPE,prop.getGenericType());
+assertEquals(B.class.getMethod("setFieldB6",new Class[]{Boolean.TYPE}),prop.getSetter());
+assertEquals(B.class.getMethod("isFieldB6",new Class[0]),prop.getGetter());
+assertTrue(prop.isTransient());
+assertFalse(prop.isFieldAccessible(false));
+assertEquals(Modifier.PUBLIC,prop.getModifier());
+assertNotNull("Transient is annotated",prop.getAnnotation(Transient.class));
+assertNull(prop.getSetter());
+assertNull(prop.getGetter());
+assertNotNull(prop.getField());
+assertEquals("str",prop.get(b));
+assertEquals(String.class,prop.getType());
+assertEquals(String.class,prop.getGenericType());
+assertNotNull(prop.getAnnotation(Nullable.class));
+assertNull(prop.getAnnotation(DefaultEnum.class));
+assertEquals(Modifier.PUBLIC | Modifier.TRANSIENT,prop.getModifier());
+assertTrue(prop.isTransient());
+assertEquals("str",b.fieldB5);
+assertEquals(String.class,prop.getType());
+assertEquals(String.class,prop.getGenericType());
+assertNotNull(prop.getAnnotation(Nullable.class));
+assertNull(prop.getAnnotation(DefaultEnum.class));
+assertEquals(Modifier.PUBLIC,prop.getModifier());
+assertTrue(prop.isTransient());
+}

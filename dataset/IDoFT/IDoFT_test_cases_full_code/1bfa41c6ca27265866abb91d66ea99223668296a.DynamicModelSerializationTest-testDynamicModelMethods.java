@@ -1,0 +1,31 @@
+@Test public void testDynamicModelMethods(){
+  ModelAPFoo model=createModelAPFoo();
+  assertEquals(model.getPropertyNames(),Sets.newHashSet("baseball","football"));
+  Foo foo=model.get("baseball");
+  assertNotNull(foo);
+  model.put("baseball2",foo);
+  assertEquals(model.getPropertyNames(),Sets.newHashSet("baseball","football","baseball2"));
+  Foo newFoo=createFoo("1B",44);
+  Foo previous=model.put("baseball",newFoo);
+  assertNotNull(previous);
+  Map<String,Foo> props=model.getProperties();
+  assertNotNull(props);
+  assertFalse(props.isEmpty());
+  assertEquals(props.size(),3);
+  model.removeProperty("baseball2");
+  assertEquals(model.getPropertyNames(),Sets.newHashSet("baseball","football"));
+  ModelAPFoo newModel=deserialize(serialize(model),ModelAPFoo.class);
+  assertEquals(newModel,model);
+  Map<String,Foo> newProps=new HashMap<>();
+  newProps.put("soccer",newFoo);
+  model.setProperties(newProps);
+  assertEquals(model.getPropertyNames(),Sets.newHashSet("soccer"));
+  newProps.remove("soccer");
+  assertEquals(model.getPropertyNames(),Sets.newHashSet("soccer"));
+  assertTrue(model.equals(model));
+  assertFalse(model.equals(null));
+  assertFalse(model.equals(this));
+  assertTrue(model.hashCode() != 0);
+  model.removeProperties();
+  assertEquals(model.getProperties().size(),0);
+}
