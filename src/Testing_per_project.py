@@ -64,10 +64,6 @@ vis_data_records_ig = []
 def combination_of_perturbation(X_test, y_test, X_test_df, perturb):
     perturbations = perturb.split("-")
     k = len(perturbations)
-    #print(len(perturbations))
-    #print(perturbations[0])
-    #print(perturbations[1])
-    #print(perturbations[2])
     if k == 2:
         X_test_df['full_code']  = combine_perturbation_technique(X_test, y_test, perturbations[0], perturbations[1])
     if k == 3:
@@ -87,8 +83,6 @@ def add_attributions_to_visualizer(attributions, tokens, pred_class, pred_logit,
     attributions = attributions / torch.norm(attributions)
     attributions = attributions.detach().cpu().numpy()
     pred_list = pred_class.tolist() if isinstance(pred_class, np.ndarray) else pred_class
-    #print(pred_list)
-    #print('original=',test_y)
     flat_tokens = tokens[0]
     #convergence_score = attributions.sum()
     assert len(flat_tokens[:len(attributions)]) == len(attributions), "Tokens and attributions length mismatch"
@@ -104,32 +98,6 @@ def add_attributions_to_visualizer(attributions, tokens, pred_class, pred_logit,
                             #convergence_score
                             approximation_error
                             ))    
-
-#def plot_text_attributions(total_tokens, total_attributions, save_path=None):
-#    max_width = 2000
-#    for i, (token_list, attribution_list) in enumerate(zip(total_tokens, total_attributions)):
-#		# Adjust width dynamically based on the number of tokens, ensuring each token has adequate space
-#        fig_width = min(max_width, max(20, len(token_list) * 0.5))
-#        fig_height = 4  # Increase height for better visibility
-#        plt.figure(figsize=(10, 4), dpi=100)
-#
-#        if isinstance(attribution_list, torch.Tensor):
-#            attribution_list = attribution_list.cpu().detach().numpy()
-#
-#        max_val = np.max(attribution_list)
-#        normalized_attributions = attribution_list / max_val if max_val > 0 else attribution_list
-#        colors = plt.cm.viridis(normalized_attributions)
-#        font_size = min(16, 800 / len(token_list))
-#
-#        for j, (token, color) in enumerate(zip(token_list, colors)):
-#            plt.text(j, 0, token, color=color, ha='center', va='center', fontsize=font_size)
-#
-#        plt.xticks([])
-#        plt.yticks([])
-#        plt.title(f"Attribution Plot for Instance {i+1}", fontsize=font_size)
-#        plt.savefig(f"attributions/attribution_{i+1}.png", bbox_inches='tight')
-#        plt.close()  # Close the figure to free memory
-
 
 def save_attributions(tokens, attributions, predictions, csv_filepath, ground_truth, pred_logit, test_confidence_score, test_case, project_group):
     flat_tokens = [item for sublist in tokens for item in sublist] if isinstance(tokens[0], list) else tokens
@@ -176,18 +144,10 @@ def save_attributions(tokens, attributions, predictions, csv_filepath, ground_tr
     # Convert to DataFrame
     output_df = pd.DataFrame([row_data])
     
-    # Define the CSV file path
-    #csv_filepath = "Flakicat_Categorization_PerProject-result/output_attributions.csv"
-    
     # Save to CSV (append mode, add header if file doesn't exist)
     output_df.to_csv(csv_filepath, index=False, mode='a', header=not os.path.exists(csv_filepath))
     
     print(f"✅ Data saved to {csv_filepath}")
-    #return output_df
-    #exit()
-    #df.to_csv(filepath, index=False, mode='a')
-
-
 
 def calculate_attributions(input_ids, attention_mask, model, integrated_gradients, label):
     #print(f"Before attribution calculation: input_ids shape {input_ids.shape}, attention_mask shape {attention_mask.shape}") 
@@ -225,9 +185,9 @@ def give_test_data_in_chunks(x_test_nparray, tokenizer, model, batch_size, devic
     # Check if file exists and delete it
     if os.path.exists(attribution_csvfile_name):
         os.remove(attribution_csvfile_name)
-        print(f"🗑️ Deleted existing file: {attribution_csvfile_name}")
+        print(f"Deleted existing file: {attribution_csvfile_name}")
     else:
-        print(f"✅ No existing file found: {attribution_csvfile_name}")
+        print(f"No existing file found: {attribution_csvfile_name}")
 
     #print(attribution_csvfile_name)
     if os.path.exists(attribution_csvfile_name):
@@ -244,11 +204,8 @@ def give_test_data_in_chunks(x_test_nparray, tokenizer, model, batch_size, devic
         tokens_test = tokenizer.batch_encode_plus(test_data, max_length=max_length, pad_to_max_length=True, truncation=True)
         test_seq = torch.tensor(tokens_test['input_ids']).to(device).long()
         test_mask = torch.tensor(tokens_test['attention_mask']).to(device).long()
-        #print('test_x=', test_data)
-        #print('test_y=', test_y)
 
         preds_chunk = model(test_seq, test_mask)
-        #print(f'preds_chunk dtype: {preds_chunk.dtype}, shape: {preds_chunk.shape}')  # Debugging line
         preds_chunk = preds_chunk.detach().cpu().numpy()
         logit_tensor = torch.tensor(preds_chunk, dtype=torch.float)  # Convert to tensor
         # Apply softmax using PyTorch
@@ -256,22 +213,14 @@ def give_test_data_in_chunks(x_test_nparray, tokenizer, model, batch_size, devic
         probabilities = F.softmax(logit_tensor, dim=1)
         #print("probabilities=",probabilities)
         confidence_score = torch.max(probabilities) 
-        #print('confidence_score=',confidence_score)
-        #exit()
         confidence_scores.append(confidence_score.item()) 
 
-        ##print('confidence_score=',confidence_scores)
-        print('preds_chunk=', preds_chunk)
-        #exit()
+        #print('preds_chunk=', preds_chunk)
         pred_class = np.argmax(preds_chunk, axis=1)
         pred_logit = preds_chunk[0, pred_class]
         total_preds.append(pred_class)
-        #print(str(confidence_score)," " ,str(pred_class))
-        #exit()
         if calculate_attribution:
             try:
-
-                #print(f'Before attribution calculation: test_seq shape {test_seq.shape}, test_mask shape {test_mask.shape}')  # Debugging line
                 attributions, approximation_error = calculate_attributions(test_seq, test_mask, model, cig, pred_class.item())
 
                 #print(len(attributions))
@@ -287,11 +236,6 @@ def give_test_data_in_chunks(x_test_nparray, tokenizer, model, batch_size, devic
                     # Print each token with its corresponding attribution score
                     print("Token | Attribution Score")
                     print("-------------------------")
-                    #for token, score in zip(tokens, attributions_sum):
-                    #    print(f"{token:10} | {score:.4f}")
-                    #print(attributions_sum)
-                    #print(tokenizer.convert_ids_to_tokens(test_seq.squeeze(0).tolist()))
-                    #exit()
             except RuntimeError as e:
                 print(f"from give_test_data_in_chunks Attribution calculation failed: {e}")
                 print(f"Input IDs shape: {test_seq.shape}, Attention mask shape: {test_mask.shape}")
@@ -300,8 +244,7 @@ def give_test_data_in_chunks(x_test_nparray, tokenizer, model, batch_size, devic
             save_attributions(tokens, attributions_sum, pred_class, attribution_csvfile_name, test_y, logit_tensor, confidence_score, test_data, project_group)
          
             add_attributions_to_visualizer(attributions_sum, tokens, pred_class, pred_logit, label, vis_data_records_ig, test_y, approximation_error)
-    #print('I should get attribution score and tokens')
-    #exit()
+    
     modified_html_content = ""
     if calculate_attribution:
         html_obj = viz.visualize_text(vis_data_records_ig)
@@ -373,11 +316,6 @@ def boosting_noisy_data_for_train(X_train, y_train, project_group, data_type="tr
     y_train_non_cat5 = y_train[non_category5_indices]
     X_train_cat5 = X_train[category5_indices]
     y_train_cat5 = y_train[category5_indices]
-    
-    # Shuffle the data indices
-    #indices = np.random.permutation(len(X_train))
-    # Determine the size of each split (20% of the data)
-    #split_size = len(X_train) // 5
 
     indices = np.random.permutation(len(X_train_non_cat5))
     print(len(X_train_non_cat5))
@@ -409,32 +347,6 @@ def boosting_noisy_data_for_train(X_train, y_train, project_group, data_type="tr
     y_train_splits.append(pd.DataFrame(y_train, columns=['category']))  # Original y_train             
     print('len_df=', len(y_train))
     print(y_train_splits[-1].head())
-    #print('******Orig=',len(X_train_splits))
-
-    '''for i in range(5):
-        start_idx = i * split_size
-        end_idx = (i + 1) * split_size if i != 4 else len(X_train_non_cat5)
-
-        split_indices = indices[start_idx:end_idx]
-        X_split = X_train_non_cat5[split_indices]
-        y_split = y_train_non_cat5[split_indices]
-
-        # Convert to DataFrame
-        X_split_df = pd.DataFrame(X_split, columns=['full_code'])
-        y_split_df = pd.DataFrame(y_split, columns=['category'])
-
-        perturbation_name = perturbation_functions[i]
-        perturbation_func = perturbation_func_map[perturbation_name]
-        print(f"Applying {perturbation_name} to split {i+1}")
-
-        # Apply perturbation only on non-category-5 data
-        X_split_modified = perturbation_func(X_split_df['full_code'], y_split_df['category'])
-        print("***", X_split_modified)
-        exit()
-
-        # Store modified data
-        X_train_splits.append(pd.DataFrame(X_split_modified, columns=['full_code']))
-        y_train_splits.append(pd.DataFrame(y_split, columns=['category']))'''
 
     print('split_size=', split_size)
     for i in range(5):
@@ -460,37 +372,6 @@ def boosting_noisy_data_for_train(X_train, y_train, project_group, data_type="tr
         X_train_splits.append(pd.DataFrame(X_split_modified, columns=['full_code']))
         y_train_splits.append(pd.DataFrame(y_split, columns=['category']))
 
-    '''for i in range(5):
-        start_idx = i * split_size
-        end_idx = (i + 1) * split_size if i != 4 else len(X_train)  # Include the remaining data in the last split
-
-        split_indices = indices[start_idx:end_idx]
-        X_split = X_train[split_indices]
-        y_split = y_train[split_indices]
-
-        # Convert numpy arrays to pandas DataFrame before calling perturbation
-        X_split_df = pd.DataFrame(X_split, columns=['full_code'])  # Assuming 'full_code' is the column name
-        y_split_df = pd.DataFrame(y_split, columns=['category'])  # Assuming 'category' is the column name
-        
-        # Convert 'full_code' and 'category' to Series to match deadcode_insertion expectations
-        X_split_series = X_split_df['full_code']  # Convert to Series
-        y_split_series = y_split_df['category']   # Convert to Series
-
-        #print("Before Perturbation:")
-        #print(X_split_series.head())
-        #print(len(y_split_series))
-        
-        # Select perturbation function based on the split
-        perturbation_name = perturbation_functions[i]
-        perturbation_func = perturbation_func_map[perturbation_name]
-        print(f"Applying {perturbation_name} to split {i+1}")
-
-        # Apply the perturbation
-        X_split_modified = perturbation_func(X_split_series, y_split_series)  # Call the function with Series
-        # Store modified and original splits
-        X_train_splits.append(pd.DataFrame(X_split_modified, columns=['full_code']))
-        y_train_splits.append(pd.DataFrame(y_split, columns=['category']))'''
-    
     print('******After Orig=',len(X_train_splits))
     # Merge back into the original data
     X_train_augmented = pd.concat(X_train_splits, axis=0).reset_index(drop=True)
@@ -513,9 +394,6 @@ def run_experiment(dataset_path, model_weights_path, results_file, data_name, te
     model_name, tokenizer, auto_model = codebert_model_define()
 
     execution_time = time.time()
-    #print("Start time of the experiment", execution_time)
-    #no_split = 5 # For Flakicat (10 project_groups)
-    #skf = StratifiedKFold(n_splits=no_split,shuffle=True)
     TN = FP = FN = TP = 0
     
     prediction_time_codebert = 0
@@ -558,19 +436,10 @@ def run_experiment(dataset_path, model_weights_path, results_file, data_name, te
         
             X_test, y_test, X_train, y_train, X_valid, y_valid = converting_df_to_series(X_train_df, Y_train_df, X_valid_df, Y_valid_df, X_test_df, Y_test_df)
 
-            #perturbation = "without_perturbation"
-            #perturbation = "single_perturbation"
-            #perturbation = "multiple_perturbation"
-            #permutation_count = 5
             if "-" in perturbation:
                 X_test_df = combination_of_perturbation(X_test, y_test, X_test_df, perturbation) #permutation_count)
 
             #=============================Adversarial Attack in the test data========================
-            # Define the while loop and Thread.sleep statement to be added
-            ##flag=3 #Thread.sleep perturbation is applied for all other 4 category; time is applied for async and concurrency category
-            ##flag="Not-Async"
-            ##flag="Not-Time"
-            ##flag="Not-UC"
             #Most or Least
             if perturbation == "deadcode_perturbation":
                 X_test_df['full_code'] = deadcode_insertion(X_test, y_test, feature_types="Most") 
@@ -689,11 +558,11 @@ def run_experiment(dataset_path, model_weights_path, results_file, data_name, te
             if not os.path.exists(attributions_dir):
                 os.mkdir(attributions_dir)
             with torch.no_grad():
-                print('X_test=', X_test)
-                print('y_test=', y_test)
+                #print('X_test=', X_test)
+                #print('y_test=', y_test)
                 preds, html_content, attribution_csvfile_name, confidence_scores = give_test_data_in_chunks(X_test, tokenizer, model, batch_size, device, project_group, label, y_test, dataset_category, attributions_dir, calculate_attribution)
                 #exit()
-            print(preds)
+            #print(preds)
             print('***************=========********')
             #exit()
             #for test_case, pred in zip(X_test, preds):
@@ -713,13 +582,13 @@ def run_experiment(dataset_path, model_weights_path, results_file, data_name, te
                 token_attribution_df = pd.read_csv(attribution_csvfile_name)
                 print('token_len=',len(token_attribution_df))
                 if token_attribution_df.empty:
-                    print("❌ token_attribution_df is empty! Skipping token extraction.")
+                    print("token_attribution_df is empty! Skipping token extraction.")
                     token_list = [""] * len(X_test)  # Assign an empty list to prevent errors
                 else:
                     if "Tokens(Sorted by Importance)" in token_attribution_df.columns:
                         token_list = token_attribution_df["Tokens(Sorted by Importance)"].to_list()
                     else:
-                        print("⚠️ Column 'Tokens(Sorted by Importance)' not found in token_attribution_df. Using an empty list.")
+                        print("Column 'Tokens(Sorted by Importance)' not found in token_attribution_df. Using an empty list.")
                         token_list = []
  
                 # Prepare the data
@@ -745,9 +614,9 @@ def run_experiment(dataset_path, model_weights_path, results_file, data_name, te
             
                 if not prediction_df_to_save.empty:
                     prediction_df_to_save.to_csv(where_data_comes+"-result/"+"predictions_"+perturbation+".csv", mode="a", index=False)
-                    print('✅ Successfully saved!')
+                    print('Successfully saved!')
                 else:
-                    print("❌ Nothing to save! DataFrame is empty.")
+                    print("Nothing to save! DataFrame is empty.")
 
 	    	
             preds_array = np.array(preds)
@@ -772,9 +641,6 @@ def run_experiment(dataset_path, model_weights_path, results_file, data_name, te
                 file.write(result_str)
                 file.write('\n')
             feature_extraction_time = time.time() - start_time
-            #exit()
-            #print(y_test)
-            #print(preds)
 
             y_test_for_cr = np.array(y_test).astype(int)
             preds_for_cr = np.array(preds).astype(int)
@@ -784,9 +650,6 @@ def run_experiment(dataset_path, model_weights_path, results_file, data_name, te
             print(cr)
             #exit()
             category_dict=parse_cr(cr, technique, str(project_group))
-            #exit()
-            #cr=classification_report(test_y, preds)
-            #parse_cr(cr, technique, str(project_group), str(feature_extraction_time), str(total_execution_time), str(fit_time))
             
             #print(type(cr))
             with open(where_data_comes+"-result/without_adversarial_"+technique+"_classification_report.txt", "a") as file:
@@ -805,19 +668,16 @@ def run_experiment(dataset_path, model_weights_path, results_file, data_name, te
             del model
             print("delete model")
             torch.cuda.empty_cache()
-        #exit() 
-            #project_group = project_group + 1
-        # ✅ After the loop, concatenate all DataFrames
+
         if all_predictions:
             final_predictions_df = pd.concat(all_predictions, ignore_index=True)
         
-            # ✅ Save once after the loop
             save_path = f"{where_data_comes}-result/predictions_{perturbation}.csv"
             final_predictions_df.to_csv(save_path, index=False)
             
-            print(f"✅ Successfully saved all predictions to: {save_path}")
+            print(f"Successfully saved all predictions to: {save_path}")
         else:
-            print("⚠️ No data to save!")
+            print("No data to save!")
   
         with open("../flaky-test-categorization/without_adversarial_per_Category_Evaluation_"+ml_technique+".txt", "w") as file:
             file.write("")
@@ -829,7 +689,6 @@ def run_experiment(dataset_path, model_weights_path, results_file, data_name, te
             with open("../flaky-test-categorization/without_adversarial_per_Category_Evaluation_"+ml_technique+".txt", "a") as file:
                 file.write(cls+":" + str(avg_category_dict))
                 file.write("\n")
-        #exit()
 
 def initialize_environment(seed_value):
     """Initializes the environment by setting the seed and configuring logging."""
@@ -841,8 +700,6 @@ if __name__ == "__main__":
     model_weights_path = sys.argv[2] #"../flaky-test-categorization_per_project/So-Far-Good-Models/per_project_model_weights_on__dataset" #sys.argv[2]
     results_file = sys.argv[3]
     data_name_dir = sys.argv[4]
-    print('*************data_name=', data_name_dir)
-    #exit()
     technique = sys.argv[5]
     #initialize_environment(42)
     perturb = ""
