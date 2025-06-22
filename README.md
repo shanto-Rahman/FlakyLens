@@ -13,7 +13,7 @@ cd src
 To run the training code, run the following command.
 
 ```shell
-bash per_project_prediction.sh Flakicat "train"
+bash per_project_prediction.sh FlakyLens "train"
 ```
 
 This train code will save the model into the following directory ../flaky-test-categorization_per_project/
@@ -21,5 +21,12 @@ This train code will save the model into the following directory ../flaky-test-c
 To run the prediction code, run the following command.
 
 ```shell
-bash per_project_prediction.sh Flakicat "BERT"
+bash per_project_prediction.sh FlakyLens "BERT"
 ```
+
+If you want to get the attribution score for the tokens, run the following command
+```shell
+bash per_project_prediction.sh FlakyLens "BERT" "calculate_gradient"
+```
+This outputs the attribution scores in Attributions_scores directory.
+/FlakyLens_attributions_project_group_1.csv
