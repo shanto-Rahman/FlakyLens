@@ -141,7 +141,7 @@ def calculate_filtered_avg(arr, th=-1000):
     return avg
 
 # balance dataset
-def sampling(X_train, y_train, X_valid, y_valid):
+'''def sampling(X_train, y_train, X_valid, y_valid):
     
     oversampling = RandomOverSampler(
         sampling_strategy='minority', random_state=49)
@@ -157,9 +157,9 @@ def sampling(X_train, y_train, X_valid, y_valid):
     x_val = pd.Series(x_val.ravel())
     y_val = pd.Series(y_val.ravel())
 
-    return x_train, y_train, x_val, y_val
+    return x_train, y_train, x_val, y_val'''
 
-def compute_metrics(test_y,preds): 
+'''def compute_metrics(test_y,preds): 
     total_tp=0
     total_fp=0
     total_fn=0
@@ -168,8 +168,8 @@ def compute_metrics(test_y,preds):
     f_scores=[]
     precisions=[]
     recalls=[]
-    print(test_y)
-    print(preds)
+    #print(test_y)
+    #print(preds)
     for category in range(4):
         y=np.where(test_y==category,1,0) #taking y only for the specific category
         print(y)
@@ -179,11 +179,6 @@ def compute_metrics(test_y,preds):
         print(p)
         n_p=np.sum(y==1) #positive
         n_n=np.sum(y==0) #negative
-        '''if (n_p == 0):
-            recalls.append(-1000)
-            precisions.append(-1000)
-            f_scores.append(-1000)
-            continue'''
         
         cm = confusion_matrix(y, p, labels=[0, 1])
         tn, fp, fn, tp = cm.ravel()
@@ -205,7 +200,7 @@ def compute_metrics(test_y,preds):
         total_fn +=fn
 
     accuracy=(total_tp+total_tn)/len(test_y)
-    return total_tp, total_tn, total_fp, total_fn, precisions, recalls, f_scores, accuracy
+    return total_tp, total_tn, total_fp, total_fn, precisions, recalls, f_scores, accuracy'''
 
 
 # setting the seed for reproducibility
@@ -230,7 +225,7 @@ df = pd.read_csv(dataset_path)
 df.head()
 # get project names
 # balance dataset
-def sampling(X_train, y_train, X_valid, y_valid):
+'''def sampling(X_train, y_train, X_valid, y_valid):
     
     oversampling = RandomOverSampler(
         sampling_strategy='minority', random_state=49)
@@ -246,7 +241,7 @@ def sampling(X_train, y_train, X_valid, y_valid):
     x_val = pd.Series(x_val.ravel())
     y_val = pd.Series(y_val.ravel())
 
-    return x_train, y_train, x_val, y_val
+    return x_train, y_train, x_val, y_val'''
 
 
 def calculate_train_and_validation_loss(model_weights_path, fold_number, model, train_dataloader, val_dataloader, cross_entropy, device, optimizer, epochs, writer):
@@ -263,7 +258,7 @@ def calculate_train_and_validation_loss(model_weights_path, fold_number, model, 
     valid_losses = []
     # for each epoch
     for epoch in range(epochs):
-        print('\n Epoch {:} / {:}'.format(epoch + 1, epochs))
+        #print('\n Epoch {:} / {:}'.format(epoch + 1, epochs))
         train(model, train_dataloader, cross_entropy, device, optimizer)
 
         train_loss, train_preds, train_labels = evaluate(model, train_dataloader, cross_entropy, device)
@@ -316,7 +311,7 @@ def calculate_train_and_validation_loss(model_weights_path, fold_number, model, 
             print("Early stopping")
             break
     
-        print("Forward method signature:", inspect.signature(model.forward))
+        #print("Forward method signature:", inspect.signature(model.forward))
         #if valid_loss < best_valid_loss:
         if valid_f1 > best_f1_score:
             #best_valid_loss = valid_loss
@@ -335,49 +330,49 @@ def calculate_train_and_validation_loss(model_weights_path, fold_number, model, 
 
     return model_weights_path
 
-def downsample_category5(df, category_col, max_size=2000):
+'''def downsample_category5(df, category_col, max_size=2000):
     """ 
     Downsamples category 5 to a specified max size while keeping other categories unchanged.
     """
     category_5_df = df[df[category_col] == 5].copy()  # Ensure a fresh copy
     
-    print("📌 Before Resampling:", len(category_5_df))  # Debugging
+    print("Before Resampling:", len(category_5_df))  # Debugging
 
     if len(category_5_df) > max_size:
         category_5_df = resample(category_5_df, replace=True, n_samples=max_size, random_state=42)
 
-    print("📌 After Resampling:", len(category_5_df))  # Should print 2000
+    print("After Resampling:", len(category_5_df))  # Should print 2000
 
     # Keep other categories unchanged
     other_categories_df = df[df[category_col] != 5]
 
     # Merge back
-    return pd.concat([other_categories_df, category_5_df])
+    return pd.concat([other_categories_df, category_5_df])'''
 
 
 def apply_smote(train_data_Org, train_y_Org):
     from imblearn.over_sampling import SMOTE
     from sklearn.feature_extraction.text import TfidfVectorizer
 
-    # ✅ Step 1: Store Original Text Data
+    # Step 1: Store Original Text Data
     train_x_Org = train_data_Org['full_code']  # Original text
     train_y_Org = train_data_Org['category']   # Original labels
     
     #valid_x = valid_data['full_code']
     #valid_y = valid_data['category']
     
-    print('Before train data')
-    print('train_data=')
-    print(train_y_Org.value_counts())
+    #print('Before train data')
+    #print('train_data=')
+    #print(train_y_Org.value_counts())
     
-    # ✅ Step 2: Convert text into numerical vectors (TF-IDF)
+    # Step 2: Convert text into numerical vectors (TF-IDF)
     vectorizer = TfidfVectorizer(max_features=5000)
     train_x_vec = vectorizer.fit_transform(train_x_Org)  # Convert text to numerical vectors
     
-    # ✅ Step 3: Store original indices (needed to track resampled data)
+    # Step 3: Store original indices (needed to track resampled data)
     train_x_Org = train_x_Org.reset_index(drop=True)  # Ensure sequential indexing
     
-    # ✅ Step 4: Apply SMOTE **on the numerical representation**
+    # Step 4: Apply SMOTE **on the numerical representation**
     smote = SMOTE(sampling_strategy={0: 500, 1: 500, 2: 500, 3: 500, 4: 500}, random_state=42)
     train_x_resampled, train_y_resampled = smote.fit_resample(train_x_vec, train_y_Org)
 
@@ -388,7 +383,7 @@ def apply_smote(train_data_Org, train_y_Org):
     #train_x_resampled, train_y_resampled = smote_enn.fit_resample(train_x_vec, train_y_Org)
 
     
-    # ✅ Step 5: Match resampled labels back to original text
+    # Step 5: Match resampled labels back to original text
     # We need to handle synthetic samples properly (since they're created by interpolation)
     #num_synthetic_samples = len(train_x_resampled) - len(train_x_Org)
     num_synthetic_samples = train_x_resampled.shape[0] - train_x_Org.shape[0]
@@ -398,16 +393,16 @@ def apply_smote(train_data_Org, train_y_Org):
     # Extend text list for synthetic samples (use a placeholder if needed)
     train_x_resampled_text.extend(["[SMOTE-generated-sample]"] * num_synthetic_samples)
     
-    # ✅ Step 6: Convert back to Pandas Series
+    # Step 6: Convert back to Pandas Series
     train_x = pd.Series(train_x_resampled_text, name="full_code")
     train_y = pd.Series(train_y_resampled, name="category")
     
-    # ✅ Step 7: Final Resampled Train Data
+    # Step 7: Final Resampled Train Data
     train_data = pd.DataFrame({"full_code": train_x, "category": train_y})
     
-    # ✅ Check Final Data Types
-    print(type(train_x))  # <class 'pandas.core.series.Series'>
-    print(type(train_data))  # <class 'pandas.core.frame.DataFrame'>
+    # Check Final Data Types
+    #print(type(train_x))  # <class 'pandas.core.series.Series'>
+    #print(type(train_data))  # <class 'pandas.core.frame.DataFrame'>
     return train_x, train_data, train_y
 
 def run_experiment(dataset_path, model_weights_path, results_file, data_name_dir, technique):
@@ -437,8 +432,8 @@ def run_experiment(dataset_path, model_weights_path, results_file, data_name_dir
         model_name, tokenizer, auto_model = codebert_model_define()
         #project_index +=1
         project_group +=1
-        print("================")
-        print('*** group:', str(project_group))
+        #print("================")
+        #print('*** group:', str(project_group))
         # Read train and test data
         #train_dataset = pd.read_csv(os.path.join(data_name_dir, train_file))
         #Adversarial
@@ -461,9 +456,9 @@ def run_experiment(dataset_path, model_weights_path, results_file, data_name_dir
         
         valid_x = valid_data['full_code']  # Keep all columns except 'category'
         valid_y = valid_data['category']  # Extract the target variable
-        print('Before train data')
-        print('train_data=')
-        print(train_y_Org.value_counts())
+        #print('Before train data')
+        #print('train_data=')
+        #print(train_y_Org.value_counts())
 
         #Adversarial
         '''os.makedirs(f"{data_name_dir}/data_split/with_50_percent_noisy_data", exist_ok=True)
@@ -472,23 +467,6 @@ def run_experiment(dataset_path, model_weights_path, results_file, data_name_dir
         #exit()
         train_x, train_data, train_y = apply_smote(train_data_Org, train_y_Org) 
 
-        ## Save train_data with all columns
-        #train_data.to_csv(f"{data_name_dir}/data_split/train_set_{project_group}.csv", index=False)
-        #valid_data.to_csv(f"{data_name_dir}/data_split/valid_set_{project_group}.csv", index=False)
-        # Extract features (X) and target (Y) from the saved CSV files
-        
-        # Display the extracted datasets
-        #print("train_x:")
-        #print(train_x.head())
-        #
-        #print("\ntrain_y:")
-        #print(train_y.head())
-        #
-        #print("\nvalid_x:")
-        #print(valid_x.head())
-        #exit()
-        
-
         #train_x, valid_x, train_y, valid_y = train_test_split(train_dataset[x], train_dataset[y], random_state=49, test_size=0.2, stratify=train_dataset[y])
         #print("train_x=")
         #train_x.to_csv("tmp.txt", index=False)
@@ -496,12 +474,12 @@ def run_experiment(dataset_path, model_weights_path, results_file, data_name_dir
         #exit()
         test_x=test_dataset[x]
         test_y=test_dataset[y]
-        print('valid_data=')
-        print(valid_y.value_counts())
-        print('train_data=')
-        print(train_y.value_counts())
-        print('test_data=')
-        print(test_y.value_counts())
+        #print('valid_data=')
+        #print(valid_y.value_counts())
+        #print('train_data=')
+        #print(train_y.value_counts())
+        #print('test_data=')
+        #print(test_y.value_counts())
         # Count occurrences of each category in test_y
         label_counts = test_y.value_counts().sort_index()
         
@@ -511,8 +489,8 @@ def run_experiment(dataset_path, model_weights_path, results_file, data_name_dir
 
         #tokens_train, tokens_val, tokens_test = tokenize_data(train_x, valid_x, test_x)
         tokenizer_instance = Tokenizer(tokenizer)
-        print(type(train_x))
-        print(type(valid_x))
+        #print(type(train_x))
+        #print(type(valid_x))
         tokens_val = tokenizer_instance.tokenize_validation_data(valid_x)
         tokens_train = tokenizer_instance.tokenize_training_data(train_x)
         tokens_test = tokenizer_instance.tokenize_test_data(test_x)
@@ -542,7 +520,7 @@ def run_experiment(dataset_path, model_weights_path, results_file, data_name_dir
          # compute the class weights
         #class_weights = compute_class_weight('balanced', classes = np.unique(Y_train.values), y=np.ravel(Y_train.values))
         #weights = torch.tensor(class_weights, dtype=torch.float)
-        loss_fun_name = "CB"
+        loss_fun_name = "focal_loss"
         class_weights = compute_class_weight(class_weight='balanced', classes=np.unique(Y_train), y=Y_train.values.flatten())
         #weights = torch.tensor(np.log1p(class_weights), dtype=torch.float).to(device)  # Apply log scaling
         weights = torch.tensor(class_weights, dtype=torch.float).to(device)  # Apply log scaling
@@ -553,9 +531,6 @@ def run_experiment(dataset_path, model_weights_path, results_file, data_name_dir
         # define the loss function
         #cross_entropy = nn.NLLLoss(weight=weights)
         #cross_entropy = nn.CrossEntropyLoss(weight=weights)
-        #loss_fn 
-        #cross_entropy = FocalLoss(alpha=weights.to(device), gamma=2.0)
-        #cross_entropy = DiceLoss()
         # Compute number of samples per class
         if loss_fun_name == "LDAM":
             cls_sample_count = np.array([np.sum(Y_train['category'].values == t) for t in np.unique(Y_train)])
@@ -566,17 +541,17 @@ def run_experiment(dataset_path, model_weights_path, results_file, data_name_dir
         elif loss_fun_name == "CB":
             samples_per_cls = [sum(Y_train['category'] == i) for i in range(6)]
             cross_entropy = ClassBalancedLoss(beta=0.9999, samples_per_cls=samples_per_cls, num_classes=6, loss_type="softmax")
-
-
+        elif loss_fun_name == "focal_loss":
+            cross_entropy = FocalLoss(alpha=weights.to(device), gamma=2.0)
 
         #cross_entropy = loss_fn(outputs, labels)
 
     
         # number of training epochs
-        epochs = 20
+        epochs = 2
     
-        print("Class Weights:", class_weights)
-        print("Weights after applying log:", weights)
+        #print("Class Weights:", class_weights)
+        #print("Weights after applying log:", weights)
     
         model = BERT_Arch(auto_model, output_layer)
     
@@ -597,14 +572,9 @@ def run_experiment(dataset_path, model_weights_path, results_file, data_name_dir
         writer.close()
         total_fine_tuning_time+=(time.time() - start_time)
 
-        # empty lists to store training and validation loss of each epoch
-   
         del model
         torch.cuda.empty_cache()
     
-        #result = result.append(pd.Series([project_Name,accuracy, F1, Precisions, Recalls, TN, FP, FN, TP, avg_precision,avg_recall,avg_f1, len(test_y)], index=result.columns), ignore_index=True)
-    
-        #result.to_csv(results_file,  index=False)
 
 import pandas as pd
 import random

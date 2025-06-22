@@ -199,21 +199,21 @@ def contains_english_letter(token):
 def filter_tokens(sorted_token_attributions):
     # Remove 'Ġ' prefix and filter out non-English tokens
     filtered_token_attributions = []
-    unique_tokens = set()  # ✅ Track unique tokens
+    unique_tokens = set()  
 
     for token, score in sorted_token_attributions:
-        cleaned_token = token.lstrip("Ġ").lstrip(".").lstrip("_")  # ✅ First, remove 'Ġ'
+        cleaned_token = token.lstrip("Ġ").lstrip(".").lstrip("_") 
         
-        # ✅ Ensure the token contains at least one English letter AND is longer than 1 character
+        # Ensure the token contains at least one English letter AND is longer than 1 character
         if contains_english_letter(cleaned_token) and len(cleaned_token) > 1:
-            if cleaned_token not in unique_tokens:  # ✅ Ensure uniqueness
+            if cleaned_token not in unique_tokens:  #Ensure uniqueness
                 unique_tokens.add(cleaned_token)
                 filtered_token_attributions.append((cleaned_token, score))
  
             if len(unique_tokens) == 20:
                 break
     # Print filtered top-20 tokens
-    print("\n✅ Filtered Top-20 Tokens (Only English Letters, No 'Ġ' Prefix):")
+    print("\n Filtered Top-20 Tokens (Only English Letters, No 'Ġ' Prefix):")
     for token, score in filtered_token_attributions:  # Get only top 20 tokens
         print(f"Token: {token}, Attribution Score: {score:.4f}")
     
@@ -239,61 +239,17 @@ def clean_token(token):
     return re.sub(r"^[^a-zA-Z]+", "", token)  # Remove leading non-letters
 
 
-#def interpret_with_ig_codellama(prompt, tokenizer, model, model_inputs, predicted_tokens, test_data):
-#    input_ids = model_inputs["input_ids"]
-#    attention_mask = model_inputs["attention_mask"]  # ✅ Ensure this is defined
-#
-#    lig = LayerIntegratedGradients(forward_func, model.model.embed_tokens)
-#    # ✅ Identify Token Indices for test_data (Test Code)
-#    tokenized_prompt = tokenizer.convert_ids_to_tokens(input_ids[0])
-#    tokenized_test_code = tokenizer.tokenize(test_data)  # Tokenize test_code separately
-#
-#    # ✅ Convert Input IDs to Tokenized Text
-#    tokenized_prompt = tokenizer.convert_ids_to_tokens(input_ids[0])
-#    print('tokenized_prompt=', tokenized_prompt)
-#    #exit()
-#    # 🔹 Locate the "Test:" marker in tokenized input
-#    test_start_index = -1
-#    for i in range(len(tokenized_prompt) - 2): 
-#        if tokenized_prompt[i] == '_Test' and (tokenized_prompt[i + 1] == ':'):
-#            test_start_index = i + 2  # Move past "Test:"
-#            break
-#
-#    if test_start_index == -1: 
-#        print("❌ Error: 'Test:' not found in tokenized input! Computing for all tokens.")
-#        test_start_index = 0  # Default to full prompt
-#        test_end_index = len(tokenized_prompt)
-#    else:
-#        # 🔹 Locate "@Test"
-#        for i in range(test_start_index, len(tokenized_prompt) - 1): 
-#            if tokenized_prompt[i] == '_@' and tokenized_prompt[i + 1] == 'Test':
-#                test_start_index = i  # Adjust start index
-#                break
-#
-#        # 🔹 Find the end of the test method (closing '}')
-#        test_end_index = -1
-#        for i in range(test_start_index, len(tokenized_prompt)):
-#            if tokenized_prompt[i] == '}':
-#                test_end_index = i + 1  # Include '}'
-#                break
-#
-#        if test_end_index == -1: 
-#            test_end_index = len(tokenized_prompt)  # If no '}', take full remaining tokens
-#
-#    filtered_tokens_attributions = []
-#    MAX_TEST_LENGTH = 1024  # ✅ Truncate large test functions
-#    print('test_end_index - test_start_index=',test_end_index - test_start_index)
 def interpret_with_ig_codellama(prompt, tokenizer, model, model_inputs, predicted_tokens, test_data):
     input_ids = model_inputs["input_ids"]
-    attention_mask = model_inputs["attention_mask"]  # ✅ Ensure this is defined
+    attention_mask = model_inputs["attention_mask"]  #Ensure this is defined
 
     lig = LayerIntegratedGradients(forward_func, model.model.embed_tokens)
     
-    # ✅ Convert Input IDs to Tokenized Text
+    # Convert Input IDs to Tokenized Text
     tokenized_prompt = tokenizer.convert_ids_to_tokens(input_ids[0])
     print('tokenized_prompt=', tokenized_prompt)
 
-    # 🔹 Locate the "Test:" marker in tokenized input
+    # Locate the "Test:" marker in tokenized input
     test_start_index = -1
     for i in range(len(tokenized_prompt) - 1):  # No need for -2
         if tokenized_prompt[i] == '▁Test' and tokenized_prompt[i + 1] == ':':
@@ -301,17 +257,17 @@ def interpret_with_ig_codellama(prompt, tokenizer, model, model_inputs, predicte
             break
 
     if test_start_index == -1: 
-        print("❌ Error: 'Test:' not found in tokenized input! Computing for all tokens.")
+        print("Error: 'Test:' not found in tokenized input! Computing for all tokens.")
         test_start_index = 0  # Default to full prompt
         test_end_index = len(tokenized_prompt)
     else:
-        # 🔹 Locate "@Test"
+        # Locate "@Test"
         for i in range(test_start_index, len(tokenized_prompt) - 1): 
             if tokenized_prompt[i] == '▁@' and tokenized_prompt[i + 1] == 'Test':
                 test_start_index = i  # Adjust start index
                 break
 
-        # 🔹 Find the end of the test method (closing '}')
+        # Find the end of the test method (closing '}')
         test_end_index = -1
         for i in range(test_start_index, len(tokenized_prompt)):
             if tokenized_prompt[i] == '▁}':  # Match tokenized version
@@ -321,8 +277,8 @@ def interpret_with_ig_codellama(prompt, tokenizer, model, model_inputs, predicte
         if test_end_index == -1: 
             test_end_index = len(tokenized_prompt)  # If no '}', take full remaining tokens
 
-    print(f"📌 Test starts at token index: {test_start_index}, ends at: {test_end_index}")
-    MAX_TEST_LENGTH = 1024  # ✅ Truncate large test functions
+    print(f"Test starts at token index: {test_start_index}, ends at: {test_end_index}")
+    MAX_TEST_LENGTH = 1024  # Truncate large test functions
     if test_end_index - test_start_index < MAX_TEST_LENGTH:
         if len(predicted_tokens.shape) > 1:
             target_token = predicted_tokens[0, -1].item()  # Last token
@@ -331,10 +287,10 @@ def interpret_with_ig_codellama(prompt, tokenizer, model, model_inputs, predicte
 
         attributions = lig.attribute(input_ids, target=target_token,     additional_forward_args=(attention_mask, model), n_steps=1)
             
-        # ✅ Normalize attributions for better visualization
+        # Normalize attributions for better visualization
         attributions = attributions.sum(dim=-1).squeeze(0).cpu().detach().numpy()
         attributions = (attributions - attributions.min()) / (attributions.max() - attributions.min() + 1e-6)
-        # ✅ Get the tokens and attributions only within the test_code range
+        # Get the tokens and attributions only within the test_code range
         filtered_tokens = tokenized_prompt[test_start_index:test_end_index]
         filtered_tokens = [clean_token(token) for token in filtered_tokens]  # Clean tokens 
         filtered_attributions = attributions[test_start_index:test_end_index]
@@ -344,7 +300,7 @@ def interpret_with_ig_codellama(prompt, tokenizer, model, model_inputs, predicte
         # Sort tokens based on attributions
         #sorted_tokens = sorted(zip(filtered_tokens_attributions, attributions), key=lambda x: x[1], reverse=True)
         sorted_tokens = sorted(filtered_tokens_attributions, key=lambda x: x[1], reverse=True)
-        # ✅ Free up memory
+        # Free up memory
         del attributions
         torch.cuda.empty_cache()
     else:
@@ -354,18 +310,18 @@ def interpret_with_ig_codellama(prompt, tokenizer, model, model_inputs, predicte
 
 def interpret_with_ig_gemma7b(prompt, tokenizer, model, model_inputs, predicted_tokens, test_data):
     input_ids = model_inputs["input_ids"]
-    attention_mask = model_inputs["attention_mask"]  # ✅ Ensure this is defined
+    attention_mask = model_inputs["attention_mask"]  # Ensure this is defined
 
     lig = LayerIntegratedGradients(forward_func, model.model.embed_tokens)
-    # ✅ Identify Token Indices for test_data (Test Code)
+    # Identify Token Indices for test_data (Test Code)
     tokenized_prompt = tokenizer.convert_ids_to_tokens(input_ids[0])
     tokenized_test_code = tokenizer.tokenize(test_data)  # Tokenize test_code separately
 
-    # ✅ Convert Input IDs to Tokenized Text
+    # Convert Input IDs to Tokenized Text
     tokenized_prompt = tokenizer.convert_ids_to_tokens(input_ids[0])
     print('tokenized_prompt=', tokenized_prompt)
     #exit()
-    # 🔹 Locate the "Test:" marker in tokenized input
+    # Locate the "Test:" marker in tokenized input
     test_start_index = -1
     for i in range(len(tokenized_prompt) - 2): 
         if tokenized_prompt[i] == 'Test' and (tokenized_prompt[i + 1] == ':'):
@@ -373,17 +329,17 @@ def interpret_with_ig_gemma7b(prompt, tokenizer, model, model_inputs, predicted_
             break
 
     if test_start_index == -1: 
-        print("❌ Error: 'Test:' not found in tokenized input! Computing for all tokens.")
+        print(" Error: 'Test:' not found in tokenized input! Computing for all tokens.")
         test_start_index = 0  # Default to full prompt
         test_end_index = len(tokenized_prompt)
     else:
-        # 🔹 Locate "@Test"
+        # Locate "@Test"
         for i in range(test_start_index, len(tokenized_prompt) - 1): 
             if tokenized_prompt[i] == '@' and tokenized_prompt[i + 1] == 'Test':
                 test_start_index = i  # Adjust start index
                 break
 
-        # 🔹 Find the end of the test method (closing '}')
+        # Find the end of the test method (closing '}')
         test_end_index = -1
         for i in range(test_start_index, len(tokenized_prompt)):
             if tokenized_prompt[i] == '}':
@@ -394,26 +350,22 @@ def interpret_with_ig_gemma7b(prompt, tokenizer, model, model_inputs, predicted_
             test_end_index = len(tokenized_prompt)  # If no '}', take full remaining tokens
 
     filtered_tokens_attributions = []
-    MAX_TEST_LENGTH = 1024  # ✅ Truncate large test functions
+    MAX_TEST_LENGTH = 1024  # Truncate large test functions
     print('test_end_index - test_start_index=',test_end_index - test_start_index)
     #exit()
     if test_end_index - test_start_index <= MAX_TEST_LENGTH:
         attributions = lig.attribute(input_ids, target=predicted_tokens[0, 0].item(),     additional_forward_args=(attention_mask, model), n_steps=1)
             
-        # ✅ Normalize attributions for better visualization
         attributions = attributions.sum(dim=-1).squeeze(0).cpu().detach().numpy()
         attributions = (attributions - attributions.min()) / (attributions.max() - attributions.min() + 1e-6)
-        # ✅ Get the tokens and attributions only within the test_code range
+        #  Get the tokens and attributions only within the test_code range
         filtered_tokens = tokenized_prompt[test_start_index:test_end_index]
         filtered_tokens = [clean_token(token) for token in filtered_tokens]  # Clean tokens 
         filtered_attributions = attributions[test_start_index:test_end_index]
 
         filtered_tokens_attributions = [(token, attribution) for token, attribution in zip(filtered_tokens, filtered_attributions) if token not in stopwords]
 
-        # Sort tokens based on attributions
-        #sorted_tokens = sorted(zip(filtered_tokens_attributions, attributions), key=lambda x: x[1], reverse=True)
         sorted_tokens = sorted(filtered_tokens_attributions, key=lambda x: x[1], reverse=True)
-        # ✅ Free up memory
         del attributions
         torch.cuda.empty_cache()
     else:
@@ -425,7 +377,7 @@ import gc
 def interpret_with_ig_qwen(prompt, tokenizer, model, model_inputs, predicted_tokens, test_data, ml_technique):
 
     input_ids = model_inputs["input_ids"]
-    attention_mask = model_inputs["attention_mask"]  # ✅ Ensure this is defined
+    attention_mask = model_inputs["attention_mask"]  # Ensure this is defined
     if input_ids.shape[0] > 1:
         print('multiple examples are runnning.....')
     if ml_technique == "deep_seek_coder" or ml_technique == "llama3_8b" or ml_technique == "qwen":
@@ -434,15 +386,15 @@ def interpret_with_ig_qwen(prompt, tokenizer, model, model_inputs, predicted_tok
         attention_mask = attention_mask[:, :MAX_TOKENS]
  
     lig = LayerIntegratedGradients(forward_func, model.model.embed_tokens)
-    # ✅ Identify Token Indices for test_data (Test Code)
+    # Identify Token Indices for test_data (Test Code)
     tokenized_prompt = tokenizer.convert_ids_to_tokens(input_ids[0])
     tokenized_test_code = tokenizer.tokenize(test_data)  # Tokenize test_code separately
 
-    # ✅ Convert Input IDs to Tokenized Text
+    # Convert Input IDs to Tokenized Text
     tokenized_prompt = tokenizer.convert_ids_to_tokens(input_ids[0])
     print('tokenized_prompt=', tokenized_prompt)
     #exit()
-    # 🔹 Locate the "Test:" marker in tokenized input
+    # Locate the "Test:" marker in tokenized input
     test_start_index = -1
     for i in range(len(tokenized_prompt) - 2): 
         if tokenized_prompt[i] == 'ĠTest' and (tokenized_prompt[i + 1] == ':' or tokenized_prompt[i + 1] == ':Ċ'):
@@ -450,17 +402,17 @@ def interpret_with_ig_qwen(prompt, tokenizer, model, model_inputs, predicted_tok
             break
 
     if test_start_index == -1: 
-        print("❌ Error: 'Test:' not found in tokenized input! Computing for all tokens.")
+        print(" Error: 'Test:' not found in tokenized input! Computing for all tokens.")
         test_start_index = 0  # Default to full prompt
         test_end_index = len(tokenized_prompt)
     else:
-        # 🔹 Locate "@Test"
+        # Locate "@Test"
         for i in range(test_start_index, len(tokenized_prompt) - 1): 
             if tokenized_prompt[i] == 'Ġ@' and tokenized_prompt[i + 1] == 'Test':
                 test_start_index = i  # Adjust start index
                 break
 
-        # 🔹 Find the end of the test method (closing '}')
+        # Find the end of the test method (closing '}')
         test_end_index = -1
         for i in range(test_start_index, len(tokenized_prompt)):
             if tokenized_prompt[i] == '}':
@@ -470,9 +422,9 @@ def interpret_with_ig_qwen(prompt, tokenizer, model, model_inputs, predicted_tok
         if test_end_index == -1: 
             test_end_index = len(tokenized_prompt)  # If no '}', take full remaining tokens
 
-    print(f"📌 Test starts at token index: {test_start_index}, ends at: {test_end_index}")
+    print(f" Test starts at token index: {test_start_index}, ends at: {test_end_index}")
     filtered_tokens_attributions = []
-    MAX_TEST_LENGTH = 1200  # ✅ Truncate large test functions
+    MAX_TEST_LENGTH = 1200  # Truncate large test functions
     print('test_end_index - test_start_index=',test_end_index - test_start_index)
     #exit()
     if test_end_index - test_start_index <= MAX_TEST_LENGTH:
@@ -481,10 +433,10 @@ def interpret_with_ig_qwen(prompt, tokenizer, model, model_inputs, predicted_tok
         with torch.cuda.amp.autocast():
             attributions = lig.attribute(input_ids, target=predicted_tokens[0, 0].item(),     additional_forward_args=(attention_mask, model), n_steps=1)
             
-        # ✅ Normalize attributions for better visualization
+        # Normalize attributions for better visualization
         attributions = attributions.sum(dim=-1).squeeze(0).cpu().detach().numpy()
         attributions = (attributions - attributions.min()) / (attributions.max() - attributions.min() + 1e-6)
-        # ✅ Get the tokens and attributions only within the test_code range
+        # Get the tokens and attributions only within the test_code range
         filtered_tokens = tokenized_prompt[test_start_index:test_end_index]
         filtered_tokens = [clean_token(token) for token in filtered_tokens]  # Clean tokens
         filtered_attributions = attributions[test_start_index:test_end_index]
@@ -494,7 +446,7 @@ def interpret_with_ig_qwen(prompt, tokenizer, model, model_inputs, predicted_tok
         # Sort tokens based on attributions
         #sorted_tokens = sorted(zip(filtered_tokens_attributions, attributions), key=lambda x: x[1], reverse=True)
         sorted_tokens = sorted(filtered_tokens_attributions, key=lambda x: x[1], reverse=True)
-        # ✅ Free up memory
+        # Free up memory
         del attributions
         torch.cuda.empty_cache()
     else:
@@ -684,9 +636,9 @@ def train(model, train_dataloader, cross_entropy, device, optimizer):
         # backward pass to calculate the gradients
         loss.backward()
         # progress update after every 50 batches.
-        if step % 50 == 0 and not step == 0:
-            print('  Batch {:>5,}  of  {:>5,}.'.format(step, len(train_dataloader)))
-            print('loss=',loss.item())
+        #if step % 50 == 0 and not step == 0:
+        #    print('  Batch {:>5,}  of  {:>5,}.'.format(step, len(train_dataloader)))
+        #    print('loss=',loss.item())
         # clip the the gradients to 1.0. It helps in preventing the exploding gradient problem
         torch.nn.utils.clip_grad_norm_(model.parameters(), 1)
         # update parameters
@@ -704,7 +656,7 @@ def train(model, train_dataloader, cross_entropy, device, optimizer):
 
 def evaluate(model, val_dataloader, cross_entropy, device):
 
-    print("\nEvaluating..")
+    #print("\nEvaluating..")
     # deactivate dropout layers
     model.eval()
 
@@ -718,14 +670,14 @@ def evaluate(model, val_dataloader, cross_entropy, device):
     for step, batch in enumerate(val_dataloader):
 
         # Progress update every 50 batches.
-        if step % 50 == 0 and not step == 0:
+        '''if step % 50 == 0 and not step == 0:
 
             # Calculate elapsed time in minutes.
             # elapsed = format_time(time.time() - t0)
 
             # Report progress.
             print('  Batch {:>5,}  of  {:>5,}.'.format(
-                step, len(val_dataloader)))
+                step, len(val_dataloader)))'''
 
         # push the batch to gpu
         batch = [t.to(device) for t in batch]
