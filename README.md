@@ -16,6 +16,8 @@ To run the training code, run the following command.
 bash per_project_prediction.sh Flakicat "train"
 ```
 
+This train code will save the model into the following directory ../flaky-test-categorization_per_project/
+
 To run the prediction code, run the following command.
 
 ```shell
