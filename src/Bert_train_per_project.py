@@ -151,15 +151,15 @@ def set_deterministic(seed):
 # specify GPU
 device = torch.device("cuda")
 
-#reading the parameters 
-
-dataset_path = sys.argv[1]
-model_weights_path = sys.argv[2]
-results_file = sys.argv[3]
-dataset_type = sys.argv[4] # IDoFT_2Cat/ IDoFT_6Cat
-
-df = pd.read_csv(dataset_path)
-df.head()
+##reading the parameters 
+#
+#dataset_path = sys.argv[1]
+#model_weights_path = sys.argv[2]
+#results_file = sys.argv[3]
+#dataset_type = sys.argv[4] # IDoFT_2Cat/ IDoFT_6Cat
+#
+#df = pd.read_csv(dataset_path)
+#df.head()
 
 def calculate_train_and_validation_loss(model_weights_path, fold_number, model, train_dataloader, val_dataloader, cross_entropy, device, optimizer, epochs, writer):
     early_stopping = EarlyStopping(patience=5, verbose=True, path=model_weights_path+str(fold_number)+'.pt')
