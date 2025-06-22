@@ -175,7 +175,7 @@ def calculate_train_and_validation_loss(model_weights_path, fold_number, model, 
     valid_losses = []
     # for each epoch
     for epoch in range(epochs):
-        #print('\n Epoch {:} / {:}'.format(epoch + 1, epochs))
+        print('\n Epoch {:} / {:}'.format(epoch + 1, epochs))
         train(model, train_dataloader, cross_entropy, device, optimizer)
 
         train_loss, train_preds, train_labels = evaluate(model, train_dataloader, cross_entropy, device)
@@ -226,13 +226,14 @@ def calculate_train_and_validation_loss(model_weights_path, fold_number, model, 
             #best_valid_loss = valid_loss
             best_f1_score = valid_f1
             #torch.save(model.state_dict(), model_weights_path+str(fold_number)+'_adversarial_training.pt')
+            print(model_weights_path+'_project_group_'+str(fold_number)+'.pt')
             torch.save(model.state_dict(), model_weights_path+'_project_group_'+str(fold_number)+'.pt')
     
         train_losses.append(train_loss)
         valid_losses.append(valid_loss)
     
-        print(f'\nTraining Loss: {train_loss:.3f}, accuracy: {train_acc}, f1: {train_f1}')
-        print(f'Validation Loss: {valid_loss:.3f}, accuracy: {valid_acc}, f1: {valid_f1}')
+        #print(f'\nTraining Loss: {train_loss:.3f}, accuracy: {train_acc}, f1: {train_f1}')
+        #print(f'Validation Loss: {valid_loss:.3f}, accuracy: {valid_acc}, f1: {valid_f1}')
 
     return model_weights_path
 
@@ -389,7 +390,7 @@ def run_experiment(dataset_path, model_weights_path, results_file, data_name_dir
             cross_entropy = FocalLoss(alpha=weights.to(device), gamma=2.0)
 
         # number of training epochs
-        epochs = 2
+        epochs = 20
     
         model = BERT_Arch(auto_model, output_layer)
         # push the model to GPU
