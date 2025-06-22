@@ -151,16 +151,6 @@ def set_deterministic(seed):
 # specify GPU
 device = torch.device("cuda")
 
-##reading the parameters 
-#
-#dataset_path = sys.argv[1]
-#model_weights_path = sys.argv[2]
-#results_file = sys.argv[3]
-#dataset_type = sys.argv[4] # IDoFT_2Cat/ IDoFT_6Cat
-#
-#df = pd.read_csv(dataset_path)
-#df.head()
-
 def calculate_train_and_validation_loss(model_weights_path, fold_number, model, train_dataloader, val_dataloader, cross_entropy, device, optimizer, epochs, writer):
     early_stopping = EarlyStopping(patience=5, verbose=True, path=model_weights_path+str(fold_number)+'.pt')
     best_valid_loss = float('inf')
@@ -282,7 +272,7 @@ def apply_smote(train_data_Org, train_y_Org):
     
     return train_x, train_data, train_y
 
-def run_experiment(dataset_path, model_weights_path, results_file, data_name_dir, technique):
+def run_experiment(dataset_path, model_weights_path, data_name_dir, technique):
     df = pd.read_csv(dataset_path)  # Load the dataset
 
     #project_index=0
@@ -491,9 +481,8 @@ def build_dataset_group(dataset_path, data_name_dir):
 if __name__ == "__main__":
     dataset_path = sys.argv[1]
     model_weights_path = sys.argv[2]
-    results_file = sys.argv[3]
-    data_name_dir = sys.argv[4]
-    technique = sys.argv[5]
+    data_name_dir = sys.argv[3]
+    technique = sys.argv[4]
     #build_dataset_group(dataset_path, data_name_dir) # will call only the first time
     #initialize_environment(42)
-    run_experiment(dataset_path, model_weights_path, results_file, data_name_dir, technique)
+    run_experiment(dataset_path, model_weights_path, data_name_dir, technique)
