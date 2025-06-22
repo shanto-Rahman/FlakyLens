@@ -376,8 +376,8 @@ def run_experiment(dataset_path, model_weights_path, calculate_attribution, data
     
     prediction_time_codebert = 0
     categories = 1 # 5 if attribution
-    if os.path.exists("../flaky-test-categorization_per_project/without_adversarial_per_Category_Evaluation_BERT-FlakyLens.txt"):
-        os.remove("../flaky-test-categorization_per_project/without_adversarial_per_Category_Evaluation_BERT-FlakyLens.txt")
+    if os.path.exists("../flaky-test-categorization_per_project/per_Category_Evaluation_BERT-FlakyLens.txt"):
+        os.remove("../flaky-test-categorization_per_project/per_Category_Evaluation_BERT-FlakyLens.txt")
     
     # Get all train-test file pairs from the directory
     train_files = sorted([f for f in os.listdir(data_name_dir) if f.startswith("train_") and f.endswith(".csv")])
@@ -620,7 +620,7 @@ def run_experiment(dataset_path, model_weights_path, calculate_attribution, data
             category_dict=parse_cr(cr, technique, str(project_group))
             
             #print(type(cr))
-            with open(where_data_comes+"-result/without_adversarial_"+technique+"_classification_report.txt", "a") as file:
+            with open(where_data_comes+"-result/"+technique+"_classification_report.txt", "a") as file:
                 file.write(technique+",Fold="+str(project_group)+"\n")
                 file.write(cr)
                 file.write("\n")
@@ -628,7 +628,7 @@ def run_experiment(dataset_path, model_weights_path, calculate_attribution, data
         
             cm = confusion_matrix(y_test, preds)
         	
-            with open(where_data_comes+"-result/without_adversarial_"+technique+"_confusion_matrix_val.txt", "a") as file:
+            with open(where_data_comes+"-result/"+technique+"_confusion_matrix_val.txt", "a") as file:
                 file.write(technique+",Fold="+str(project_group)+"\n")
                 file.write(np.array2string(cm))
                 file.write("\n")
@@ -647,14 +647,14 @@ def run_experiment(dataset_path, model_weights_path, calculate_attribution, data
         else:
             print("No data to save!")
   
-        with open("../flaky-test-categorization/without_adversarial_per_Category_Evaluation_"+ml_technique+".txt", "w") as file:
+        with open("../flaky-test-categorization/per_Category_Evaluation_"+ml_technique+".txt", "w") as file:
             file.write("")
         for cls in range(output_layer):
             cls=str(cls)
             #print(cls)
             avg_category_dict =  [(category_dict[cls][idx] /category_dict[cls][-1]) for idx in range(3)] 
             print(avg_category_dict)
-            with open("../flaky-test-categorization/without_adversarial_per_Category_Evaluation_"+ml_technique+".txt", "a") as file:
+            with open("../flaky-test-categorization/per_Category_Evaluation_"+ml_technique+".txt", "a") as file:
                 file.write(cls+":" + str(avg_category_dict))
                 file.write("\n")
 

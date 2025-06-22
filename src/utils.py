@@ -530,7 +530,7 @@ def parse_cr(cr, ml_technique, fold):
         key=t[0]
         values=[float(x) for x in t[1:]]
 
-        with open("../flaky-test-categorization/without_adversarial_per_Category_Evaluation_"+ml_technique+".txt", "a") as file:
+        with open("../flaky-test-categorization/per_Category_Evaluation_"+ml_technique+".txt", "a") as file:
             file.write(fold+":"+key+":" + str(values))
             file.write("\n")
 
@@ -558,12 +558,12 @@ def parse_cr(cr, ml_technique, fold):
     last_line = lines[-1].strip().split()
     weighted_avg = [float(x) for x in last_line[2:]]
     # print the results
-    print('Classes:', classes)
+    #print('Classes:', classes)
 
     total_weighted_avg_scores =  [ total_weighted_avg_scores[idx] + (weighted_avg[idx] * weighted_avg[-1]) for idx in range(3)] 
     total_support +=weighted_avg[-1]
 
-    with open("../flaky-test-categorization/without_adversarial_weighted_avg_for_cv_"+ml_technique+".txt", "a") as file: # Once I get the result, need to divide by 10
+    with open("../flaky-test-categorization/weighted_avg_for_cv_"+ml_technique+".txt", "a") as file: # Once I get the result, need to divide by 10
         file.write(fold+",")
         file.write(str(weighted_avg))
         file.write("\n")
