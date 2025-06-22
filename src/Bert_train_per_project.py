@@ -207,7 +207,7 @@ def calculate_train_and_validation_loss(model_weights_path, fold_number, model, 
         # EarlyStopping needs to check if validation loss has improved
         early_stopping(valid_f1, model)
         if early_stopping.early_stop:
-            print("Early stopping")
+            #print("Early stopping")
             break
     
         #print("Forward method signature:", inspect.signature(model.forward))
@@ -216,7 +216,7 @@ def calculate_train_and_validation_loss(model_weights_path, fold_number, model, 
             #best_valid_loss = valid_loss
             best_f1_score = valid_f1
             #torch.save(model.state_dict(), model_weights_path+str(fold_number)+'_adversarial_training.pt')
-            print(model_weights_path+'_project_group_'+str(fold_number)+'.pt')
+            #print(model_weights_path+'_project_group_'+str(fold_number)+'.pt')
             torch.save(model.state_dict(), model_weights_path+'_project_group_'+str(fold_number)+'.pt')
     
         train_losses.append(train_loss)

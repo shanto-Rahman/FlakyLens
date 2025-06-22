@@ -634,7 +634,7 @@ def run_experiment(dataset_path, model_weights_path, calculate_attribution, data
                 file.write("\n")
             
             del model
-            print("delete model")
+            #print("delete model")
             torch.cuda.empty_cache()
 
         if all_predictions:
