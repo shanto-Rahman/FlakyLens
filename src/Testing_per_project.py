@@ -398,7 +398,6 @@ def run_experiment(dataset_path, model_weights_path, calculate_attribution, data
     if calculate_attribution:
         categories = 1 # it will be 6, keeping one to ignore the outer for loop
     for label in range(categories):
-        #for project_group in range(no_split):
         # Ensure each train file has a corresponding test file
         assert len(train_files) == len(test_files), "Mismatch between train and test files"
 
@@ -530,28 +529,14 @@ def run_experiment(dataset_path, model_weights_path, calculate_attribution, data
 
             print(model_weights_path+'_project_group_'+str(project_group)+'.pt')
             model.load_state_dict(torch.load(model_weights_path+'_project_group_'+str(project_group)+'.pt'))
-            
-            #print(model_weights_path+str(project_group)+'.pt') 
-            #model.load_state_dict(torch.load(model_weights_path+str(project_group)+'.pt'))
 
             model.to(device)
             model.eval()
             start_time = time.time()
             bert_flag=1
-            #print("label=", str(label), " project_group=", str(project_group))
             with torch.no_grad():
-                #print('X_test=', X_test)
-                #print('y_test=', y_test)
                 preds, html_content, attribution_csvfile_name, confidence_scores = give_test_data_in_chunks(X_test, tokenizer, model, batch_size, device, project_group, label, y_test, dataset_category, attributions_dir, calculate_attribution)
-                #exit()
-            #print(preds)
-            print('***************=========********')
-            #exit()
-            #for test_case, pred in zip(X_test, preds):
-            #    print(f"X_test={test_case}\nPreds={pred}\n")
             y_true_values = y_test['which_tests'].values
-            # Ensure `pred` is a scalar value, not a list
-            #print('flattened_preds===')
 
             preds_to_save = [
                 pred[0] if isinstance(pred, (list, tuple)) and len(pred) == 1 else 
@@ -562,7 +547,7 @@ def run_experiment(dataset_path, model_weights_path, calculate_attribution, data
             
             if os.path.exists(attribution_csvfile_name): # Mainly needed to have the important token-list for each test
                 token_attribution_df = pd.read_csv(attribution_csvfile_name)
-                print('token_len=',len(token_attribution_df))
+                #print('token_len=',len(token_attribution_df))
                 if token_attribution_df.empty:
                     print("token_attribution_df is empty! Skipping token extraction.")
                     token_list = [""] * len(X_test)  # Assign an empty list to prevent errors
@@ -582,9 +567,9 @@ def run_experiment(dataset_path, model_weights_path, calculate_attribution, data
                     "Token_List": token_list
                 }
                 
-                print(f"X_test length: {len(X_test)}")
-                print(f"token_attribution_df empty? {token_attribution_df.empty}")
-                print(f"Lengths -> X_test: {len(X_test)}, preds_to_save: {len(preds_to_save)}, y_true_values: {len(y_true_values)}, token_list: {len(token_list)}")
+                #print(f"X_test length: {len(X_test)}")
+                #print(f"token_attribution_df empty? {token_attribution_df.empty}")
+                #print(f"Lengths -> X_test: {len(X_test)}, preds_to_save: {len(preds_to_save)}, y_true_values: {len(y_true_values)}, token_list: {len(token_list)}")
                 # Create a DataFrame
                 prediction_df_to_save = pd.DataFrame(data)
                 all_predictions.append(prediction_df_to_save)
@@ -609,7 +594,6 @@ def run_experiment(dataset_path, model_weights_path, calculate_attribution, data
 
             original_values_list = Y_test_df['category'].tolist()
             original_y_test = ', '.join(map(str, original_values_list))
-            #print(original_y_test)
             original_y_test_str = f"Original: {original_y_test}"
             
             if calculate_attribution == "calculate_attribution_True":
