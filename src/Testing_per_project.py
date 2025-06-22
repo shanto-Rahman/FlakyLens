@@ -139,7 +139,7 @@ def save_attributions(tokens, attributions, predictions, csv_filepath, ground_tr
     # Save to CSV (append mode, add header if file doesn't exist)
     output_df.to_csv(csv_filepath, index=False, mode='a', header=not os.path.exists(csv_filepath))
     
-    print(f"Data saved to {csv_filepath}")
+    #print(f"Data saved to {csv_filepath}")
 
 def calculate_attributions(input_ids, attention_mask, model, integrated_gradients, label):
     #print(f"Before attribution calculation: input_ids shape {input_ids.shape}, attention_mask shape {attention_mask.shape}") 
@@ -591,8 +591,8 @@ def run_experiment(dataset_path, model_weights_path, calculate_attribution, data
 
             if calculate_attribution: 
                 print(f"Saving to: {where_data_comes}-result/predictions_{perturb}.csv")
-                print("Data being saved:")
-                print(prediction_df_to_save)
+                #print("Data being saved:")
+                #print(prediction_df_to_save)
             
                 if not prediction_df_to_save.empty:
                     prediction_df_to_save.to_csv(where_data_comes+"-result/"+"predictions_"+perturbation+".csv", mode="a", index=False)
