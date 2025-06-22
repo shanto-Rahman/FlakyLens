@@ -1106,8 +1106,8 @@ def run_experiment(dataset_path, model_weights_path, results_file, data_name_dir
         if project_group == 5:
             break
 
-        if os.path.exists("Flakicat_Categorization-result/score_project_group"+str(project_group)+"_Class.txt"):
-            os.remove("Flakicat_Categorization-result/score_project_group"+str(project_group)+"_Class.txt")
+        if os.path.exists("FlakyLens_Categorization-result/score_project_group"+str(project_group)+"_Class.txt"):
+            os.remove("FlakyLens_Categorization-result/score_project_group"+str(project_group)+"_Class.txt")
         fit_time=0
         bert_flag=0
         total_execution_time = 0

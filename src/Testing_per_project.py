@@ -102,12 +102,7 @@ def add_attributions_to_visualizer(attributions, tokens, pred_class, pred_logit,
 def save_attributions(tokens, attributions, predictions, csv_filepath, ground_truth, pred_logit, test_confidence_score, test_case, project_group):
     flat_tokens = [item for sublist in tokens for item in sublist] if isinstance(tokens[0], list) else tokens
     flat_attributions = attributions.tolist() if isinstance(attributions, torch.Tensor) else attributions 
-    print(flat_tokens)
-    #exit()
-    #print(type(pred_logit))
-   
-    #print(type(flat_attributions))
-    #print(flat_attributions)
+    #print(flat_tokens)
     pred_logit_converted = pred_logit.tolist() if isinstance(pred_logit, torch.Tensor) else pred_logit
     confidence_score_converted = test_confidence_score.item() if isinstance(test_confidence_score, torch.Tensor) else confidence_score
 
@@ -117,18 +112,15 @@ def save_attributions(tokens, attributions, predictions, csv_filepath, ground_tr
         if token != '<pad>'
     ]
     df = pd.DataFrame(data)
-    #print(df.head(20))
     detokenized_df = combine_tokens(df)
 
     # Sorting tokens based on attribution scores in descending order
     sorted_df = detokenized_df.sort_values(by="Attribution", ascending=False)
     
-    #print('sorted_df=',sorted_df.head(20))
-    # Creating the concatenated string representations
     tokens_str = ";".join(sorted_df["Token"])
     attributions_str = ";".join(map(str, sorted_df["Attribution"]))
-    print(tokens_str)
-    print(attributions_str)
+    #print(tokens_str)
+    #print(attributions_str)
     # Prepare the row data
     row_data = {
         "Project_Group": project_group,
@@ -147,7 +139,7 @@ def save_attributions(tokens, attributions, predictions, csv_filepath, ground_tr
     # Save to CSV (append mode, add header if file doesn't exist)
     output_df.to_csv(csv_filepath, index=False, mode='a', header=not os.path.exists(csv_filepath))
     
-    print(f"✅ Data saved to {csv_filepath}")
+    print(f"Data saved to {csv_filepath}")
 
 def calculate_attributions(input_ids, attention_mask, model, integrated_gradients, label):
     #print(f"Before attribution calculation: input_ids shape {input_ids.shape}, attention_mask shape {attention_mask.shape}") 
@@ -157,16 +149,15 @@ def calculate_attributions(input_ids, attention_mask, model, integrated_gradient
     try:
         attributions= integrated_gradients.attribute(inputs=(embeddings, attention_mask), target=label, return_convergence_delta=True)
         approximation_error = None
-        print("Attributions calculated.")
+        #print("Attributions calculated.")
     except RuntimeError as e:
         print(f"from calculate_attribution Attribution calculation failed: {e}")
         attributions = None
     return attributions, approximation_error
 
 
-def give_test_data_in_chunks(x_test_nparray, tokenizer, model, batch_size, device, project_group, label, Y_test, dataset_category, attributions_dir, calculate_attribution=False): #BERT
-    max_length = 512 #; 128
-    #max_length = 512
+def give_test_data_in_chunks(x_test_nparray, tokenizer, model, batch_size, device, project_group, label, Y_test, dataset_category, attributions_dir, calculate_attribution=False):
+    max_length = 512
     x_test = pd.DataFrame(x_test_nparray)
     n = 1
     preds_chunks = None
@@ -179,17 +170,13 @@ def give_test_data_in_chunks(x_test_nparray, tokenizer, model, batch_size, devic
     count = 0
     confidence_scores = []
     token_attribution_df = pd.DataFrame()
-    #wrapped_model = CustomModelWrapper(model)
     cig = CustomIntegratedGradients(model)
     attribution_csvfile_name = attributions_dir+dataset_category+"_attributions_project_group_"+str(project_group)+".csv"
     # Check if file exists and delete it
-    if os.path.exists(attribution_csvfile_name):
+    if calculate_attribution and os.path.exists(attribution_csvfile_name):
         os.remove(attribution_csvfile_name)
-        print(f"Deleted existing file: {attribution_csvfile_name}")
-    else:
-        print(f"No existing file found: {attribution_csvfile_name}")
+        #print(f"Deleted existing file: {attribution_csvfile_name}")
 
-    #print(attribution_csvfile_name)
     if os.path.exists(attribution_csvfile_name):
         os.remove(attribution_csvfile_name) 
     for g, x_test_chunk in x_test.groupby(np.arange(len(x_test)) // n):
@@ -199,7 +186,6 @@ def give_test_data_in_chunks(x_test_nparray, tokenizer, model, batch_size, devic
             x_test_chunk = x_test_chunk.to_frame().T
         # Convert DataFrame to list of strings
         test_data = x_test_chunk.iloc[:, 0].tolist() if len(x_test_chunk) > 1 else [x_test_chunk.iloc[0, 0]]
-        #print(test_data)
         test_y = Y_test['which_tests'].iloc[g]
         tokens_test = tokenizer.batch_encode_plus(test_data, max_length=max_length, pad_to_max_length=True, truncation=True)
         test_seq = torch.tensor(tokens_test['input_ids']).to(device).long()
@@ -208,14 +194,10 @@ def give_test_data_in_chunks(x_test_nparray, tokenizer, model, batch_size, devic
         preds_chunk = model(test_seq, test_mask)
         preds_chunk = preds_chunk.detach().cpu().numpy()
         logit_tensor = torch.tensor(preds_chunk, dtype=torch.float)  # Convert to tensor
-        # Apply softmax using PyTorch
-        #print('preds_chunk_tensor=',logit_tensor)
         probabilities = F.softmax(logit_tensor, dim=1)
-        #print("probabilities=",probabilities)
         confidence_score = torch.max(probabilities) 
         confidence_scores.append(confidence_score.item()) 
 
-        #print('preds_chunk=', preds_chunk)
         pred_class = np.argmax(preds_chunk, axis=1)
         pred_logit = preds_chunk[0, pred_class]
         total_preds.append(pred_class)
@@ -223,19 +205,15 @@ def give_test_data_in_chunks(x_test_nparray, tokenizer, model, batch_size, devic
             try:
                 attributions, approximation_error = calculate_attributions(test_seq, test_mask, model, cig, pred_class.item())
 
-                #print(len(attributions))
                 if attributions is not None:
-                    #print('Attribution calculation successful')
                     attributions_tensor = attributions[0]
-                    #print(attributions_tensor.shape)
                     attributions_sum = attributions_tensor.sum(dim=2).squeeze(0).detach().cpu().numpy()
-                    #print(attributions_sum)
                     total_attributions.append(attributions_sum)
                     tokens = [tokenizer.convert_ids_to_tokens(id) for id in test_seq.cpu().numpy()]
                     total_tokens.append(tokens)
                     # Print each token with its corresponding attribution score
-                    print("Token | Attribution Score")
-                    print("-------------------------")
+                    #print("Token | Attribution Score")
+                    #print("-------------------------")
             except RuntimeError as e:
                 print(f"from give_test_data_in_chunks Attribution calculation failed: {e}")
                 print(f"Input IDs shape: {test_seq.shape}, Attention mask shape: {test_mask.shape}")
@@ -381,15 +359,15 @@ def boosting_noisy_data_for_train(X_train, y_train, project_group, data_type="tr
     #print('***=',len(X_train_augmented), len(y_train_augmented ))
     combined_df = pd.concat([X_train_augmented, y_train_augmented], axis=1)
 
-    os.makedirs(f"Flakicat_Categorization_PerProject-Data/data_split/with_50_percent_noisy_data", exist_ok=True)
-    output_csv_file = "Flakicat_Categorization_PerProject-Data/data_split/with_50_percent_noisy_data/"+data_type+"_set_"+str(project_group)+"_with_noisy_data_excluding_nonflakyCat.csv"
+    os.makedirs(f"FlakyLens_Categorization_PerProject-Data/data_split/with_50_percent_noisy_data", exist_ok=True)
+    output_csv_file = "FlakyLens_Categorization_PerProject-Data/data_split/with_50_percent_noisy_data/"+data_type+"_set_"+str(project_group)+"_with_noisy_data_excluding_nonflakyCat.csv"
     combined_df.to_csv(output_csv_file, index=False)
     df = pd.read_csv(output_csv_file)
     print("Final df, len=", len(df))
     #y_train_augmented.to_csv(y_output_csv_file, index=False)
 
 
-def run_experiment(dataset_path, model_weights_path, results_file, data_name, technique, perturbation):
+def run_experiment(dataset_path, model_weights_path, calculate_attribution, data_name, technique, perturbation):
     device, ml_technique, dataset_category, output_layer, where_data_comes = init_setup(technique, data_name)
     model_name, tokenizer, auto_model = codebert_model_define()
 
@@ -398,8 +376,8 @@ def run_experiment(dataset_path, model_weights_path, results_file, data_name, te
     
     prediction_time_codebert = 0
     categories = 1 # 5 if attribution
-    if os.path.exists("../flaky-test-categorization_per_project/without_adversarial_per_Category_Evaluation_BERT-Flakicat.txt"):
-        os.remove("../flaky-test-categorization_per_project/without_adversarial_per_Category_Evaluation_BERT-Flakicat.txt")
+    if os.path.exists("../flaky-test-categorization_per_project/without_adversarial_per_Category_Evaluation_BERT-FlakyLens.txt"):
+        os.remove("../flaky-test-categorization_per_project/without_adversarial_per_Category_Evaluation_BERT-FlakyLens.txt")
     
     # Get all train-test file pairs from the directory
     train_files = sorted([f for f in os.listdir(data_name_dir) if f.startswith("train_") and f.endswith(".csv")])
@@ -407,8 +385,16 @@ def run_experiment(dataset_path, model_weights_path, results_file, data_name, te
 
     project_group = 0
     all_predictions = []
-    #calculate_attribution = True
-    calculate_attribution = False
+
+    attributions_dir="Attributions_scores/"
+    if calculate_attribution == "calculate_attribution_True":
+        calculate_attribution = True
+
+        if not os.path.exists(attributions_dir):
+            os.mkdir(attributions_dir)
+    else:
+        calculate_attribution = False
+
     if calculate_attribution:
         categories = 1 # it will be 6, keeping one to ignore the outer for loop
     for label in range(categories):
@@ -420,8 +406,8 @@ def run_experiment(dataset_path, model_weights_path, results_file, data_name, te
             project_group +=1
             if project_group == 5:
                 break
-            if os.path.exists("Flakicat_Per_Project_Categorization-result/score_project_group"+str(project_group)+"_Class.txt"):
-                os.remove("Flakicat_Per_Project_Categorization-result/score_project_group"+str(project_group)+"_Class.txt")
+            if os.path.exists("FlakyLens_Per_Project_Categorization-result/score_project_group"+str(project_group)+"_Class.txt"):
+                os.remove("FlakyLens_Per_Project_Categorization-result/score_project_group"+str(project_group)+"_Class.txt")
             fit_time=0
             bert_flag=0
             total_execution_time = 0
@@ -553,10 +539,6 @@ def run_experiment(dataset_path, model_weights_path, results_file, data_name, te
             start_time = time.time()
             bert_flag=1
             #print("label=", str(label), " project_group=", str(project_group))
-            attributions_dir="Example_attributions_"+perturbation+"/"
-
-            if not os.path.exists(attributions_dir):
-                os.mkdir(attributions_dir)
             with torch.no_grad():
                 #print('X_test=', X_test)
                 #print('y_test=', y_test)
@@ -569,7 +551,7 @@ def run_experiment(dataset_path, model_weights_path, results_file, data_name, te
             #    print(f"X_test={test_case}\nPreds={pred}\n")
             y_true_values = y_test['which_tests'].values
             # Ensure `pred` is a scalar value, not a list
-            print('flattened_preds===')
+            #print('flattened_preds===')
 
             preds_to_save = [
                 pred[0] if isinstance(pred, (list, tuple)) and len(pred) == 1 else 
@@ -629,17 +611,19 @@ def run_experiment(dataset_path, model_weights_path, results_file, data_name, te
             original_y_test = ', '.join(map(str, original_values_list))
             #print(original_y_test)
             original_y_test_str = f"Original: {original_y_test}"
-            file_path = os.path.abspath(where_data_comes+"-result/"+perturbation+".txt")
-            print('file_path=', file_path)
-            print("Current Working Directory:", os.getcwd())
+            
+            if calculate_attribution == "calculate_attribution_True":
+                file_path = os.path.abspath(where_data_comes+"-result/"+perturbation+".txt")
+                print('file_path=', file_path)
+                print("Current Working Directory:", os.getcwd())
 
 
-            #with open(where_data_comes+"-result/"+perturbation+".txt" , 'a') as file:
-            with open(file_path, 'a') as file:
-                file.write(original_y_test_str)
-                file.write('\n')
-                file.write(result_str)
-                file.write('\n')
+                #with open(where_data_comes+"-result/"+perturbation+".txt" , 'a') as file:
+                with open(file_path, 'a') as file:
+                    file.write(original_y_test_str)
+                    file.write('\n')
+                    file.write(result_str)
+                    file.write('\n')
             feature_extraction_time = time.time() - start_time
 
             y_test_for_cr = np.array(y_test).astype(int)
@@ -698,11 +682,11 @@ def initialize_environment(seed_value):
 if __name__ == "__main__":
     dataset_path = sys.argv[1]
     model_weights_path = sys.argv[2] #"../flaky-test-categorization_per_project/So-Far-Good-Models/per_project_model_weights_on__dataset" #sys.argv[2]
-    results_file = sys.argv[3]
+    calculate_attribution = sys.argv[3]
     data_name_dir = sys.argv[4]
     technique = sys.argv[5]
     #initialize_environment(42)
     perturb = ""
     if len(sys.argv) > 6: #Because the argv starts with the 0 index (0 index is for the script itself)
         perturb = sys.argv[6]
-    run_experiment(dataset_path, model_weights_path, results_file, data_name_dir, technique, perturb)
+    run_experiment(dataset_path, model_weights_path, calculate_attribution, data_name_dir, technique, perturb)

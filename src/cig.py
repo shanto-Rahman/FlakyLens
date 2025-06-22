@@ -37,11 +37,11 @@ class CustomIntegratedGradients(IntegratedGradients):
 
         grads = torch.autograd.grad(selected, embeddings, allow_unused=True)
         #self.model.eval()
-        print("Gradients calculated")  # Debugging line
+        #print("Gradients calculated")  # Debugging line
         return grads
 
     def _attribute(self, inputs, target, additional_forward_args=None, **kwargs):
-        print("Custom _attribute method called")  # Debugging line
+        #print("Custom _attribute method called")  # Debugging line
         target_ind = target if isinstance(target, int) else target[0]
         gradients = self.compute_gradients(inputs, target_ind)
         return gradients
@@ -69,7 +69,7 @@ class CustomIntegratedGradients(IntegratedGradients):
         return attributions, approximation_error'''
 
     def attribute(self, inputs, target=0, **kwargs):
-        print("Custom attribute method called")  # Debugging line
+        #print("Custom attribute method called")  # Debugging line
         return self._attribute(inputs, target, **kwargs)
 
     #def _attribute(self, inputs, target, additional_forward_args=None, **kwargs):

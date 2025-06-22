@@ -464,8 +464,8 @@ def init_setup(technique, data_name):
     #device = torch.device("cpu")
     ml_technique=technique.split("-")[0]
     #input_data, target_data, output_layer, dataset_category = preprocess_data(dataset_path, technique)
-    dataset_category = "Flakicat"
-    output_layer = 6 # Flakicat
+    dataset_category = "FlakyLens"
+    output_layer = 6 # FlakyLens
 
     where_data_comes = data_name.split("-")[0] 
     os.makedirs(f"{where_data_comes}-result", exist_ok=True)
