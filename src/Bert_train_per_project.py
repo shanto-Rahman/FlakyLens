@@ -243,11 +243,11 @@ def apply_smote(train_data_Org, train_y_Org):
     train_x_Org = train_x_Org.reset_index(drop=True)  # Ensure sequential indexing
     
     # Step 4: Apply SMOTE **on the numerical representation**
-    smote = SMOTE(sampling_strategy={0: 500, 1: 500, 2: 500, 3: 500, 4: 500}, random_state=42)
-    train_x_resampled, train_y_resampled = smote.fit_resample(train_x_vec, train_y_Org)
+    '''smote = SMOTE(sampling_strategy={0: 500, 1: 500, 2: 500, 3: 500, 4: 500}, random_state=42)
+    train_x_resampled, train_y_resampled = smote.fit_resample(train_x_vec, train_y_Org)'''
 
-    '''borderline_smote = BorderlineSMOTE(sampling_strategy='auto', random_state=42, kind='borderline-1')
-    train_x_resampled, train_y_resampled = borderline_smote.fit_resample(train_x_vec, train_y_Org)'''
+    borderline_smote = BorderlineSMOTE(sampling_strategy='auto', random_state=42, kind='borderline-1')
+    train_x_resampled, train_y_resampled = borderline_smote.fit_resample(train_x_vec, train_y_Org)
 
     #smote_enn = SMOTEENN(sampling_strategy='auto', random_state=42)
     #train_x_resampled, train_y_resampled = smote_enn.fit_resample(train_x_vec, train_y_Org)
@@ -380,7 +380,7 @@ def run_experiment(dataset_path, model_weights_path, data_name_dir, technique):
             cross_entropy = FocalLoss(alpha=weights.to(device), gamma=2.0)
 
         # number of training epochs
-        epochs = 20
+        epochs = 40
     
         model = BERT_Arch(auto_model, output_layer)
         # push the model to GPU
