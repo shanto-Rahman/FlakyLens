@@ -41,3 +41,7 @@ Now to parse the result, run the following command from flaky-test-categorizatio
 
 This outputs the attribution scores in Attributions_scores directory.
 /FlakyLens_attributions_project_group_1.csv
+
+# Hardware Requirement
+
+We perform fine-tuning on a Linux machine equipped with a single NVIDIA RTX A5000 GPU, 125GB of RAM, and 24GB of GPU memory, utilizing CUDA version 12.0.
