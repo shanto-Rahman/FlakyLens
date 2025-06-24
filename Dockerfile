@@ -1,3 +1,18 @@
+# Commands-1: docker build -t flaky-test-classifier-gpu:latest . # This command is needed to build the docker image.
+# Commands-2: docker run -it --rm --gpus all flaky-test-classifier-gpu:latest # This command is needed to run the docker container
+## Inside the Docker container's terminal:
+
+# To run the training code:
+#bash per_project_prediction.sh FlakyLens "train"
+
+# The model will be saved to /app/flaky-test-categorization_per_project/
+# (This path resolves correctly because /app is your project root)
+
+# To run the prediction code:
+#bash per_project_prediction.sh FlakyLens "BERT"
+#*********************************
+
+
 # STEP 1: Choose a CUDA-enabled Base Image from NVIDIA
 # Uses CUDA 12.0.1 with cuDNN 8 on Ubuntu 22.04, ideal for RTX A5000 and your specified CUDA.
 FROM nvidia/cuda:12.0.1-cudnn8-devel-ubuntu22.04
