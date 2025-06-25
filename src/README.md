@@ -1,4 +1,4 @@
-python3 compare_perturbation_result.py Flakicat_Categorization-result/without_perturbation.txt Flakicat_Categorization-result/deadcode_perturbation.txt
+python3 compare_perturbation_result.py FlakyLens_Categorization-result/without_perturbation.txt FlakyLens_Categorization-result/deadcode_perturbation.txt
 deadcode_perturbation
 
 bash heatmap_category_wise_feature_attribution.sh
@@ -11,7 +11,7 @@ python3 gpt_experiment_to_get_pertubed_code.py attributions_deadcode_perturbatio
 Date: Mar. 3, 2025
 
 Prediction of fine-tuned model. THis will also save the attribution score for each token of each test
-bash per_project_prediction.sh Flakicat "BERT"
+bash per_project_prediction.sh FlakyLens "BERT"
 
 Now I need to look for the tokens for those tests that are correctly predicted
 a) Here I first find the rows that have both True_class, and Predicted_Class same

@@ -152,7 +152,7 @@ def set_deterministic(seed):
 device = torch.device("cuda")
 
 def calculate_train_and_validation_loss(model_weights_path, fold_number, model, train_dataloader, val_dataloader, cross_entropy, device, optimizer, epochs, writer):
-    early_stopping = EarlyStopping(patience=5, verbose=True, path=model_weights_path+str(fold_number)+'.pt')
+    early_stopping = EarlyStopping(patience=10, verbose=True, path=model_weights_path+str(fold_number)+'.pt')
     best_valid_loss = float('inf')
     best_f1_score = 0.0
     # Log the model architecture (ensure it's logged only once at the beginning of training)
@@ -243,14 +243,14 @@ def apply_smote(train_data_Org, train_y_Org):
     train_x_Org = train_x_Org.reset_index(drop=True)  # Ensure sequential indexing
     
     # Step 4: Apply SMOTE **on the numerical representation**
-    '''smote = SMOTE(sampling_strategy={0: 500, 1: 500, 2: 500, 3: 500, 4: 500}, random_state=42)
-    train_x_resampled, train_y_resampled = smote.fit_resample(train_x_vec, train_y_Org)'''
+    smote = SMOTE(sampling_strategy={0: 500, 1: 500, 2: 500, 3: 500, 4: 500}, random_state=42)
+    train_x_resampled, train_y_resampled = smote.fit_resample(train_x_vec, train_y_Org)
 
-    borderline_smote = BorderlineSMOTE(sampling_strategy='auto', random_state=42, kind='borderline-1')
-    train_x_resampled, train_y_resampled = borderline_smote.fit_resample(train_x_vec, train_y_Org)
+    '''borderline_smote = BorderlineSMOTE(sampling_strategy='auto', random_state=42, kind='borderline-1')
+    train_x_resampled, train_y_resampled = borderline_smote.fit_resample(train_x_vec, train_y_Org)'''
 
-    #smote_enn = SMOTEENN(sampling_strategy='auto', random_state=42)
-    #train_x_resampled, train_y_resampled = smote_enn.fit_resample(train_x_vec, train_y_Org)
+    '''smote_enn = SMOTEENN(sampling_strategy='auto', random_state=42)
+    train_x_resampled, train_y_resampled = smote_enn.fit_resample(train_x_vec, train_y_Org)'''
 
     
     # Step 5: Match resampled labels back to original text
@@ -274,8 +274,6 @@ def apply_smote(train_data_Org, train_y_Org):
 
 def run_experiment(dataset_path, model_weights_path, data_name_dir, technique):
     df = pd.read_csv(dataset_path)  # Load the dataset
-
-    #project_index=0
     x = 'full_code'
     y='category'
     project_group = 0
@@ -380,7 +378,7 @@ def run_experiment(dataset_path, model_weights_path, data_name_dir, technique):
             cross_entropy = FocalLoss(alpha=weights.to(device), gamma=2.0)
 
         # number of training epochs
-        epochs = 40
+        epochs = 30
     
         model = BERT_Arch(auto_model, output_layer)
         # push the model to GPU
