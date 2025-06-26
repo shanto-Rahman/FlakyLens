@@ -7,6 +7,35 @@ The primary goal of this artifact is to provide access to the dataset, training 
 
 We are applying for the "Available" and "Reusable" badges. The dataset and code are publicly accessible via a Zenodo link, and all scripts are fully executable, enabling others to reproduce our results and extend the work.
 
+# Provenance
+
+The artifact can be obtained from https://zenodo.org/records/??? in the form of a Docker image. Note that the size of our Docker image including the dataset is about ???GB, so please prepare sufficient disk space.
+
+# Requirements
+
+docker
+
+NVIDIA GPU
+
+Disk Space ???GB
+
+
+# Setup 
+After downloading flakylens_latest.tar.gz from the Zenodo link, load it into Docker:
+
+```shell
+docker load < flakylens_latest.tar.gz
+```
+
+Ensure that your user is added to the docker group to interact with the Docker daemon without needing sudo. If you're not already a member of the docker group, please follow these instructions to run Docker commands as a non-root user: https://docs.docker.com/engine/install/linux-postinstall/.
+
+To start a Docker container, use the following command:
+
+```shell
+docker run --gpus all -it --rm flakylens:latest
+```
+
+We evaluated our artifact on our end using Docker version 20.10.21, build 20.10.21-0ubuntu1~20.04.2.
 
 # Dataset
 
