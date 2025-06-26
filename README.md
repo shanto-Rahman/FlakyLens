@@ -1,5 +1,13 @@
 # Understanding_and_Improving_FlakyTest_Classifiers_Artifact
 
+# Purpose
+This README accompanies the artifact for the paper "Understanding and Improving Flaky Test Classification." This work introduces a new dataset that combines flaky and non-flaky tests, resulting in a more realistic distribution of test categories. The paper also presents a classification approach using fine-tuned models to predict the category of each test.
+
+The primary goal of this artifact is to provide access to the dataset, training and inference code, and scripts for interpreting model predictions by identifying key features with attribution scores.
+
+We are applying for the "Available" and "Reusable" badges. The dataset and code are publicly accessible via a Zenodo link, and all scripts are fully executable, enabling others to reproduce our results and extend the work.
+
+
 # Dataset
 
 Our dataset is available in ```dataset/FlakyLens/FlakyLens_dataset_with_nonflaky_indented.csv```
