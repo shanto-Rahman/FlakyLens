@@ -29,7 +29,7 @@ ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
 # For exact version control like 3.8.5, installing Miniconda is usually more straightforward.
 # Let's stick with Miniconda for precise version control as implied by your README's `conda create`
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends wget bzip2 ca-certificates git build-essential && \
+    apt-get install -y --no-install-recommends wget bzip2 ca-certificates git build-essential vim && \
     rm -rf /var/lib/apt/lists/*
 
 RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh && \
