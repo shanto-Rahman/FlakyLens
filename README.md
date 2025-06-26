@@ -37,9 +37,37 @@ docker run --gpus all -it --rm flakylens:latest
 
 We evaluated our artifact on our end using Docker version 20.10.21, build 20.10.21-0ubuntu1~20.04.2.
 
+
+# Usage
+Use the following instructions to run through our artifact. Our models are placed into 
+```
+flaky-test-categorization_per_project/
+```
+For the prediction task, you need to run the following command
+
+```shell
+bash per_project_prediction.sh FlakyLens "BERT"
+```
+To run the prediction code, run the following command. This may take around 2-3 mins.
+
+
+Now to parse the result, run the following command from flaky-test-categorization/scripts
+```shell
+ bash per_category_parse_result.sh ../per_Category_Evaluation_BERT-FlakyLens.txt
+ ```
+
+
+If you want to get the attribution score for the tokens, run the following command
+```shell
+bash per_project_prediction.sh FlakyLens "BERT" "calculate_gradient"
+```
+
 # Dataset
 
 Our dataset is available in ```dataset/FlakyLens/FlakyLens_dataset_with_nonflaky_indented.csv```
+
+
+# ************ =====================
 
 # Environment
 ```shell
