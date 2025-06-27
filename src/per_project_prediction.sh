@@ -2,10 +2,10 @@
 #dataset=$1
 dataset_name=$(echo $1 | cut -d'_' -f1)
 data_path="../dataset"
-results_path="../flaky-test-categorization_per_project"
+results_path="../models"
 #dataset_file="${data_path}/${dataset_name}/${dataset_name}_dataset.csv" 
 dataset_file="${data_path}/${dataset_name}/${dataset_name}_dataset_with_nonflaky_indented.csv"  
-model_weights="${results_path}/per_project_model_weights_on_dataset"
+model_weights="${results_path}/per_project_model_weights_on__dataset"
 results_file="${results_path}/sklearn_predictor/per_project_validation_results_on_${dataset}_dataset"
 
 #if [[ ! -d "${results_path}/sklearn_predictor" ]]; then

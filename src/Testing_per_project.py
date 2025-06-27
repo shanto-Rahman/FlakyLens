@@ -376,8 +376,8 @@ def run_experiment(dataset_path, model_weights_path, calculate_attribution, data
     
     prediction_time_codebert = 0
     categories = 1 # 5 if attribution
-    if os.path.exists("../flaky-test-categorization_per_project/per_Category_Evaluation_BERT-FlakyLens.txt"):
-        os.remove("../flaky-test-categorization_per_project/per_Category_Evaluation_BERT-FlakyLens.txt")
+    if os.path.exists("../results_per_project/per_Category_Evaluation_BERT-FlakyLens.txt"):
+        os.remove("../results_per_project/per_Category_Evaluation_BERT-FlakyLens.txt")
     
     # Get all train-test file pairs from the directory
     train_files = sorted([f for f in os.listdir(data_name_dir) if f.startswith("train_") and f.endswith(".csv")])
@@ -647,14 +647,14 @@ def run_experiment(dataset_path, model_weights_path, calculate_attribution, data
         else:
             print("No data to save!")
   
-        with open("../flaky-test-categorization/per_Category_Evaluation_"+ml_technique+".txt", "w") as file:
+        with open("../results/per_Category_Evaluation_"+ml_technique+".txt", "w") as file:
             file.write("")
         for cls in range(output_layer):
             cls=str(cls)
             #print(cls)
             avg_category_dict =  [(category_dict[cls][idx] /category_dict[cls][-1]) for idx in range(3)] 
             print(avg_category_dict)
-            with open("../flaky-test-categorization/per_Category_Evaluation_"+ml_technique+".txt", "a") as file:
+            with open("../results/per_Category_Evaluation_"+ml_technique+".txt", "a") as file:
                 file.write(cls+":" + str(avg_category_dict))
                 file.write("\n")
 
@@ -665,7 +665,7 @@ def initialize_environment(seed_value):
 
 if __name__ == "__main__":
     dataset_path = sys.argv[1]
-    model_weights_path = sys.argv[2] #"../flaky-test-categorization_per_project/So-Far-Good-Models/per_project_model_weights_on__dataset" #sys.argv[2]
+    model_weights_path = sys.argv[2] #"../results_per_project/So-Far-Good-Models/per_project_model_weights_on__dataset" #sys.argv[2]
     calculate_attribution = sys.argv[3]
     data_name_dir = sys.argv[4]
     technique = sys.argv[5]
