@@ -111,7 +111,7 @@ Your output must be in the following format, with no extra text:
 **Category**: <one of the six categories above>
 """
 
-        print(prompt)
+        #print(prompt)
         # Ensure tokenizer has a padding token
         if tokenizer.pad_token is None:
             tokenizer.pad_token = tokenizer.eos_token  # Use EOS token as padding
@@ -121,7 +121,7 @@ Your output must be in the following format, with no extra text:
         # Move inputs to the correct device
         model_inputs = {key: value.to(device) for key, value in model_inputs.items()}  # Ensure it's a dict
 
-        # ✅ Limit tokens to avoid excessive generation
+        # Limit tokens to avoid excessive generation
         outputs = model.generate(
             **model_inputs,
             max_new_tokens=15,  # Limit to prevent explanations
@@ -137,7 +137,7 @@ Your output must be in the following format, with no extra text:
         raw_output = tokenizer.batch_decode(outputs.sequences[:, input_length:], skip_special_tokens=True)[0]
         print(raw_output)
 
-        # ✅ Extract only the category using regex
+        # Extract only the category using regex
         match = re.search(r'\*\*Category\*\*:\s*(.*)', raw_output)
         category = match.group(1).strip() if match else "Unknown"
 
@@ -173,8 +173,8 @@ Your output must be in the following format, with no extra text:
         top_token_list = "" #collect_token_list_by_applying_ig(model_inputs, prompt, tokenizer, model, test_data, ml_technique)
 
         # Print only the tokens (no scores)
-        print("\n✅ Top-20 Tokens Based on Attribution Scores:")
-        print(top_token_list)
+        #print("\n✅ Top-20 Tokens Based on Attribution Scores:")
+        #print(top_token_list)
 
         category_value = categories.get(output_category_lower, 6)  # Return -1 if category not found
         print('category_value=')
@@ -190,8 +190,8 @@ Your output must be in the following format, with no extra text:
         else:
             category_token_map[category_value] = []  # Store empty list for large test cases
 
-        print("\nFinal Category-Token Map:", category_token_map)
-        exit()
+        #print("\nFinal Category-Token Map:", category_token_map)
+        #exit()
     #return total_preds, category_token_map
     return total_preds, category_token_map, top_tokens_per_test
     #print(category_value)
@@ -202,7 +202,7 @@ Your output must be in the following format, with no extra text:
 def give_test_data_in_chunks_deep_seek_coder(x_test_nparray, tokenizer, model, batch_size, device, fold, y_test_nparray, ml_technique): 
     x_test_df = pd.DataFrame(x_test_nparray)
     y_test_df = pd.DataFrame(y_test_nparray, columns=['category'])  # Convert to DataFrame
-    print(y_test_df)
+    #print(y_test_df)
     n = 1  # len(x_test) / batch_size
     preds_chunks = None
     paired_data = []
@@ -300,7 +300,7 @@ Test:
         raw_output = tokenizer.decode(outputs[0][len(input_ids[0]):], skip_special_tokens=True).strip()
         print("Raw model output:", raw_output)
 
-        # ✅ Extract only the category using regex
+        # Extract only the category using regex
         match = re.search(r'\*\*Category\*\*:\s*(.*)', raw_output)
         category = match.group(1).strip() if match else "Unknown"
 
@@ -329,8 +329,8 @@ Test:
         top_token_list = "" #collect_token_list_by_applying_ig(model_inputs, prompt, tokenizer, model, test_data, ml_technique)
 
         # Print only the tokens (no scores)
-        print("\n✅ Top-20 Tokens Based on Attribution Scores:")
-        print(top_token_list)
+        #print("\n Top-20 Tokens Based on Attribution Scores:")
+        #print(top_token_list)
 
         category_value = categories.get(output_category_lower, 6)  # Return -1 if category not found
         print('category_value=')
@@ -346,7 +346,7 @@ Test:
         else:
             category_token_map[category_value] = []  # Store empty list for large test cases
 
-        print("\nFinal Category-Token Map:", category_token_map)
+        #print("\nFinal Category-Token Map:", category_token_map)
         #exit()
     #return total_preds, category_token_map
     return total_preds, category_token_map, top_tokens_per_test
@@ -490,8 +490,8 @@ def give_test_data_in_chunks_llama3_8b(x_test_nparray, tokenizer, model, batch_s
         top_token_list = "" #collect_token_list_by_applying_ig(model_inputs, prompt, tokenizer, model, test_data, ml_technique)
 
         # Print only the tokens (no scores)
-        print("\n✅ Top-20 Tokens Based on Attribution Scores:")
-        print(top_token_list)
+        #print("\n✅ Top-20 Tokens Based on Attribution Scores:")
+        #print(top_token_list)
         #Storing tokens for each category test 
         #category = parse_category_and_token_list(output_category)
 
@@ -509,7 +509,7 @@ def give_test_data_in_chunks_llama3_8b(x_test_nparray, tokenizer, model, batch_s
         else:
             category_token_map[category_value] = []  # Store empty list for large test cases
 
-        print("\nFinal Category-Token Map:", category_token_map)
+        #print("\nFinal Category-Token Map:", category_token_map)
     
         #total_preds.append(category_value)
         #top_tokens_per_test.append(tokens)
@@ -604,9 +604,9 @@ def give_test_data_in_chunks_codegemma(x_test_nparray, tokenizer, model, batch_s
         #response = outputs[0][model_inputs.shape[-1]:]
         response = outputs["sequences"][:, model_inputs.shape[-1]:]
 
-        print(response)
+        #print(response)
         output_text = tokenizer.decode(response[0], skip_special_tokens=True)
-        print(output_text)
+        #print(output_text)
         output_category = parse_generated_output_to_get_category(output_text)
         output_category_lower = output_category.lower()
 
@@ -614,8 +614,8 @@ def give_test_data_in_chunks_codegemma(x_test_nparray, tokenizer, model, batch_s
         top_token_list = "" #collect_token_list_by_applying_ig(model_inputs, prompt, tokenizer, model, test_data, ml_technique)
 
         # Print only the tokens (no scores)
-        print("\n✅ Top-20 Tokens Based on Attribution Scores:")
-        print(top_token_list)
+        #print("\nTop-20 Tokens Based on Attribution Scores:")
+        #print(top_token_list)
         #Storing tokens for each category test 
         #category = parse_category_and_token_list(output_category)
 
@@ -633,7 +633,7 @@ def give_test_data_in_chunks_codegemma(x_test_nparray, tokenizer, model, batch_s
         else:
             category_token_map[category_value] = []  # Store empty list for large test cases
 
-        print("\nFinal Category-Token Map:", category_token_map)
+        #print("\nFinal Category-Token Map:", category_token_map)
 
     #return total_preds
     return total_preds, category_token_map, top_tokens_per_test
@@ -685,7 +685,7 @@ def give_test_data_in_chunks_gemma2b(x_test_nparray, tokenizer, model, batch_siz
         )
 
         output_text = tokenizer.decode(outputs["sequences"][0], skip_special_tokens=True)
-        print('output=', output_text)
+        #print('output=', output_text)
         #output = output.split("Category:", 1)[1]
         output_category = parse_generated_output_to_get_category(output_text)
         print(output_category)
@@ -697,8 +697,8 @@ def give_test_data_in_chunks_gemma2b(x_test_nparray, tokenizer, model, batch_siz
         top_token_list = "" #collect_token_list_by_applying_ig(model_inputs, prompt, tokenizer, model, test_data, ml_technique)
 
         # Print only the tokens (no scores)
-        print("\n✅ Top-20 Tokens Based on Attribution Scores:")
-        print(top_token_list)
+        #print("\n Top-20 Tokens Based on Attribution Scores:")
+        #print(top_token_list)
         #Storing tokens for each category test 
         #category = parse_category_and_token_list(output_category)
 
@@ -716,7 +716,7 @@ def give_test_data_in_chunks_gemma2b(x_test_nparray, tokenizer, model, batch_siz
         else:
             category_token_map[category_value] = []  # Store empty list for large test cases
 
-        print("\nFinal Category-Token Map:", category_token_map)
+        #print("\nFinal Category-Token Map:", category_token_map)
 
     #return total_preds
     return total_preds, category_token_map, top_tokens_per_test
@@ -822,7 +822,7 @@ def give_test_data_in_chunks_gemma7b(x_test_nparray, tokenizer, model, batch_siz
         ) 
 
         output_text = tokenizer.decode(outputs["sequences"][0], skip_special_tokens=True)
-        print(output_text)
+        #print(output_text)
         output_category = parse_generated_output_to_get_category(output_text)
         print("category_output=", output_category)
 
@@ -832,8 +832,8 @@ def give_test_data_in_chunks_gemma7b(x_test_nparray, tokenizer, model, batch_siz
         #exit()
 
         # Print only the tokens (no scores)
-        print("\n✅ Top-20 Tokens Based on Attribution Scores:")
-        print(top_token_list)
+        #print("\n✅ Top-20 Tokens Based on Attribution Scores:")
+        #print(top_token_list)
         #Storing tokens for each category test 
         #category = parse_category_and_token_list(output_category)
 
@@ -850,7 +850,7 @@ def give_test_data_in_chunks_gemma7b(x_test_nparray, tokenizer, model, batch_siz
         else:
             category_token_map[category_value] = []  # Store empty list for large test cases
 
-        print("\nFinal Category-Token Map:", category_token_map)
+        #print("\nFinal Category-Token Map:", category_token_map)
         #exit()
 
     return total_preds, category_token_map, top_tokens_per_test
@@ -1002,7 +1002,7 @@ Category: <one of the six categories above>
                tokenize=False,
                add_generation_prompt=True
         )
-        print('row_index=', index)
+        #print('row_index=', index)
         #exit()
         #MAX_LENGTH = 2048  # Or 8192, based on your model
 
@@ -1032,8 +1032,8 @@ Category: <one of the six categories above>
         top_token_list = "" #collect_token_list_by_applying_ig(model_inputs, prompt, tokenizer, model, test_data, ml_technique)
 
         # Print only the tokens (no scores)
-        print("\n✅ Top-20 Tokens Based on Attribution Scores:")
-        print(top_token_list)
+        #print("\n✅ Top-20 Tokens Based on Attribution Scores:")
+        #print(top_token_list)
         #Storing tokens for each category test 
         category = parse_category_and_token_list(output_category)
         category_value = categories.get(category.lower().strip(), 6)  # Return -1 if category not found
@@ -1049,7 +1049,7 @@ Category: <one of the six categories above>
         else:
             category_token_map[category_value] = []  # Store empty list for large test cases
 
-        print("\nFinal Category-Token Map:", category_token_map)
+        #print("\nFinal Category-Token Map:", category_token_map)
         #exit()
 
     return total_preds, category_token_map, top_tokens_per_test
@@ -1066,7 +1066,7 @@ def run_experiment(dataset_path, model_weights_path, results_file, data_name_dir
     device, ml_technique, dataset_category, output_layer, where_data_comes = init_setup(technique, data_name_dir)
     
     if ml_technique == "qwen":
-        print('I am qwen')
+        #print('I am qwen')
         model_name, tokenizer, auto_model = qwen_model_define()
     elif ml_technique == "gemma7b":
         model_name, tokenizer, auto_model = gemma7b_model_define() 
@@ -1082,7 +1082,7 @@ def run_experiment(dataset_path, model_weights_path, results_file, data_name_dir
         model_name, tokenizer, auto_model =  codellama_7b_instruct_model_define()
     else:
         print('model name not correct')
-        exit()
+        #exit()
     execution_time = time.time()
     print("Start time of the experiment", execution_time)
     #no_splits = 10 # For FlakiCat=4, IDOFT=10
@@ -1127,9 +1127,9 @@ def run_experiment(dataset_path, model_weights_path, results_file, data_name_dir
         Y_test_df = pd.read_csv(data_name+'/data_splits/y_test_project_group'+str(project_group)+'.csv')'''
         X_train_df, Y_train_df, X_valid_df, Y_valid_df, X_test_df, Y_test_df = read_data(data_name_dir, project_group)
 
-        print(len(X_test_df))
-        print(len(Y_test_df))
-        print(X_test_df)
+        #print(len(X_test_df))
+        #print(len(Y_test_df))
+        #print(X_test_df)
         #X_test_df.to_csv('XX.csv', index=False)
         #test_name_at_83 = X_test_df.iloc[83]["full_code"]  # Replace "test_name" with the actual column name
 
@@ -1161,13 +1161,13 @@ def run_experiment(dataset_path, model_weights_path, results_file, data_name_dir
         if ml_technique == "qwen":
             with torch.no_grad():
                 preds, category_token_map, top_tokens_per_test = give_test_data_in_chunks_qwen(X_test, tokenizer, model, batch_size, device, project_group, test_y.numpy(), ml_technique)
-                print('***************** All preds=')
+                #print('***************** All preds=')
                 print(preds)
         
         elif ml_technique == "gemma7b":
             with torch.no_grad():
                 preds, category_token_map, top_tokens_per_test = give_test_data_in_chunks_gemma7b(X_test, tokenizer, model, batch_size, device, project_group, test_y.numpy(), ml_technique)
-                print('***************** All preds=')
+                #print('***************** All preds=')
                 print(preds)
 
         elif ml_technique == "gemma2b":
