@@ -27,7 +27,7 @@ elif [[ $2 == "BERT" ]]; then
     fi
 
 elif [[ $2 == "qwen" || $2 == "gemma7b" || $2 == "gemma2b" || $2 == "codegemma" || $2 == "llama3_8b" || $2 == "deep_seek_coder" || $2 == "codellama" ]]; then
-    python3 Testing_qwen_categorization.py $dataset_file $model_weights "${results_file}_qwen.csv" "FlakyLens_Categorization_PerProject-Data" "$2-$1"
+    python3 Testing_other_LLMs.py $dataset_file $model_weights "${results_file}_qwen.csv" "FlakyLens_Categorization_PerProject-Data" "$2-$1"
 fi
 
 
