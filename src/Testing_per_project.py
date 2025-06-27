@@ -211,7 +211,7 @@ def give_test_data_in_chunks(x_test_nparray, tokenizer, model, batch_size, devic
                     total_attributions.append(attributions_sum)
                     tokens = [tokenizer.convert_ids_to_tokens(id) for id in test_seq.cpu().numpy()]
                     total_tokens.append(tokens)
-                    # Print each token with its corresponding attribution score
+                    #Print each token with its corresponding attribution score
                     #print("Token | Attribution Score")
                     #print("-------------------------")
             except RuntimeError as e:
@@ -224,7 +224,8 @@ def give_test_data_in_chunks(x_test_nparray, tokenizer, model, batch_size, devic
             add_attributions_to_visualizer(attributions_sum, tokens, pred_class, pred_logit, label, vis_data_records_ig, test_y, approximation_error)
     
     modified_html_content = ""
-    if calculate_attribution:
+    '''if calculate_attribution:
+        print("CALCULATE ***")
         html_obj = viz.visualize_text(vis_data_records_ig)
         html_content = html_obj.data 
         html_content = html_content.replace('True Label', 'Target Label')
@@ -244,7 +245,7 @@ def give_test_data_in_chunks(x_test_nparray, tokenizer, model, batch_size, devic
             #print('********Ground-truth=', str(test_value))
             row.insert(1, new_col_data)
 
-        modified_html_content = str(soup)
+        modified_html_content = str(soup)'''
     return total_preds, modified_html_content, attribution_csvfile_name, confidence_scores
 
 # Mapping from perturbation technique names to actual function objects
