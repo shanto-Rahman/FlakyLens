@@ -57,10 +57,19 @@ Now to parse the result, run the following command from ```results/scripts```
  ```
 
 
-If you want to get the attribution score for the tokens, run the following command
+For getting the results of other LLMs, run the following command (related to the RQ2).
+
+```shell
+bash per_project_prediction.sh FlakyLens "qwen"
+```
+
+
+If you want to get the attribution score for the tokens, run the following command (related to the RQ3). Start running 4:45 PM
 ```shell
 bash per_project_prediction.sh FlakyLens "BERT" "calculate_gradient"
 ```
+
+
 
 # Dataset
 
