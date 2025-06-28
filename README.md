@@ -113,9 +113,3 @@ bash rq4.sh
 ```
 This will print the precision, recall, and F1-score for each category.
 Estimated runtime: ~5 minutes.
-
-
-# Fine-tuned Models
-
-Use the following instructions to run through our artifact.
-
