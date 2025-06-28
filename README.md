@@ -9,7 +9,7 @@ We are applying for the "Available" and "Functional" badges. The dataset and cod
 
 # Provenance
 
-The artifact can be obtained from https://zenodo.org/records/??? in the form of a Docker image. Note that the size of our Docker image including the dataset is about ???GB, so please prepare sufficient disk space.
+The artifact can be obtained from https://zenodo.org/records/??? in the form of a Docker image. Note that the size of our Docker image including the dataset is about 11GB, so please prepare sufficient disk space.
 
 # Requirements
 
