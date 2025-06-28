@@ -15,12 +15,17 @@ from collections import Counter
 import torch.nn.functional as F
 from Testing_gemma_7b_categorization import parse_generated_output_to_get_category
 from Testing_gemma_2b_categorization  import identify_test_category
-import transformers  # ✅ Ensure transformers is imported
+import transformers
 
 import torch
 
 #login(token="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")
-login(token="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")
+token = os.getenv("HF_TOKEN")
+#login(token="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")
+if token is None:
+    raise ValueError("Environment variable HF_TOKEN not set. Please export it before running.(export HF_TOKEN=hf_your_token_here)")
+
+login(token=token)
 
 timeStart = time.time()
 # Define a set of common stopwords or meaningless tokens
@@ -135,7 +140,7 @@ Your output must be in the following format, with no extra text:
 
         input_length = model_inputs["input_ids"].shape[1]
         raw_output = tokenizer.batch_decode(outputs.sequences[:, input_length:], skip_special_tokens=True)[0]
-        print(raw_output)
+        #print(raw_output)
 
         # Extract only the category using regex
         match = re.search(r'\*\*Category\*\*:\s*(.*)', raw_output)
@@ -298,7 +303,7 @@ Test:
 
         # Decode and clean the output
         raw_output = tokenizer.decode(outputs[0][len(input_ids[0]):], skip_special_tokens=True).strip()
-        print("Raw model output:", raw_output)
+        #print("Raw model output:", raw_output)
 
         # Extract only the category using regex
         match = re.search(r'\*\*Category\*\*:\s*(.*)', raw_output)
@@ -900,7 +905,7 @@ def collect_token_list_by_applying_ig(model_inputs, prompt, tokenizer, model, te
     #print('predicted_tokens=', predicted_tokens)
     probs = torch.nn.functional.softmax(logits, dim=-1)  # Convert logits to probabilities
     #print('probs=',probs)
-    print('model=', model)
+    #print('model=', model)
     if ml_technique == "gemma7b" or ml_technique == "gemma2b" or ml_technique == "codegemma":
         sorted_token_attributions = interpret_with_ig_gemma7b(prompt, tokenizer, model, model_inputs, predicted_tokens, test_data)
     elif ml_technique == "codellama":
@@ -908,7 +913,7 @@ def collect_token_list_by_applying_ig(model_inputs, prompt, tokenizer, model, te
 
     elif ml_technique == "qwen" or ml_technique == "llama3_8b" or ml_technique == "deep_seek_coder":
         sorted_token_attributions = interpret_with_ig_qwen(prompt, tokenizer, model, model_inputs, predicted_tokens, test_data, ml_technique)
-        print("IIIIII AMMM ********")
+        #print("IIIIII AMMM ********")
 
     top_token_list = filter_tokens(sorted_token_attributions)
     return top_token_list
@@ -1162,13 +1167,13 @@ def run_experiment(dataset_path, model_weights_path, results_file, data_name_dir
             with torch.no_grad():
                 preds, category_token_map, top_tokens_per_test = give_test_data_in_chunks_qwen(X_test, tokenizer, model, batch_size, device, project_group, test_y.numpy(), ml_technique)
                 #print('***************** All preds=')
-                print(preds)
+                #print(preds)
         
         elif ml_technique == "gemma7b":
             with torch.no_grad():
                 preds, category_token_map, top_tokens_per_test = give_test_data_in_chunks_gemma7b(X_test, tokenizer, model, batch_size, device, project_group, test_y.numpy(), ml_technique)
                 #print('***************** All preds=')
-                print(preds)
+                #print(preds)
 
         elif ml_technique == "gemma2b":
             with torch.no_grad():
@@ -1204,7 +1209,7 @@ def run_experiment(dataset_path, model_weights_path, results_file, data_name_dir
             global_category_token_map[category].extend(tokens)  # Append tokens from current project_group
 
         cr=classification_report(test_y, preds)
-        print(type(cr))
+        #print(type(cr))
         parse_cr(cr, technique, str(project_group))
     
         with open(where_data_comes+"-result/classification_report_"+str(project_group)+"project_groups_"+str(project_group), "a") as file:
@@ -1225,7 +1230,7 @@ def run_experiment(dataset_path, model_weights_path, results_file, data_name_dir
         #FP = FP + fp
         #FN = FN + fn
         #TP = TP + tp
-        print("delete model")
+        #print("delete model")
         del model
         torch.cuda.empty_cache()
     

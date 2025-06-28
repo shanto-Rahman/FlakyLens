@@ -57,14 +57,15 @@ Now to parse the result, run the following command from ```results/scripts```
  ```
 
 
-For getting the results of other LLMs, run the following command (related to the RQ2).
+For getting the results of other LLMs, run the following command (related to the RQ2). One example model to run is following command.
 
 ```shell
+export HF_TOKEN=<hf_your_token_here>
 bash per_project_prediction.sh FlakyLens "qwen"
 ```
+Expected runtime is 50 to 55 mins. The result will be stored in ```FlakyLens_Categorization_PerProject-result/qwen.csv```
 
-
-If you want to get the attribution score for the tokens, run the following command (related to the RQ3). This needs around 20~25 mins to finish. Attribution scores for each token is found ```Attributions_scores/```
+If you want to get the attribution score for the tokens, run the following command (related to the RQ3). This needs around 25~30 mins to finish. Attribution scores for each token is found ```Attributions_scores/```
 
 ```shell
 bash per_project_prediction.sh FlakyLens "BERT" "calculate_gradient"
