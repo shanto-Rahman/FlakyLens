@@ -1,4 +1,4 @@
-# Understanding and Improving FlakyTest Classifier Artifact
+# Understanding and Improving Flaky Test Classification Artifact
 
 # Purpose
 This README accompanies the artifact for the paper "Understanding and Improving Flaky Test Classification." This work introduces a new dataset that combines flaky and non-flaky tests, resulting in a more realistic distribution of test categories. The paper also presents a classification approach using fine-tuned models to predict the category of each test.
