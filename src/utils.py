@@ -546,7 +546,7 @@ def parse_cr(cr, ml_technique, fold):
             category_dict[key] = initial_val
 
     
-    print('metrics=',metrics)
+    #print('metrics=',metrics)
     third_last_line = lines[-3].strip().split()
 
     accuracy = [float(x) for x in third_last_line[1:]]

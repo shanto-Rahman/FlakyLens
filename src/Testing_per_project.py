@@ -531,7 +531,7 @@ def run_experiment(dataset_path, model_weights_path, calculate_attribution, data
             #model.load_state_dict(torch.load(model_weights_path+str(project_group)+'_With_noisy_train_data.pt'))
             #model.load_state_dict(torch.load(model_weights_path+str(project_group)+'_Only_noisy_train_1024_data.pt'))
 
-            print(model_weights_path+'_project_group_'+str(project_group)+'.pt')
+            #print(model_weights_path+'_project_group_'+str(project_group)+'.pt')
             model.load_state_dict(torch.load(model_weights_path+'_project_group_'+str(project_group)+'.pt'))
 
             model.to(device)
@@ -619,7 +619,7 @@ def run_experiment(dataset_path, model_weights_path, calculate_attribution, data
 
             #all_classes = list(range(max(max(y_test_for_cr), max(preds_for_cr)) + 1))
             cr=classification_report(y_test, preds, zero_division=0)
-            print(cr)
+            #print(cr)
             #exit()
             category_dict=parse_cr(cr, technique, str(project_group))
             
@@ -648,8 +648,8 @@ def run_experiment(dataset_path, model_weights_path, calculate_attribution, data
             final_predictions_df.to_csv(save_path, index=False)
             
             print(f"Successfully saved all predictions to: {save_path}")
-        else:
-            print("No data to save!")
+        #else:
+        #    print("No data to save!")
   
         with open("../results/per_Category_Evaluation_"+ml_technique+".txt", "w") as file:
             file.write("")
@@ -661,8 +661,8 @@ def run_experiment(dataset_path, model_weights_path, calculate_attribution, data
             with open("../results/per_Category_Evaluation_"+ml_technique+".txt", "a") as file:
                 file.write(cls+":" + str(avg_category_dict))
                 file.write("\n")
-
-    find_most_and_least_imp_tokens()    
+    if calculate_attribution == "calculate_attribution_True":
+        find_most_and_least_imp_tokens()    
 
 def initialize_environment(seed_value):
     """Initializes the environment by setting the seed and configuring logging."""
