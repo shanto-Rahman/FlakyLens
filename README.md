@@ -20,6 +20,10 @@ NVIDIA GPU
 Disk Space ???GB
 
 
+# Hardware Requirement
+
+We perform fine-tuning on a Linux machine equipped with a single NVIDIA RTX A5000 GPU, 125GB of RAM, and 24GB of GPU memory, utilizing CUDA version 12.0.
+
 # Setup 
 After downloading flakylens_latest.tar.gz from the Zenodo link, load it into Docker:
 
@@ -91,15 +95,11 @@ Estimated runtime: ~5 minutes.
 
 Our dataset is available in ```dataset/FlakyLens/FlakyLens_dataset_with_nonflaky_indented.csv```
 
+Our dataset includes six types of tests — five categories of flaky tests and one non-flaky category. It comprises a total of 8,574 tests collected from 97 projects.
+Each row in the dataset provides the project name, test name, test method body, and its corresponding test category.
+
+
+# Finetuned Models
+
 Use the following instructions to run through our artifact. Our models are placed into ```models/```
 
-# Hardware Requirement
-
-We perform fine-tuning on a Linux machine equipped with a single NVIDIA RTX A5000 GPU, 125GB of RAM, and 24GB of GPU memory, utilizing CUDA version 12.0.
-
-# To run Docker Image, run the following
-
-```shell
-docker build -t flakylens:latest .
-docker run --gpus all -it --rm flakylens:latest
-```
