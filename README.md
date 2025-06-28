@@ -65,7 +65,7 @@ To reproduce the full pipeline from scratch, you may choose to fine-tune the mod
 bash per_project_prediction.sh FlakyLens "train"
 ```
 
-Fine-tuning takes significant time (typically 8–10 hours on a standard GPU setup). However, you do not need to fine-tune the model to run the remaining steps or evaluate the research questions. We provide the pretrained fine-tuned models, and all RQ evaluations are based on them unless otherwise noted.
+Fine-tuning takes significant time (typically 8–10 hours on a standard GPU setup). However, you do not need to fine-tune the model to run the remaining steps or evaluate the research questions. We provide the fine-tuned models in the models/ directory.  All RQ evaluations are based on them unless otherwise noted.
 
 # Usage
 
@@ -115,7 +115,7 @@ This will print the precision, recall, and F1-score for each category.
 Estimated runtime: ~5 minutes.
 
 
-# Finetuned Models
+# Fine-tuned Models
 
-Use the following instructions to run through our artifact. Our models are placed into ```models/```
+Use the following instructions to run through our artifact.
 
