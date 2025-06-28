@@ -85,7 +85,7 @@ This will print the precision, recall, and F1-score for each category to the con
 Estimated runtime: ~2–3 minutes.
 
 ## RQ2: Predicting Flaky Tests with Other LLMs
-To evaluate other language models (e.g., Qwen) for flaky test prediction, run:
+To evaluate other large language models (LLMs) such as Qwen for flaky test prediction, you must first obtain a Hugging Face access token and set it as an environment variable:
 
 ```shell
 export HF_TOKEN=<your_huggingface_token>
