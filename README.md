@@ -1,4 +1,4 @@
-# Understanding_and_Improving_FlakyTest_Classifiers_Artifact
+# Understanding and Improving FlakyTest Classifier Artifact
 
 # Purpose
 This README accompanies the artifact for the paper "Understanding and Improving Flaky Test Classification." This work introduces a new dataset that combines flaky and non-flaky tests, resulting in a more realistic distribution of test categories. The paper also presents a classification approach using fine-tuned models to predict the category of each test.
@@ -66,6 +66,12 @@ bash rq1.sh
 
 This will print the precision, recall, and F1-score for each category to the console.
 Estimated runtime: ~2–3 minutes.
+
+To fine-tune, run the following command.
+```bash
+bash per_project_prediction.sh FlakyLens "train"
+```
+This process may take approximately 8 to 10 hours to complete.
 
 ## RQ2: Predicting Flaky Tests with Other LLMs
 To evaluate other language models (e.g., Qwen) for flaky test prediction, run:
