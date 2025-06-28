@@ -853,7 +853,7 @@ def generate_random_number(exclude_number):
 
 def count_perturb_type(type_of_perturbation, perturb_cat_counts, num_perturbation):
     print("\nCounts of each unique perturb_cat:")
-    filename = "Perturbation/Results/"+num_perturbation+type_of_perturbation+'Perturbation_least_important_features.csv'
+    filename = "../results/"+num_perturbation+type_of_perturbation+'Perturbation_least_important_features.csv'
     # Open the CSV file for writing
     with open(filename, mode='a', newline='') as file:
         writer = csv.writer(file)
@@ -861,7 +861,7 @@ def count_perturb_type(type_of_perturbation, perturb_cat_counts, num_perturbatio
         # Write the header
         writer.writerow(["Original Label", "Perturbation Category", "Count"])
         for (original_label, perturb_cat), count in sorted(perturb_cat_counts.items()):
-            print(f"Original Label {original_label}, Perturbation Category {perturb_cat}: {count}")
+            #print(f"Original Label {original_label}, Perturbation Category {perturb_cat}: {count}")
             writer.writerow([original_label, perturb_cat, count])
 
 def get_perturbed_data(test_code, code_to_add):

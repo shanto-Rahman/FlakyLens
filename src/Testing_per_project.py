@@ -661,7 +661,7 @@ def run_experiment(dataset_path, model_weights_path, calculate_attribution, data
             with open("../results/per_Category_Evaluation_"+ml_technique+".txt", "a") as file:
                 file.write(cls+":" + str(avg_category_dict))
                 file.write("\n")
-    if calculate_attribution == "calculate_attribution_True":
+    if calculate_attribution:
         find_most_and_least_imp_tokens()    
 
 def initialize_environment(seed_value):
