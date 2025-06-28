@@ -71,6 +71,12 @@ If you want to get the attribution score for the tokens, run the following comma
 bash per_project_prediction.sh FlakyLens "BERT" "calculate_gradient"
 ```
 
+To apply perturbation, we need to run the following command. One example of applying one category of the perturbation (deadlock) is as follows.
+
+```shell
+bash per_project_prediction.sh FlakyLens "BERT" "deadcode_perturbation"
+```
+
 
 
 # Dataset
