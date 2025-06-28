@@ -38,10 +38,19 @@ To start a Docker container, use the following command:
 # Dataset
 
 Our dataset is available in ```dataset/FlakyLens/FlakyLens_dataset_with_nonflaky_indented.csv```
+Our dataset contains 8,574 tests collected from 97 projects, spanning six categories — five types of flaky tests and one non-flaky category. Each row in the dataset includes the following columns:
 
-Our dataset includes six types of tests — five categories of flaky tests and one non-flaky category. It comprises a total of 8,574 tests collected from 97 projects.
-Each row in the dataset provides the project name, test name, test method body, and its corresponding test category.
+id – A unique identifier for each test case.
 
+project – The name of the project the test belongs to.
+
+test_name – The name of the test method.
+
+full_code – The complete source code of the test method.
+
+label – The numeric label assigned to the test, ranging from 0 to 5 (where 0–4 represent different flaky categories and 5 indicates non-flaky).
+
+category – The string name of the test category, such as "Async-Wait" or "Non-Flaky".
 
 ```shell
 docker run --gpus all -it --rm flakylens:latest
