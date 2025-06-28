@@ -35,6 +35,12 @@ Ensure that your user is added to the docker group to interact with the Docker d
 
 To start a Docker container, use the following command:
 
+```shell
+docker run --gpus all -it --rm flakylens:latest
+```
+
+We evaluated our artifact on our end using Docker version 20.10.21, build 20.10.21-0ubuntu1~20.04.2.
+
 # Dataset
 
 Our dataset is available in ```dataset/FlakyLens/FlakyLens_dataset_with_nonflaky_indented.csv```
@@ -52,11 +58,6 @@ label – The numeric label assigned to the test, ranging from 0 to 5 (where 0�
 
 category – The string name of the test category, such as "Async-Wait" or "Non-Flaky".
 
-```shell
-docker run --gpus all -it --rm flakylens:latest
-```
-
-We evaluated our artifact on our end using Docker version 20.10.21, build 20.10.21-0ubuntu1~20.04.2.
 
 
 # Usage
