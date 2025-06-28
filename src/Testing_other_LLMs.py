@@ -16,20 +16,15 @@ import torch.nn.functional as F
 from Testing_gemma_7b_categorization import parse_generated_output_to_get_category
 from Testing_gemma_2b_categorization  import identify_test_category
 import transformers
-
 import torch
 
-#login(token="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")
 token = os.getenv("HF_TOKEN")
-#login(token="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")
 if token is None:
     raise ValueError("Environment variable HF_TOKEN not set. Please export it before running.(export HF_TOKEN=hf_your_token_here)")
 
 login(token=token)
 
 timeStart = time.time()
-# Define a set of common stopwords or meaningless tokens
-#stopwords = {"Ġ", ";", "()", "ĠĠĠĠĠĠĠĠ", ";Ċ", ".", ",", "i", "be", "this", "you"}
 
 import torch
 from captum.attr import IntegratedGradients
@@ -169,7 +164,7 @@ Your output must be in the following format, with no extra text:
 
         #category, tokens = parse_category_and_tokens(output[0])
         #output_category = output_categories[0]
-        print('Category_name=',category)
+        #print('Category_name=',category)
         #print('token=', tokens)
 
         #category_value = categories.get(category.lower().strip(), 6)  # Return -1 if category not found
