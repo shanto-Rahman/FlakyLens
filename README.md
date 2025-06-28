@@ -64,7 +64,8 @@ bash per_project_prediction.sh FlakyLens "qwen"
 ```
 
 
-If you want to get the attribution score for the tokens, run the following command (related to the RQ3). Start running 4:45 PM
+If you want to get the attribution score for the tokens, run the following command (related to the RQ3). This needs around 20~25 mins to finish. Attribution scores for each token is found ```Attributions_scores/```
+
 ```shell
 bash per_project_prediction.sh FlakyLens "BERT" "calculate_gradient"
 ```
