@@ -81,7 +81,7 @@ To evaluate the predictive performance of **FlakyLens**, run:
 bash rq1.sh
 ```
 
-This will print the precision, recall, and F1-score for each category to the console.
+This will print the precision, recall, and F1-score for each category to the console. The output will be comparable to the results found in ```results/FlakyLens_Result_Found_By_Author.csv```.
 Estimated runtime: ~2–3 minutes.
 
 ## RQ2: Predicting Flaky Tests with Other LLMs
@@ -112,5 +112,5 @@ To evaluate the model under code perturbations (e.g., deadcode injection), run:
 ```shell
 bash rq4.sh
 ```
-This will print the precision, recall, and F1-score for each category.
+This will print the precision, recall, and F1-score for each category. Exact outputs may vary depending on test types and perturbations, but the overall trend is consistent—perturbations typically reduce performance.
 Estimated runtime: ~5 minutes.
