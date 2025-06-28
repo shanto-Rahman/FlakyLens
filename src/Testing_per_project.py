@@ -58,6 +58,7 @@ import torch.nn.functional as F
 import csv
 import string
 from detokenization import combine_tokens 
+from calculate_most_and_least_imp_tokens import find_most_and_least_imp_tokens
 
 vis_data_records_ig = []
 
@@ -172,6 +173,8 @@ def give_test_data_in_chunks(x_test_nparray, tokenizer, model, batch_size, devic
     token_attribution_df = pd.DataFrame()
     cig = CustomIntegratedGradients(model)
     attribution_csvfile_name = attributions_dir+dataset_category+"_attributions_project_group_"+str(project_group)+".csv"
+    #print("attribution_csvfile_name=", attribution_csvfile_name)
+    #exit()
     # Check if file exists and delete it
     if calculate_attribution and os.path.exists(attribution_csvfile_name):
         os.remove(attribution_csvfile_name)
@@ -658,6 +661,8 @@ def run_experiment(dataset_path, model_weights_path, calculate_attribution, data
             with open("../results/per_Category_Evaluation_"+ml_technique+".txt", "a") as file:
                 file.write(cls+":" + str(avg_category_dict))
                 file.write("\n")
+
+    find_most_and_least_imp_tokens()    
 
 def initialize_environment(seed_value):
     """Initializes the environment by setting the seed and configuring logging."""
