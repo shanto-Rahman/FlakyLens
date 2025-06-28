@@ -101,7 +101,8 @@ To calculate attribution scores for each token using gradient-based analysis, ru
 ```shell
 bash per_project_prediction.sh FlakyLens "BERT" "calculate_gradient"
 ```
-The attribution results will be stored in: ```Attributions_scores/```
+The attribution results will be stored in: ```Attributions_scores/```.
+For each category, a separate CSV file is provided containing two columns: Token and Attribution_Score.
 
 Estimated runtime: ~25–30 minutes.
 
