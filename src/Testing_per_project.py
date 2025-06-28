@@ -576,12 +576,12 @@ def run_experiment(dataset_path, model_weights_path, calculate_attribution, data
                 all_predictions.append(prediction_df_to_save)
 
             if calculate_attribution: 
-                print(f"Saving to: {where_data_comes}-result/predictions_{perturb}.csv")
+                print(f"Saving to: {where_data_comes}-result/Result_with_tokens.csv")
                 #print("Data being saved:")
                 #print(prediction_df_to_save)
             
                 if not prediction_df_to_save.empty:
-                    prediction_df_to_save.to_csv(where_data_comes+"-result/"+"predictions_"+perturbation+".csv", mode="a", index=False)
+                    prediction_df_to_save.to_csv(where_data_comes+"-result/"+"Result_with_tokens.csv", mode="a", index=False)
                     print('Successfully saved!')
                 else:
                     print("Nothing to save! DataFrame is empty.")
@@ -598,7 +598,7 @@ def run_experiment(dataset_path, model_weights_path, calculate_attribution, data
             original_y_test_str = f"Original: {original_y_test}"
             
             if calculate_attribution == "calculate_attribution_True":
-                file_path = os.path.abspath(where_data_comes+"-result/"+perturbation+".txt")
+                file_path = os.path.abspath(where_data_comes+"-result/"+perturbation+"_.txt")
                 print('file_path=', file_path)
                 print("Current Working Directory:", os.getcwd())
 
@@ -641,7 +641,7 @@ def run_experiment(dataset_path, model_weights_path, calculate_attribution, data
         if all_predictions:
             final_predictions_df = pd.concat(all_predictions, ignore_index=True)
         
-            save_path = f"{where_data_comes}-result/predictions_{perturbation}.csv"
+            save_path = f"{where_data_comes}-result/Result_with_tokens.csv"
             final_predictions_df.to_csv(save_path, index=False)
             
             print(f"Successfully saved all predictions to: {save_path}")
@@ -654,7 +654,7 @@ def run_experiment(dataset_path, model_weights_path, calculate_attribution, data
             cls=str(cls)
             #print(cls)
             avg_category_dict =  [(category_dict[cls][idx] /category_dict[cls][-1]) for idx in range(3)] 
-            print(avg_category_dict)
+            #print(avg_category_dict)
             with open("../results/per_Category_Evaluation_"+ml_technique+".txt", "a") as file:
                 file.write(cls+":" + str(avg_category_dict))
                 file.write("\n")
