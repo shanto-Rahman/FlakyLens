@@ -17,7 +17,7 @@ docker
 
 NVIDIA GPU
 
-Disk Space ???GB
+Disk Space 11GB
 
 
 # Hardware Requirement
