@@ -106,7 +106,7 @@ The attribution results will be stored in: ```Attributions_scores/```
 Estimated runtime: ~25–30 minutes.
 
 ## RQ4: Perturbation-Based Robustness Evaluation
-To evaluate the model under code perturbations (e.g., deadlock injection), run:
+To evaluate the model under code perturbations (e.g., deadcode injection), run:
 
 ```shell
 bash rq4.sh

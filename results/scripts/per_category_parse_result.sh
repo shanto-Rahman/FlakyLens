@@ -17,7 +17,7 @@ do
 done 
 all_results=${all_results%,}
 echo "precision,recall,f1(Async),precision,recall,f1(Conc),precision,recall,f1(Time),precision,recall,f1(UC),precision,recall,f1(OD),precision,recall,f1(Non-flaky)"
-echo "all_result= $all_results"
+echo "$all_results"
 rm data.csv
 rm tmp
 #echo -e "$all_results" | sed '$d'
