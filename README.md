@@ -89,10 +89,10 @@ To evaluate other large language models (LLMs) such as Qwen for flaky test predi
 
 ```shell
 export HF_TOKEN=<your_huggingface_token>
-bash per_project_prediction.sh FlakyLens "qwen"
+bash rq2.sh
 ```
 
-The output will be saved to: ```FlakyLens_Categorization_PerProject-result/qwen.csv```
+The raw output is saved to FlakyLens_Categorization_PerProject-result/qwen.csv, and the final summary will be printed to the console. The results are comparable to ../results/qwen_Result_Found_By_Author.csv.
 Estimated runtime: ~50–55 minutes.
 
 ## RQ3: Token-Level Attribution Analysis
