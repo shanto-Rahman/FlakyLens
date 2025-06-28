@@ -5,7 +5,7 @@ This README accompanies the artifact for the paper "Understanding and Improving 
 
 The primary goal of this artifact is to provide access to the dataset, training and inference code, and scripts for interpreting model predictions by identifying key features with attribution scores.
 
-We are applying for the "Available" and "Reusable" badges. The dataset and code are publicly accessible via a Zenodo link, and all scripts are fully executable, enabling others to reproduce our results and extend the work.
+We are applying for the "Available" and "Functional" badges. The dataset and code are publicly accessible via a Zenodo link, and all scripts are fully executable, enabling others to reproduce our results and extend the work.
 
 # Provenance
 
