@@ -58,7 +58,14 @@ label – The numeric label assigned to the test, ranging from 0 to 5 (where 0�
 
 category – The string name of the test category, such as "Async-Wait" or "Non-Flaky".
 
+# Fine-Tuning
 
+To reproduce the full pipeline from scratch, you may choose to fine-tune the model:
+```shell
+bash per_project_prediction.sh FlakyLens "train"
+```
+
+Fine-tuning takes significant time (typically 8–10 hours on a standard GPU setup). However, you do not need to fine-tune the model to run the remaining steps or evaluate the research questions. We provide the pretrained fine-tuned models, and all RQ evaluations are based on them unless otherwise noted.
 
 # Usage
 
@@ -76,12 +83,6 @@ bash rq1.sh
 
 This will print the precision, recall, and F1-score for each category to the console.
 Estimated runtime: ~2–3 minutes.
-
-To fine-tune, run the following command.
-```bash
-bash per_project_prediction.sh FlakyLens "train"
-```
-This process may take approximately 8 to 10 hours to complete.
 
 ## RQ2: Predicting Flaky Tests with Other LLMs
 To evaluate other language models (e.g., Qwen) for flaky test prediction, run:
