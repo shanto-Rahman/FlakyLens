@@ -22,7 +22,7 @@ Disk Space 11GB
 
 # Hardware Requirement
 
-We perform fine-tuning on a Linux machine equipped with a single NVIDIA RTX A5000 GPU, 125GB of RAM, and 24GB of GPU memory, utilizing CUDA version 12.0.
+We perform fine-tuning on a Linux machine equipped with a single NVIDIA RTX A5000 GPU, 125GB of RAM, and 48GB of GPU memory, utilizing CUDA version 12.0.
 
 # Setup 
 After downloading flakylens_latest.tar.gz from the Zenodo link, load it into Docker:
