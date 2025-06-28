@@ -51,7 +51,6 @@ We evaluated our artifact on our end using Docker version 20.10.21, build 20.10.
 
 
 # Usage
-i# FlakyLens: Flaky Test Categorization and Attribution
 
 This repository supports running four major research questions (RQs) from our study.
 
