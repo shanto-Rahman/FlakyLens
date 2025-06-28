@@ -35,6 +35,14 @@ Ensure that your user is added to the docker group to interact with the Docker d
 
 To start a Docker container, use the following command:
 
+# Dataset
+
+Our dataset is available in ```dataset/FlakyLens/FlakyLens_dataset_with_nonflaky_indented.csv```
+
+Our dataset includes six types of tests — five categories of flaky tests and one non-flaky category. It comprises a total of 8,574 tests collected from 97 projects.
+Each row in the dataset provides the project name, test name, test method body, and its corresponding test category.
+
+
 ```shell
 docker run --gpus all -it --rm flakylens:latest
 ```
@@ -89,14 +97,6 @@ bash rq4.sh
 ```
 This will print the precision, recall, and F1-score for each category.
 Estimated runtime: ~5 minutes.
-
-
-# Dataset
-
-Our dataset is available in ```dataset/FlakyLens/FlakyLens_dataset_with_nonflaky_indented.csv```
-
-Our dataset includes six types of tests — five categories of flaky tests and one non-flaky category. It comprises a total of 8,574 tests collected from 97 projects.
-Each row in the dataset provides the project name, test name, test method body, and its corresponding test category.
 
 
 # Finetuned Models
