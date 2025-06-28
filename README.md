@@ -39,49 +39,63 @@ We evaluated our artifact on our end using Docker version 20.10.21, build 20.10.
 
 
 # Usage
-Use the following instructions to run through our artifact. Our models are placed into 
+i# FlakyLens: Flaky Test Categorization and Attribution
+
+This repository supports running four major research questions (RQs) from our study.
+
+---
+
+## RQ1: Run Prediction with FlakyLens
+
+To evaluate the predictive performance of **FlakyLens**, run:
+
+```bash
+bash rq1.sh
 ```
-models/
-```
-For the prediction task, you need to run the following command
+
+This will print the precision, recall, and F1-score for each category to the console.
+Estimated runtime: ~2–3 minutes.
+
+## RQ2: Predicting Flaky Tests with Other LLMs
+To evaluate other language models (e.g., Qwen) for flaky test prediction, run:
 
 ```shell
-bash per_project_prediction.sh FlakyLens "BERT"
-```
-To run the prediction code, run the following command. This may take around 2-3 mins.
-
-
-Now to parse the result, run the following command from ```results/scripts```
-```shell
- bash per_category_parse_result.sh ../per_Category_Evaluation_BERT-FlakyLens.txt
- ```
-
-
-For getting the results of other LLMs, run the following command (related to the RQ2). One example model to run is following command.
-
-```shell
-export HF_TOKEN=<hf_your_token_here>
+export HF_TOKEN=<your_huggingface_token>
 bash per_project_prediction.sh FlakyLens "qwen"
 ```
-Expected runtime is 50 to 55 mins. The result will be stored in ```FlakyLens_Categorization_PerProject-result/qwen.csv```
 
-If you want to get the attribution score for the tokens, run the following command (related to the RQ3). This needs around 25~30 mins to finish. Attribution scores for each token is found ```Attributions_scores/```
+The output will be saved to: ```FlakyLens_Categorization_PerProject-result/qwen.csv```
+Estimated runtime: ~50–55 minutes.
 
+## RQ3: Token-Level Attribution Analysis
+
+To calculate attribution scores for each token using gradient-based analysis, run:
 ```shell
 bash per_project_prediction.sh FlakyLens "BERT" "calculate_gradient"
 ```
+The attribution results will be stored in: ```Attributions_scores/```
 
-To apply perturbation, we need to run the following command (related to th RQ4). One example of applying one category of the perturbation (deadlock) is as follows.
+Estimated runtime: ~25–30 minutes.
+
+## RQ4: Perturbation-Based Robustness Evaluation
+To evaluate the model under code perturbations (e.g., deadlock injection), run:
 
 ```shell
-bash per_project_prediction.sh FlakyLens "BERT" "deadcode_perturbation"
+bash rq4.sh
 ```
+This will print the precision, recall, and F1-score for each category.
+Estimated runtime: ~5 minutes.
 
 
 # Dataset
 
 Our dataset is available in ```dataset/FlakyLens/FlakyLens_dataset_with_nonflaky_indented.csv```
 
+Use the following instructions to run through our artifact. Our models are placed into 
+
+```
+models/
+```
 
 # ************ =====================
 
