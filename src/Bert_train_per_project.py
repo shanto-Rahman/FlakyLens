@@ -152,7 +152,7 @@ def set_deterministic(seed):
 device = torch.device("cuda")
 
 def calculate_train_and_validation_loss(model_weights_path, fold_number, model, train_dataloader, val_dataloader, cross_entropy, device, optimizer, epochs, writer):
-    early_stopping = EarlyStopping(patience=10, verbose=True, path=model_weights_path+str(fold_number)+'.pt')
+    early_stopping = EarlyStopping(patience=20, verbose=True, path=model_weights_path+str(fold_number)+'.pt')
     best_valid_loss = float('inf')
     best_f1_score = 0.0
     # Log the model architecture (ensure it's logged only once at the beginning of training)
@@ -234,6 +234,13 @@ def apply_smote(train_data_Org, train_y_Org):
     # Step 1: Store Original Text Data
     train_x_Org = train_data_Org['full_code']  # Original text
     train_y_Org = train_data_Org['category']   # Original labels
+
+    # Skip SMOTE, return original data in required format
+    train_x = train_x_Org.reset_index(drop=True)
+    train_y = train_y_Org.reset_index(drop=True)
+    train_data = pd.DataFrame({"full_code": train_x, "category": train_y})
+    return train_x, train_data, train_y
+
     
     # Step 2: Convert text into numerical vectors (TF-IDF)
     vectorizer = TfidfVectorizer(max_features=5000)
@@ -243,7 +250,27 @@ def apply_smote(train_data_Org, train_y_Org):
     train_x_Org = train_x_Org.reset_index(drop=True)  # Ensure sequential indexing
     
     # Step 4: Apply SMOTE **on the numerical representation**
-    smote = SMOTE(sampling_strategy={0: 500, 1: 500, 2: 500, 3: 500, 4: 500}, random_state=42)
+    #smote = SMOTE(sampling_strategy={0: 500, 1: 500, 2: 500, 3: 500, 4: 500}, random_state=42)
+    #smote = SMOTE(sampling_strategy={0: 160, 1: 90, 2: 100, 3: 120, 4: 250}, random_state=42)
+    smote = SMOTE(sampling_strategy={0: 300, 1: 300, 2: 250, 3: 275, 4: 400}, random_state=42)
+    '''from collections import Counter
+
+    # Count current samples per class
+    class_counts = Counter(train_y_Org)
+    
+    # Identify the majority class size
+    majority_size = max(class_counts.values())
+    
+    # Target size for each minority class
+    target_size = int(majority_size * 0.5)
+    
+    # Build dictionary excluding the majority class
+    sampling_strategy = {
+            cls: target_size for cls, count in class_counts.items() if count < majority_size
+    }
+    
+    smote = SMOTE(sampling_strategy=sampling_strategy, random_state=42)'''
+
     train_x_resampled, train_y_resampled = smote.fit_resample(train_x_vec, train_y_Org)
 
     '''borderline_smote = BorderlineSMOTE(sampling_strategy='auto', random_state=42, kind='borderline-1')
@@ -272,7 +299,22 @@ def apply_smote(train_data_Org, train_y_Org):
     
     return train_x, train_data, train_y
 
-def run_experiment(dataset_path, model_weights_path, data_name_dir, technique):
+def generate_train_valid_data_split(data_name_dir, train_dataset, test_dataset, project_group, y):
+    # Read train and test data (When I am making validation set)
+    train_data, valid_data = train_test_split(train_dataset, random_state=49, test_size=0.2, stratify=train_dataset[y])
+    os.makedirs(f"{data_name_dir}/data_split", exist_ok=True)
+    # Save train_data with all columns
+    train_data.to_csv(f"{data_name_dir}/data_split/train_set_{project_group}.csv", index=False)
+    valid_data.to_csv(f"{data_name_dir}/data_split/valid_set_{project_group}.csv", index=False)
+    # Extract features (X) and target (Y) from the saved CSV files
+    train_x = train_data.drop(columns=['category'])  # Keep all columns except 'category'
+    train_y = train_data['category']  # Extract the target variable
+    valid_x = valid_data.drop(columns=['category'])  # Keep all columns except 'category'
+    valid_y = valid_data['category']  # Extract the target variable
+    return train_x, train_y, valid_x, valid_y
+
+
+def run_experiment(dataset_path, model_weights_path, data_name_dir, technique, need_valid_set_create=False):
     df = pd.read_csv(dataset_path)  # Load the dataset
     x = 'full_code'
     y='category'
@@ -283,17 +325,19 @@ def run_experiment(dataset_path, model_weights_path, data_name_dir, technique):
     #for i in sorted(project_name):
     # Without Adversarial train 
     train_files = sorted([f for f in os.listdir(data_name_dir+"/data_split") if f.startswith("train_") and f.endswith(".csv")])
-    valid_files = sorted([f for f in os.listdir(data_name_dir+"/data_split") if f.startswith("valid_") and f.endswith(".csv")])
+    #valid_files = sorted([f for f in os.listdir(data_name_dir+"/data_split") if f.startswith("valid_") and f.endswith(".csv")])
     #During adversarial
     '''train_files = sorted([f for f in os.listdir(data_name_dir+"/data_split/with_50_percent_noisy_data") if f.startswith("train_") and f.endswith("_with_noisy_data_excluding_nonflakyCat.csv")])
     valid_files = sorted([f for f in os.listdir(data_name_dir+"/data_split/with_50_percent_noisy_data") if f.startswith("valid_") and f.endswith("_with_noisy_data_excluding_nonflakyCat.csv")])'''
+
+    train_files = sorted([f for f in os.listdir(data_name_dir) if f.startswith("train_") and f.endswith(".csv")])
     test_files = sorted([f for f in os.listdir(data_name_dir) if f.startswith("test_") and f.endswith(".csv")])
 
     # Ensure each train file has a corresponding test file
     assert len(train_files) == len(test_files), "Mismatch between train and test files"
 
-    #for train_file, test_file in zip(train_files, test_files):
-    for train_file, test_file, valid_file in zip(train_files, test_files, valid_files): ##During adversarial training, also data preperation
+    for train_file, test_file in zip(train_files, test_files):
+    #for train_file, test_file, valid_file in zip(train_files, test_files, valid_files): ## When I already have saved train and valid data
         model_name, tokenizer, auto_model = codebert_model_define()
         #project_index +=1
         project_group +=1
@@ -302,23 +346,30 @@ def run_experiment(dataset_path, model_weights_path, data_name_dir, technique):
         #Adversarial
         '''train_data_Org = pd.read_csv(os.path.join(data_name_dir+"/data_split/with_50_percent_noisy_data", train_file))
         valid_data = pd.read_csv(os.path.join(data_name_dir+"/data_split/with_50_percent_noisy_data", valid_file))'''
-
-        train_data_Org = pd.read_csv(os.path.join(data_name_dir+"/data_split", train_file))
-        valid_data = pd.read_csv(os.path.join(data_name_dir+"/data_split", valid_file))
+         
+        train_dataset = pd.read_csv(os.path.join(data_name_dir, train_file))
         test_dataset = pd.read_csv(os.path.join(data_name_dir, test_file))
+        if need_valid_set_create: # If True
+            train_x, train_y, valid_x, valid_y = generate_train_valid_data_split(data_name_dir, train_dataset, test_dataset, project_group, y)
+            # Fix: select only the text column as Series
+            train_x = train_x['full_code']
+            valid_x = valid_x['full_code']
+        else: # If False
+            # When I already have the saved data
+            train_data_Org = pd.read_csv(os.path.join(data_name_dir+"/data_split", train_file))
+            valid_data = pd.read_csv(os.path.join(data_name_dir+"/data_split", valid_file))
+            test_dataset = pd.read_csv(os.path.join(data_name_dir, test_file))
+            valid_x = valid_data.drop(columns=['category'])  # Keep all columns except 'category'
+            valid_y = valid_data['category']  # Extract the target variable
+            train_x, train_data, train_y = apply_smote(train_data_Org, train_y_Org) 
 
-        train_x_Org = train_data_Org['full_code']  # Keep all columns except 'category'
-        train_y_Org = train_data_Org['category']  # Extract the target variable
-        
-        valid_x = valid_data['full_code']  # Keep all columns except 'category'
-        valid_y = valid_data['category']  # Extract the target variable
+
 
         #Adversarial
         '''os.makedirs(f"{data_name_dir}/data_split/with_50_percent_noisy_data", exist_ok=True)
         boosting_noisy_data_for_train(train_x_Org, train_y_Org, project_group, "train")
         boosting_noisy_data_for_train(valid_x, valid_y, project_group, "valid")'''
         #exit()
-        train_x, train_data, train_y = apply_smote(train_data_Org, train_y_Org) 
         test_x=test_dataset[x]
         test_y=test_dataset[y]
         # Count occurrences of each category in test_y
@@ -378,7 +429,7 @@ def run_experiment(dataset_path, model_weights_path, data_name_dir, technique):
             cross_entropy = FocalLoss(alpha=weights.to(device), gamma=2.0)
 
         # number of training epochs
-        epochs = 30
+        epochs = 40
     
         model = BERT_Arch(auto_model, output_layer)
         # push the model to GPU
@@ -458,6 +509,7 @@ def build_dataset_group(dataset_path, data_name_dir):
     # Load dataset
     df = pd.read_csv(dataset_path)
     os.makedirs(data_name_dir, exist_ok=True) 
+    os.makedirs(data_name_dir+"/data_split", exist_ok=True) 
     # Create all possible train-test groups
     train_test_groups = create_train_test_groups(df)
     
@@ -481,6 +533,8 @@ if __name__ == "__main__":
     model_weights_path = sys.argv[2]
     data_name_dir = sys.argv[3]
     technique = sys.argv[4]
-    #build_dataset_group(dataset_path, data_name_dir) # will call only the first time
+    build_dataset_group(dataset_path, data_name_dir) # will call only the first time
+    need_valid_set_create = True
+    #exit()
     #initialize_environment(42)
-    run_experiment(dataset_path, model_weights_path, data_name_dir, technique)
+    run_experiment(dataset_path, model_weights_path, data_name_dir, technique, need_valid_set_create)

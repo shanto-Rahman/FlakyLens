@@ -118,3 +118,7 @@ bash rq4.sh
 ```
 This will print the precision, recall, and F1-score for each category. The results will resemble FlakyLens_Categorization_PerProject-result/perturbation_result.csv. While exact outputs may vary based on test type and perturbation, the overall trend remains consistent—perturbations generally degrade performance.
 Estimated runtime: ~5 minutes.
+=======
+
+# Without Docker
+
