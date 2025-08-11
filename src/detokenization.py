@@ -158,7 +158,8 @@ if __name__ == "__main__":
 
         print('*** Saving into ', str(outputFile))
         combined_df['Attribution'] = combined_df['Attribution'].astype(float)
-        top_k = int(len(combined_df) * 0.20)
+        #top_k = int(len(combined_df) * 0.10)
+        top_k = 20 #int(len(combined_df) * 0.10)
         sorted_df = combined_df.sort_values(by='Attribution', ascending=False).head(top_k)
         #sorted_df = combined_df.sort_values(by='Attribution', ascending=False)
         sorted_df.to_csv(outputFile, index=False, mode='a')
