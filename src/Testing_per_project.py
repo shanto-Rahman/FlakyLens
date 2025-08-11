@@ -116,7 +116,12 @@ def save_attributions(tokens, attributions, predictions, csv_filepath, ground_tr
     detokenized_df = combine_tokens(df)
 
     # Sorting tokens based on attribution scores in descending order
-    sorted_df = detokenized_df.sort_values(by="Attribution", ascending=False)
+    #sorted_df = detokenized_df.sort_values(by="Attribution", ascending=False)
+    
+    #tokens_str = ";".join(sorted_df["Token"])
+    #attributions_str = ";".join(map(str, sorted_df["Attribution"]))
+    # Sorting tokens based on attribution scores in descending order and keeping only top 20
+    sorted_df = detokenized_df.sort_values(by="Attribution", ascending=False).head(10)
     
     tokens_str = ";".join(sorted_df["Token"])
     attributions_str = ";".join(map(str, sorted_df["Attribution"]))

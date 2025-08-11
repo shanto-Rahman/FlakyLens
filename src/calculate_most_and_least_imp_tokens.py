@@ -1,5 +1,6 @@
 import pandas as pd
 from collections import defaultdict
+import numpy as np
 
 # === Step 1: List all CSV file paths ===
 def find_most_and_least_imp_tokens():
@@ -19,6 +20,7 @@ def find_most_and_least_imp_tokens():
     category_tokens = {i: defaultdict(float) for i in range(6)}  # 5 categories: 0–4
     
     # === Step 4: Aggregate scores for rows where prediction == true class ===
+    token_frequency = {i: defaultdict(int) for i in range(6)}  # Track frequency per category
     for idx, row in df.iterrows():
         #print("row=", row)
         print("SHANTO ***, idx=", idx)
@@ -45,6 +47,7 @@ def find_most_and_least_imp_tokens():
             for token, total_score in temp_token_scores.items():
                 weighted_attribution_score = total_score * confidence_score  # Multiply sum by confidence score
                 category_tokens[true_class][token] += weighted_attribution_score  # Accumulate the weighted score
+                token_frequency[true_class][token] += 1  # Count how many tests this token appears in
 
                 if true_class == 0 and token == "sleep" and predicted_class == 0:
                     print(f"debug/debug_row_{idx}.csv")
@@ -60,14 +63,14 @@ def find_most_and_least_imp_tokens():
     # === Step 5: Save per-class attribution summaries ===
     for cat, token_dict in category_tokens.items():
         token_score_df = pd.DataFrame(list(token_dict.items()), columns=['Token', 'Attribution_Score'])
-        
+        token_score_df['Frequency'] = token_score_df['Token'].map(token_frequency[cat])
+        # Final importance: Attribution_Score * log(1 + Frequency)
+        token_score_df['Final_Importance'] = token_score_df['Attribution_Score'] * np.log1p(token_score_df['Frequency'])
         # Split positive and negative attribution scores
-        pos_df = token_score_df[token_score_df['Attribution_Score'] >= 0].sort_values(by='Attribution_Score', ascending=False)
-        neg_df = token_score_df[token_score_df['Attribution_Score'] < 0].sort_values(by='Attribution_Score', ascending=True)
-    
+        pos_df = token_score_df[token_score_df['Attribution_Score'] >= 0].sort_values(by='Final_Importance', ascending=False)
+        neg_df = token_score_df[token_score_df['Attribution_Score'] < 0].sort_values(by='Final_Importance', ascending=True)
         # Concatenate: positives first, then negatives
         final_df = pd.concat([pos_df, neg_df], ignore_index=True)
-    
         output_path = f'Attributions_scores/category_{cat}_attributions.csv'
         final_df.to_csv(output_path, index=False)
-    
+

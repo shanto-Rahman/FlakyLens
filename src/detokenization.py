@@ -8,7 +8,7 @@ import numpy as np
 
 def is_special_character(token):
     # This function checks if the token is made up only of punctuation or is one of the special tokens
-    special_tokens = {'<s>', '</s>', '@', 'Ċ', '=', '()', '.', ';', ',', 'test', 'Test', 'public', 'void', 'private', 'Token', 'not', 'even', 'for', 'To', 'Of', 'With',  'is', 'String', 'int', 'Epoch', 'Assert', 'Id', 'assert', 'At', 'Is', 'ases', 'If', 'Epoch'}
+    special_tokens = {'<s>', '</s>', '@', 'Ċ', '=', '()', '.', ';', ',', 'test', 'Test', 'public', 'void', 'private', 'Token', 'not', 'even', 'for', 'To', 'Of', 'With',  'is', 'String', 'int', 'Epoch', 'Assert', 'Id', 'assert', 'At', 'Is', 'ases', 'If', 'Epoch', 'Override', 'And', 'then', 'try', 'throws'}
     #return all(char in string.punctuation for char in token) or token in special_tokens
     return (len(token) == 1 or all(char in string.punctuation for char in token) or token in special_tokens)
 
@@ -159,7 +159,7 @@ if __name__ == "__main__":
         print('*** Saving into ', str(outputFile))
         combined_df['Attribution'] = combined_df['Attribution'].astype(float)
         #top_k = int(len(combined_df) * 0.10)
-        top_k = 20 #int(len(combined_df) * 0.10)
+        top_k = 10 #int(len(combined_df) * 0.10)
         sorted_df = combined_df.sort_values(by='Attribution', ascending=False).head(top_k)
         #sorted_df = combined_df.sort_values(by='Attribution', ascending=False)
         sorted_df.to_csv(outputFile, index=False, mode='a')
