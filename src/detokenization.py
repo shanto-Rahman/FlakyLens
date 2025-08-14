@@ -9,8 +9,19 @@ import numpy as np
 def is_special_character(token):
     # This function checks if the token is made up only of punctuation or is one of the special tokens
     special_tokens = {'<s>', '</s>', '@', 'Ċ', '=', '()', '.', ';', ',', 'test', 'Test', 'public', 'void', 'private', 'Token', 'not', 'even', 'for', 'To', 'Of', 'With',  'is', 'String', 'int', 'Epoch', 'Assert', 'Id', 'assert', 'At', 'Is', 'ases', 'If', 'Epoch', 'Override', 'And', 'then', 'try', 'throws'}
-    #return all(char in string.punctuation for char in token) or token in special_tokens
-    return (len(token) == 1 or all(char in string.punctuation for char in token) or token in special_tokens)
+    def is_number(s):
+        try:
+            float(s)
+            return True
+        except ValueError:
+            return False
+    return (
+        len(token) == 1
+        or all(char in string.punctuation for char in token)
+        or token in special_tokens
+        or is_number(token)
+    )
+    #return (len(token) == 1 or all(char in string.punctuation for char in token) or token in special_tokens)
 
 def set_new_current_word(token, attribution, pred_class, true_class, pred_logit, confidence_score):
     current_word = token
