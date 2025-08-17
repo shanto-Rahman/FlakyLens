@@ -4,6 +4,7 @@ import string
 import random
 import csv
 from collections import Counter
+import traceback
 
 #def operand_mutation(X_test, y_test):
 
@@ -38,427 +39,156 @@ import javalang
 import re
 from collections import Counter
 
-'''def renaming_variable(java_code, new_variable_names):
+def renaming_variable(java_code, new_variable_names):
+    """
+    Renames the most used local variable (not class fields or fields accessed via 'this.') in the given Java code.
+    Only variables declared in method bodies or as parameters are considered.
+    """
+    from collections import Counter
+    import re
+    import traceback
+
+    code_wrapped = False
+    original_code = java_code
+    # More robust: wrap if not starting with 'class' or 'public class'
+    if not re.match(r'\s*(public\s+)?class\s+\w+', java_code):
+        java_code = f'public class DummyClass {{\n{java_code}\n}}'
+        code_wrapped = True
+
     try:
         tree = javalang.parse.parse(java_code)
-        variable_replacements = {}
+        local_vars = set()
         usage_counter = Counter()
+        param_vars = set()
 
-        # Step 1: Count variable usage
-        for path, node in tree.filter(javalang.tree.MemberReference):
-            if isinstance(node, javalang.tree.MemberReference) and node.member is not None:
-                usage_counter[node.member] += 1
+        # Collect method parameter names
+        for _, node in tree.filter(javalang.tree.MethodDeclaration):
+            if node.parameters:
+                for param in node.parameters:
+                    param_vars.add(param.name)
 
-        for path, node in tree.filter(javalang.tree.LocalVariableDeclaration):
+        # Collect local variable names (including loop variables)
+        for _, node in tree.filter(javalang.tree.LocalVariableDeclaration):
             for declarator in node.declarators:
-                if declarator.name is not None:
-                    usage_counter[declarator.name] += 1
+                local_vars.add(declarator.name)
+        for _, node in tree.filter(javalang.tree.ForStatement):
+            if node.control and hasattr(node.control, 'init') and node.control.init:
+                for var in node.control.init:
+                    if isinstance(var, javalang.tree.VariableDeclarator):
+                        local_vars.add(var.name)
 
-        for path, node in tree.filter(javalang.tree.ForStatement):
-            if isinstance(node, javalang.tree.ForStatement) and isinstance(node.control, javalang.tree.ForControl):
-                if node.control.init:
-                    for var in node.control.init:
-                        if isinstance(var, javalang.tree.VariableDeclarator) and var.name is not None:
-                            usage_counter[var.name] += 1
+        all_local_vars = local_vars | param_vars
 
-        for path, node in tree.filter(javalang.tree.ReferenceType):
-            if isinstance(node, javalang.tree.ReferenceType) and node.name is not None and node.name.isupper():
+        # Count usages of each local variable (excluding field accesses)
+        for _, node in tree.filter(javalang.tree.MemberReference):
+            if node.qualifier is None and node.member in all_local_vars:
+                usage_counter[node.member] += 1
+        for _, node in tree.filter(javalang.tree.VariableDeclarator):
+            if node.name in all_local_vars:
+                usage_counter[node.name] += 1
+        for _, node in tree.filter(javalang.tree.FormalParameter):
+            if node.name in all_local_vars:
                 usage_counter[node.name] += 1
 
-        # Get the two most common variable names
-        most_used_variables = [var for var, count in usage_counter.most_common(2)]
+        if not usage_counter:
+            return original_code  # No local variables to rename
 
-        # Ensure we have variables to rename
-        if not most_used_variables:
-            raise ValueError("No variables found to rename.")
+        # Find the most used local variable
+        most_used_var, _ = usage_counter.most_common(1)[0]
+        if not new_variable_names or not isinstance(new_variable_names, list):
+            raise ValueError("new_variable_names must be a list of strings")
+        # Pick the first new name that does not conflict
+        new_name = None
+        for candidate in new_variable_names:
+            if candidate not in all_local_vars:
+                new_name = candidate
+                break
+        if not new_name:
+            return original_code  # All new names conflict
 
-        # Ensure enough new variable names are provided
-        if len(new_variable_names) < len(most_used_variables):
-            raise ValueError(f"Not enough unique names. Required: {len(most_used_variables)}, Given: {len(new_variable_names)}")
+        # Replace only the local variable (not field accesses like this.sharedState)
+        pattern = rf'(?<![\w.]){re.escape(most_used_var)}(?![\w])'
+        java_code = re.sub(pattern, new_name, java_code)
 
-        # Convert name iterator to an index-based list approach
-        name_index = 0
-        name_list = new_variable_names  # Ensure this is a list
-
-        # Step 2: Replace top 2 most used variables
-        for path, node in tree.filter(javalang.tree.LocalVariableDeclaration):
-            for declarator in node.declarators:
-                original_name = declarator.name
-                if original_name is not None and original_name in most_used_variables:
-                    if name_index < len(name_list):
-                        new_name = name_list[name_index]
-                        name_index += 1
-                    else:
-                        raise Exception("Not enough unique names provided")
-
-                    retry_count = 0
-                    while new_name in variable_replacements.values() or new_name is None:
-                        new_name = generate_random_variable_name()
-                        retry_count += 1
-                        if retry_count > 10:
-                            raise Exception("Could not generate a unique name after 10 attempts")
-
-                    variable_replacements[original_name] = new_name
-
-        # Step 3: Replace loop control variables
-        for path, node in tree.filter(javalang.tree.ForStatement):
-            if isinstance(node, javalang.tree.ForStatement) and isinstance(node.control, javalang.tree.ForControl):
-                if node.control.init:
-                    for var in node.control.init:
-                        if isinstance(var, javalang.tree.VariableDeclarator):
-                            original_name = var.name
-                            if original_name is not None and original_name in most_used_variables:
-                                if name_index < len(name_list):
-                                    new_name = name_list[name_index]
-                                    name_index += 1
-                                else:
-                                    raise Exception("Not enough unique names provided")
-
-                                retry_count = 0
-                                while new_name in variable_replacements.values() or new_name is None:
-                                    new_name = generate_random_variable_name()
-                                    retry_count += 1
-                                    if retry_count > 10:
-                                        raise Exception("Could not generate a unique name after 10 attempts")
-
-                                variable_replacements[original_name] = new_name
-
-        # Step 4: Replace constants
-        for path, node in tree.filter(javalang.tree.ReferenceType):
-            if isinstance(node, javalang.tree.ReferenceType) and node.name is not None and node.name.isupper():
-                original_name = node.name
-                if original_name in most_used_variables:
-                    if name_index < len(name_list):
-                        new_name = name_list[name_index]
-                        name_index += 1
-                    else:
-                        raise Exception("Not enough unique names provided")
-
-                    retry_count = 0
-                    while new_name in variable_replacements.values() or new_name is None:
-                        new_name = generate_random_variable_name()
-                        retry_count += 1
-                        if retry_count > 10:
-                            raise Exception("Could not generate a unique name after 10 attempts")
-
-                    variable_replacements[original_name] = new_name
-
-        # Step 5: Use regex to replace variable names
-        for original_name, new_name in variable_replacements.items():
-            if original_name is not None and new_name is not None:
-                java_code = re.sub(rf'\b{original_name}\b', new_name, java_code)
-
+        # If we wrapped, extract the code back out
+        if code_wrapped:
+            match = re.search(r'public class DummyClass \{(.*)\}', java_code, re.DOTALL)
+            if match:
+                java_code = match.group(1).strip()
     except Exception as e:
-        print(f"Error during renaming: {str(e)} ; Provided names: {new_variable_names}")
-
-    return java_code'''
-
-
-def renaming_variable(java_code, new_variable_names): 
-    try: 
-        tree = javalang.parse.parse(java_code)
-        variable_replacements = {} 
-        usage_counter = Counter()
-
-        # Step 1: Count variable usage
-        for path, node in tree.filter(javalang.tree.MemberReference):
-            if isinstance(node, javalang.tree.MemberReference):
-                usage_counter[node.member] += 1 
-
-        for path, node in tree.filter(javalang.tree.LocalVariableDeclaration):
-            for declarator in node.declarators:
-                usage_counter[declarator.name] += 1 
-
-        for path, node in tree.filter(javalang.tree.ForStatement):
-            if isinstance(node, javalang.tree.ForStatement) and isinstance(node.control, javalang.tree.ForControl):
-                if node.control.init:
-                    for var in node.control.init:
-                        if isinstance(var, javalang.tree.VariableDeclarator):
-                            usage_counter[var.name] += 1 
-
-        for path, node in tree.filter(javalang.tree.ReferenceType):
-            if isinstance(node, javalang.tree.ReferenceType) and node.name is not None and node.name.isupper():
-                usage_counter[node.name] += 1 
-
-        # Get the five most common variable names
-        most_used_variables = [var for var, count in usage_counter.most_common(2)]
-
-        # Ensure enough new variable names are provided
-        if len(new_variable_names) < len(most_used_variables):
-            raise ValueError(f"Not enough unique names. Required: {len(most_used_variables)}, Given: {len(new_variable_names)}")
-
-        # Convert name iterator to an index-based list approach
-        name_index = 0
-        name_list = new_variable_names  # Ensure this is a list
-
-        # Step 2: Replace top 5 most used variables
-        for path, node in tree.filter(javalang.tree.LocalVariableDeclaration):
-            for declarator in node.declarators:
-                original_name = declarator.name
-                if original_name and original_name in most_used_variables:
-                    if name_index < len(name_list):
-                        new_name = name_list[name_index]
-                        name_index += 1
-                    else:
-                        raise Exception("Not enough unique names provided")
-                    
-                    retry_count = 0
-                    while new_name in variable_replacements.values():
-                        new_name = generate_random_variable_name()
-                        retry_count += 1
-                        if retry_count > 10:
-                            raise Exception("Could not generate a unique name after 10 attempts")
-
-                    variable_replacements[original_name] = new_name
-
-        # Step 3: Replace loop control variables
-        for path, node in tree.filter(javalang.tree.ForStatement):
-            if isinstance(node, javalang.tree.ForStatement) and isinstance(node.control, javalang.tree.ForControl):
-                if node.control.init:
-                    for var in node.control.init:
-                        if isinstance(var, javalang.tree.VariableDeclarator):
-                            original_name = var.name
-                            if original_name and original_name in most_used_variables:
-                                if name_index < len(name_list):
-                                    new_name = name_list[name_index]
-                                    name_index += 1
-                                else:
-                                    raise Exception("Not enough unique names provided")
-                                
-                                retry_count = 0
-                                while new_name in variable_replacements.values():
-                                    new_name = generate_random_variable_name()
-                                    retry_count += 1
-                                    if retry_count > 10:
-                                        raise Exception("Could not generate a unique name after 10 attempts")
-
-                                variable_replacements[original_name] = new_name
-
-        # Step 4: Replace constants
-        for path, node in tree.filter(javalang.tree.ReferenceType):
-            #print(f"Processing ReferenceType: {node}")  # Debugging
-            if isinstance(node, javalang.tree.ReferenceType) and node.name is not None and node.name.isupper():
-                original_name = node.name
-                if original_name in most_used_variables:
-                    if name_index < len(name_list):
-                        new_name = name_list[name_index]
-                        name_index += 1
-                    else:
-                        raise Exception("Not enough unique names provided")
-
-                    retry_count = 0
-                    while new_name in variable_replacements.values():
-                        new_name = generate_random_variable_name()
-                        retry_count += 1
-                        if retry_count > 10:
-                            raise Exception("Could not generate a unique name after 10 attempts")
-
-                    variable_replacements[original_name] = new_name
-
-        # Step 5: Use regex to replace variable names
-        for original_name, new_name in variable_replacements.items():
-            if original_name is not None and new_name is not None:
-                java_code = re.sub(rf'\b{original_name}\b', new_name, java_code)
-
-    except Exception as e:
-        print(f"Error during renaming: {str(e)} ; Provided names: {new_variable_names}")
+        print(f"Error during renaming: {str(e)} ; {str(new_variable_names)}")
+        traceback.print_exc()
+        return original_code
 
     return java_code
 
-'''def renaming_variable(java_code, new_variable_names): # consider the variable that is used in max times
+def renaming_variable_in_60_percent_methods(java_code, new_variable_names):
+    """
+    Renames the most used local variable in 60% of the methods (randomly selected) in the given Java code.
+    Only variables declared in method bodies or as parameters are considered.
+    """
+    import javalang
+    import re
+    from collections import Counter
+    import random
+    import traceback
+
     try:
-        #print(f"Original java_code=\n{java_code}")
         tree = javalang.parse.parse(java_code)
-        variable_replacements = {}
-        usage_counter = Counter()
+        # Collect all method declarations with their positions
+        method_nodes = []
+        for path, node in tree.filter(javalang.tree.MethodDeclaration):
+            if hasattr(node, 'position') and node.position:
+                method_nodes.append((node, node.position))
 
-        # Step 1: Collect all variable usages and count their occurrences
-        for path, node in tree.filter(javalang.tree.MemberReference):
-            if isinstance(node, javalang.tree.MemberReference):
-                usage_counter[node.member] += 1
+        if not method_nodes:
+            return java_code  # No methods to process
 
-        # Include loop variables, local variables, and constants
-        for path, node in tree.filter(javalang.tree.LocalVariableDeclaration):
-            for declarator in node.declarators:
-                usage_counter[declarator.name] += 1
+        # Randomly select 60% of the methods
+        num_to_select = max(1, int(len(method_nodes) * 0.6))
+        selected_methods = set(random.sample(method_nodes, num_to_select))
 
-        for path, node in tree.filter(javalang.tree.ForStatement):
-            if isinstance(node, javalang.tree.ForStatement):
-                if isinstance(node.control, javalang.tree.ForControl):
-                    if node.control.init:
-                        for var in node.control.init:
-                            if isinstance(var, javalang.tree.VariableDeclarator):
-                                usage_counter[var.name] += 1
+        # Split code into lines for easier manipulation
+        code_lines = java_code.splitlines()
+        # To avoid overlapping edits, process from last to first
+        method_nodes_sorted = sorted(method_nodes, key=lambda x: x[1].line, reverse=True)
 
-        # Also check for constants (typically all-uppercase)
-        for path, node in tree.filter(javalang.tree.ReferenceType):
-            if isinstance(node, javalang.tree.ReferenceType) and node.name is not None:
-                if node.name.isupper():
-                    usage_counter[node.name] += 1
-
-        # Get the five most common variable names based on usage count
-        most_used_variables = [var for var, count in usage_counter.most_common(5)]
-        #print(f"Most used variables: {most_used_variables}")
-
-        # Step 2: Replace only the top five variable names
-        if new_variable_names is None or not isinstance(new_variable_names, list):
-                raise ValueError("new_variable_names must be a list of strings")
-        name_iter = iter(new_variable_names)
-        for path, node in tree.filter(javalang.tree.LocalVariableDeclaration):
-            for declarator in node.declarators:
-                original_name = declarator.name
-                if original_name and original_name in most_used_variables:  # Replace only the top 5 most used variables
-                    try:
-                        new_name = next(name_iter)
-                        while new_name in variable_replacements.values():  # Ensure uniqueness
-                            new_name = generate_random_variable_name()
-                    except StopIteration:
-                        raise Exception("Not enough unique names provided")
-                    variable_replacements[original_name] = new_name
-
-        # Step 3: Replace loop control variables
-        for path, node in tree.filter(javalang.tree.ForStatement):
-            if isinstance(node, javalang.tree.ForStatement):
-                if isinstance(node.control, javalang.tree.ForControl):
-                    if node.control.init:
-                        for var in node.control.init:
-                            if isinstance(var, javalang.tree.VariableDeclarator):
-                                original_name = var.name
-                                if original_name in most_used_variables:
-                                    try:
-                                        new_name = next(name_iter)
-                                        while new_name in variable_replacements.values():
-                                            new_name = generate_random_variable_name()
-                                        variable_replacements[original_name] = new_name
-                                    except StopIteration:
-                                        raise Exception("Not enough unique names provided")
-
-        # Step 4: Replace constants
-        for path, node in tree.filter(javalang.tree.ReferenceType):
-            print(f"Processing ReferenceType: {node}")  # Debugging
-            if isinstance(node, javalang.tree.ReferenceType):
-                print(f"Valid ReferenceType: {node.name}")
-                if node.name.isupper():
-                    original_name = node.name
-                    if original_name in most_used_variables:
-                        try:
-                            new_name = next(name_iter)
-                            while new_name in variable_replacements.values():
-                                new_name = generate_random_variable_name()
-                            variable_replacements[original_name] = new_name
-                        except StopIteration:
-                            raise Exception("Not enough unique names provided")
-
-        # Step 5: Use regex to replace variable names in the code
-        for original_name, new_name in variable_replacements.items():
-            # Use word boundaries (\b) to ensure we only replace the exact variable names
-            java_code = re.sub(rf'\b{original_name}\b', new_name, java_code)
-
-        #print(f"Variable replacements: {variable_replacements}")
-
+        for node, pos in method_nodes_sorted:
+            if (node, pos) not in selected_methods:
+                continue  # Skip methods not selected
+            # Find method start and end lines
+            start_line = pos.line - 1  # 0-based
+            # Try to find the end of the method by counting braces
+            brace_count = 0
+            method_start = None
+            method_end = None
+            for i in range(start_line, len(code_lines)):
+                line = code_lines[i]
+                if '{' in line:
+                    if method_start is None:
+                        method_start = i
+                    brace_count += line.count('{')
+                if '}' in line:
+                    brace_count -= line.count('}')
+                if method_start is not None and brace_count == 0:
+                    method_end = i
+                    break
+            if method_start is None or method_end is None:
+                continue  # Could not find method body
+            # Extract method code
+            method_code = '\n'.join(code_lines[method_start:method_end+1])
+            if not method_code or not isinstance(method_code, str):
+                continue  # Defensive: skip if method_code is None or empty
+            # Rename variable in this method only
+            changed_method_code = renaming_variable(method_code, new_variable_names)
+            # Replace in code_lines
+            code_lines = code_lines[:method_start] + changed_method_code.splitlines() + code_lines[method_end+1:]
+        # Reconstruct code
+        return '\n'.join(code_lines)
     except Exception as e:
-        print(f"Error during renaming: {str(e)} ; {str(new_variable_names)}")
-
-    #print(f"Updated java_code=\n{java_code}")
-    return java_code'''
-
-'''def renaming_variable(java_code, new_variable_names): #Look for the variables that are used in least time
-    try:
-        print(f"Original java_code=\n{java_code}")
-        tree = javalang.parse.parse(java_code)
-        variable_replacements = {}
-        usage_counter = Counter()
-
-        # Step 1: Collect all variable usages and count their occurrences
-        for path, node in tree.filter(javalang.tree.MemberReference):
-            if isinstance(node, javalang.tree.MemberReference):
-                usage_counter[node.member] += 1
-
-        # Include loop variables, local variables, and constants
-        for path, node in tree.filter(javalang.tree.LocalVariableDeclaration):
-            for declarator in node.declarators:
-                usage_counter[declarator.name] += 1
-
-        for path, node in tree.filter(javalang.tree.ForStatement):
-            if isinstance(node, javalang.tree.ForStatement):
-                if isinstance(node.control, javalang.tree.ForControl):
-                    if node.control.init:
-                        for var in node.control.init:
-                            if isinstance(var, javalang.tree.VariableDeclarator):
-                                usage_counter[var.name] += 1
-
-        # Also check for constants (typically all-uppercase)
-        for path, node in tree.filter(javalang.tree.ReferenceType):
-            if isinstance(node, javalang.tree.ReferenceType):
-                if node.name.isupper():
-                    usage_counter[node.name] += 1
-
-        # Get the least used variable name based on usage count
-        if usage_counter:
-            least_used_variable = min(usage_counter.items(), key=lambda x: x[1])[0]
-        else:
-            print("No variables found for renaming.")
-            return java_code
-        
-        print(f"Least used variable: {least_used_variable}")
-
-        # Step 2: Replace only the least used variable
-        name_iter = iter(new_variable_names)
-        for path, node in tree.filter(javalang.tree.LocalVariableDeclaration):
-            for declarator in node.declarators:
-                original_name = declarator.name
-                if original_name == least_used_variable:  # Replace only the least used variable
-                    try:
-                        new_name = next(name_iter)
-                        while new_name in variable_replacements.values():  # Ensure uniqueness
-                            new_name = generate_random_variable_name()
-                    except StopIteration:
-                        raise Exception("Not enough unique names provided")
-                    variable_replacements[original_name] = new_name
-
-        # Step 3: Replace loop control variables
-        for path, node in tree.filter(javalang.tree.ForStatement):
-            if isinstance(node, javalang.tree.ForStatement):
-                if isinstance(node.control, javalang.tree.ForControl):
-                    if node.control.init:
-                        for var in node.control.init:
-                            if isinstance(var, javalang.tree.VariableDeclarator):
-                                original_name = var.name
-                                if original_name == least_used_variable:
-                                    try:
-                                        new_name = next(name_iter)
-                                        while new_name in variable_replacements.values():
-                                            new_name = generate_random_variable_name()
-                                        variable_replacements[original_name] = new_name
-                                    except StopIteration:
-                                        raise Exception("Not enough unique names provided")
-
-        # Step 4: Replace constants
-        for path, node in tree.filter(javalang.tree.ReferenceType):
-            if isinstance(node, javalang.tree.ReferenceType):
-                if node.name.isupper():
-                    original_name = node.name
-                    if original_name == least_used_variable:
-                        try:
-                            new_name = next(name_iter)
-                            while new_name in variable_replacements.values():
-                                new_name = generate_random_variable_name()
-                            variable_replacements[original_name] = new_name
-                        except StopIteration:
-                            raise Exception("Not enough unique names provided")
-
-        # Step 5: Use regex to replace variable names in the code
-        for original_name, new_name in variable_replacements.items():
-            # Use word boundaries (\b) to ensure we only replace the exact variable names
-            java_code = re.sub(rf'\b{original_name}\b', new_name, java_code)
-
-        print(f"Variable replacements: {variable_replacements}")
-        print(f"Updated java_code=\n{java_code}")
-        
-    except Exception as e:
-        print(f"Error during renaming: {str(e)} ; {str(new_variable_names)}")
-
-    return java_code'''
+        print(f"Error during 60% method renaming: {str(e)} ; {str(new_variable_names)}")
+        traceback.print_exc()
+        return java_code
 
 def variableRenaming_perturbation(java_code, idx, new_variable_names, perturb_cat):
     count_kotlin = 0
@@ -471,7 +201,7 @@ public class WrapperClass {{
     """
     #print(java_code)
     if not is_kotlin_code(java_code):
-        changed_code = renaming_variable(java_code, new_variable_names)
+        changed_code = renaming_variable_in_60_percent_methods(java_code, new_variable_names)
         #print(changed_code)
         # Remove the wrapper class
         # Use a regular expression to remove the wrapper class
@@ -1101,7 +831,7 @@ def deadcode_insertion(X_test, y_test, perturb_cats=None, num_perturbation="sing
         
         if perturb_cat == 0: #Async
             code_to_add = deadcode_perturbation_with_async(feature_types)
-            #print('*** From perturbation ******')
+            print('*** From perturbation ******; feature_types=', feature_types)
             #print(code_to_add)
             #print('test_code=')
             #print(test_code)
@@ -1180,14 +910,14 @@ def variableRenaming_insertion(X_test, y_test, perturb_cats=None, num_perturbati
                 variable_name_list = ["sleep", "await", "future", "unit", "poll", "connection", "wait",  "is", "service", "thread", "future", "prepare", "run", "events", "test", "uri", "servlet", "workflow", "duration", "point", "now", "point", "mapper", "worker", "block", "ms", "yield", "iio", "abc", "ppo", "xyz", "ylk", "oow", "lksm", "wer", "qwe", "rek", "llinePath", "wqr", "mlk", "sst", "qwa", "dfg", "llq", "aas", "zza", "bba", "dda", "ssa", "wwp", "ggf", "lt", "le", "lw", "lx", "lc", "sleep1", "wait1", "thread1", "thread2", "run3"] 
             else:
                 #Least Impact tokens
-                variable_name_list = ["snapshot", "query", "ttl","jar", "me", "control", "greeter", "validator", "read", "run1", "capture", "dispatch", "acked", "sex", "ums", "ums", "cursor", "message", "ledger", "ops", "operator", "spy", "report", "crud", "health", "task", "ms", "that", "t", "region", "ppo", "tomcat", "ylk", "oow", "lksm", "wer", "qwe", "rek", "llinePath", "wqr", "mlk", "sst", "qwa", "dfg", "llq", "aas", "zza", "bba", "dda", "ssa", "wwp", "ggf", "lt", "le", "lw", "lx", "lc", "sleep1", "wait1", "thread1", "thread2", "run3"] 
+                variable_name_list = ["snapshot", "query", "ttl","jar", "me", "control", "greeter", "validator", "read", "run1", "capture", "dispatch", "acked", "sex", "ums", "ums", "cursor", "message", "ledger", "ops", "operator", "spy", "report", "crud", "health", "task", "ms", "that", "t", "region", "ppo", "tomcat", "ylk", "oow", "lksm", "wer", "qwe", "rek", "llinePath", "wqr", "mlk", "sst", "qwa", "dfg", "llq", "aas", "zza", "bba", "dda", "ssa", "wwp", "ggf", "lt", "le", "lw", "lx", "lc"]
             updated_code = variableRenaming_perturbation(test_code, idx, variable_name_list, perturb_cat)
             #last_closing_brace_idx = test_code.rfind('}')
             #updated_code = test_code[:last_closing_brace_idx] + code_to_add +"\n" +test_code[last_closing_brace_idx:]
         
         if perturb_cat == 1:
             if feature_types == "Most_Imp":
-                variable_name_list = ["concurrenct", "wait", "automic", "latch", "interrupted", "schedule", "sleep", "duration", "bolt", "manager", "atomic", "distributed", "write", "robust", "matcher", "choke", "stub", "hello","semaphore", "iio", "abc", "ppo", "xyz", "ylk", "oow", "lksm", "wer", "qwe", "rek", "llinePath", "wqr", "mlk", "sst", "qa", "qw", "qr", "qt", "qo", "qk", "qo", "qp", "qm" , "lt", "le", "lw", "lx", "lc"]
+                variable_name_list = ["Duration", "concurrenct", "wait", "automic", "latch", "interrupted", "schedule", "sleep", "duration", "bolt", "manager", "atomic", "distributed", "write", "robust", "matcher", "choke", "stub", "hello","semaphore", "iio", "abc", "ppo", "xyz", "ylk", "oow", "lksm", "wer", "qwe", "rek", "llinePath", "wqr", "mlk", "sst", "qa", "qw", "qr", "qt", "qo", "qk", "qo", "qp", "qm" , "lt", "le", "lw", "lx", "lc"]
             else:
                 #Least Impact tokens
                 variable_name_list = ["runtime", "bulk", "down", "last", "consumer", "operation", "subject", "verify", "worker", "batch", "failed", "stlset", "zkw", "adder", "latch", "corrupt", "raided", "hello","executed", "pool", "grace", "kafka", "xyz", "ylk", "oow", "lksm", "wer", "qwe", "rek", "llinePath", "wqr", "mlk", "sst", "qa", "qw", "qr", "qt", "qo", "qk", "qo", "qp", "qm" , "lt", "le", "lw", "lx", "lc"]
@@ -1199,7 +929,7 @@ def variableRenaming_insertion(X_test, y_test, perturb_cats=None, num_perturbati
 
         if perturb_cat == 2:
             if feature_types == "Most_Imp":
-                variable_name_list = ["date", "time", "timestamp", "millis", "now", "duration", "clock", "seconds", "builder", "min", "month", "snapshot", "service", "offset", "response", "satisfy", "update", "live", "year", "current", "nano", "days", "hours", "yesterday", "absent",  "minutes", "duration2", "timer2", "isInstant", "timestamp", "optional", "handle", "equ", "fn", "iio", "abc", "ppo", "xyz", "ylk", "oow", "lksm", "wer", "qwe", "rek", "llinePath", "wqr", "mlk", "sst",  "date1",  "date2", "date3", "date5", "day2", "day3", "day10", "time", "date1", "date2", "date3", "date4", "date5", "date6", "ppl", "lkw", "qwa", "dfg", "lt", "le", "lw", "lx", "lc"]
+                variable_name_list = ["time", "timestamp", "millis", "now", "duration", "clock", "seconds", "builder", "min", "month", "snapshot", "service", "offset", "response", "satisfy", "update", "live", "year", "current", "nano", "days", "hours", "yesterday", "absent",  "minutes", "duration2", "timer2", "isInstant", "timestamp", "optional", "handle", "equ", "fn", "iio", "abc", "ppo", "xyz", "ylk", "oow", "lksm", "wer", "qwe", "rek", "llinePath", "wqr", "mlk", "sst",  "date1",  "date2", "date3", "date5", "day2", "day3", "day10", "time", "date1", "date2", "date3", "date4", "date5", "date6", "ppl", "lkw", "qwa", "dfg", "lt", "le", "lw", "lx", "lc"]
             else:
                 #Least Impact tokens
                 variable_name_list = ["checkpoint", "vo", "greater", "etlbatch", "yield", "through", "metadata", "yesterday", "new", "set", "updated", "mtime1", "suffix", "exporter", "start", "modify", "response", "execution", "snapshot", "expected", "pm", "parser", "instant", "delete",  "distributer", "instant2", "instant2",  "optional", "handle", "equ", "fn", "iio", "abc", "ppo", "xyz", "ylk", "oow", "lksm", "wer", "qwe", "rek", "llinePath", "wqr", "mlk", "sst",  "date1",  "date2", "date3", "date5", "day2", "day3", "day10", "time", "date1", "date2", "date3", "date4", "date5", "date6", "ppl", "lkw", "qwa", "dfg", "lt", "le", "lw", "lx", "lc"]
