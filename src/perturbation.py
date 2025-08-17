@@ -117,21 +117,187 @@ def renaming_variable(java_code, new_variable_names):
                 java_code = match.group(1).strip()
     except Exception as e:
         print(f"Error during renaming: {str(e)} ; {str(new_variable_names)}")
-        traceback.print_exc()
+        #traceback.print_exc()
+        return original_code
+
+    return java_code
+
+def renaming_least_used_variable(java_code, new_variable_names):
+    """
+    Renames the least used local variable (not class fields or fields accessed via 'this.') in the given Java code.
+    Only variables declared in method bodies or as parameters are considered.
+    """
+    from collections import Counter
+
+    code_wrapped = False
+    original_code = java_code
+    # More robust: wrap if not starting with 'class' or 'public class'
+    if not re.match(r'\s*(public\s+)?class\s+\w+', java_code):
+        java_code = f'public class DummyClass {{\n{java_code}\n}}'
+        code_wrapped = True
+
+    try:
+        tree = javalang.parse.parse(java_code)
+        local_vars = set()
+        usage_counter = Counter()
+        param_vars = set()
+
+        # Collect method parameter names
+        for _, node in tree.filter(javalang.tree.MethodDeclaration):
+            if node.parameters:
+                for param in node.parameters:
+                    if param.name is not None and isinstance(param.name, str):
+                        param_vars.add(param.name)
+
+        # Collect local variable names (including loop variables)
+        for _, node in tree.filter(javalang.tree.LocalVariableDeclaration):
+            for declarator in node.declarators:
+                if declarator.name is not None and isinstance(declarator.name, str):
+                    local_vars.add(declarator.name)
+        for _, node in tree.filter(javalang.tree.ForStatement):
+            if node.control and hasattr(node.control, 'init') and node.control.init:
+                for var in node.control.init:
+                    if isinstance(var, javalang.tree.VariableDeclarator) and var.name is not None and isinstance(var.name, str):
+                        local_vars.add(var.name)
+
+        all_local_vars = set([v for v in (local_vars | param_vars) if isinstance(v, str) and v is not None])
+
+        # Count usages of each local variable (excluding field accesses)
+        for _, node in tree.filter(javalang.tree.MemberReference):
+            if node.qualifier is None and isinstance(node.member, str) and node.member in all_local_vars:
+                usage_counter[node.member] += 1
+        for _, node in tree.filter(javalang.tree.VariableDeclarator):
+            if isinstance(node.name, str) and node.name in all_local_vars:
+                usage_counter[node.name] += 1
+        for _, node in tree.filter(javalang.tree.FormalParameter):
+            if isinstance(node.name, str) and node.name in all_local_vars:
+                usage_counter[node.name] += 1
+
+        if not usage_counter:
+            return original_code  # No local variables to rename
+
+        # Find the least used local variable (with minimum usage, but at least 1 usage)
+        least_used_vars = [var for var, count in usage_counter.items() if count > 0 and isinstance(var, str) and var is not None]
+        if not least_used_vars:
+            return original_code
+        least_used_var = min(least_used_vars, key=lambda v: usage_counter[v])
+
+        if not new_variable_names or not isinstance(new_variable_names, list):
+            raise ValueError("new_variable_names must be a list of strings")
+        # Pick the first new name that does not conflict and is a string
+        new_name = None
+        for candidate in new_variable_names:
+            if isinstance(candidate, str) and candidate not in all_local_vars:
+                new_name = candidate
+                break
+        if not new_name or not isinstance(least_used_var, str):
+            return original_code  # All new names conflict or invalid var
+
+        # Replace only the local variable (not field accesses like this.sharedState)
+        try:
+            pattern = rf'(?<![\w.]){re.escape(least_used_var)}(?![\w])'
+            java_code = re.sub(pattern, new_name, java_code)
+        except Exception as regex_e:
+            print(f"Regex error during least-used renaming: {str(regex_e)} ; least_used_var={least_used_var} ; new_name={new_name}")
+            return original_code
+
+        # If we wrapped, extract the code back out
+        if code_wrapped:
+            match = re.search(r'public class DummyClass \{(.*)\}', java_code, re.DOTALL)
+            if match:
+                java_code = match.group(1).strip()
+    except Exception as e:
+        print(f"Error during least-used renaming: {str(e)} ; {str(new_variable_names)}")
+        #traceback.print_exc()
         return original_code
 
     return java_code
 
 def renaming_variable_in_60_percent_methods(java_code, new_variable_names):
     """
-    Renames the most used local variable in 60% of the methods (randomly selected) in the given Java code.
+    Renames the least used local variable in up to 10 methods (randomly selected, at least 1) in the given Java code.
+    Only variables declared in method bodies or as parameters are considered.
+    If more than 10 methods would be modified, skip renaming for the rest.
+    All other methods are left unchanged.
+    """
+    from collections import Counter
+
+    if not new_variable_names or not isinstance(new_variable_names, list):
+        return java_code
+    new_variable_names = [n for n in new_variable_names if isinstance(n, str) and n is not None]
+    if not new_variable_names:
+        return java_code
+
+    try:
+        tree = javalang.parse.parse(java_code)
+        method_nodes = []
+        for path, node in tree.filter(javalang.tree.MethodDeclaration):
+            if hasattr(node, 'position') and node.position:
+                method_nodes.append((node, node.position))
+        if not method_nodes:
+            return java_code
+        num_to_select = max(1, min(10, len(method_nodes)))
+        selected_methods = set(random.sample(method_nodes, num_to_select))
+        code_lines = java_code.splitlines()
+        method_nodes_sorted = sorted(method_nodes, key=lambda x: x[1].line, reverse=True)
+        methods_modified = 0
+        # Track which lines are replaced
+        replaced_ranges = set()
+        for node, pos in method_nodes_sorted:
+            if (node, pos) not in selected_methods or methods_modified >= 10:
+                continue
+            start_line = pos.line - 1
+            brace_count = 0
+            method_start = None
+            method_end = None
+            for i in range(start_line, len(code_lines)):
+                line = code_lines[i]
+                if '{' in line:
+                    if method_start is None:
+                        method_start = i
+                    brace_count += line.count('{')
+                if '}' in line:
+                    brace_count -= line.count('}')
+                if method_start is not None and brace_count == 0:
+                    method_end = i
+                    break
+            if method_start is None or method_end is None:
+                continue
+            method_code = '\n'.join(code_lines[method_start:method_end+1])
+            if not method_code or not isinstance(method_code, str):
+                continue
+            wrapped_method_code = f'public class DummyClass {{\n{method_code}\n}}'
+            try:
+                changed_method_code = renaming_least_used_variable(wrapped_method_code, new_variable_names)
+                match = re.search(r'public class DummyClass \{(.*)\}', changed_method_code, re.DOTALL)
+                if match:
+                    changed_method_code = match.group(1).strip()
+            except Exception as e:
+                print(f"Skipping method due to parse error: {str(e)}\nProblematic method code:\n{method_code}")
+                continue
+            # Replace only the selected method's lines
+            code_lines = code_lines[:method_start] + changed_method_code.splitlines() + code_lines[method_end+1:]
+            replaced_ranges.add((method_start, method_end))
+            methods_modified += 1
+        # All other methods are left untouched
+        return '\n'.join(code_lines)
+    except Exception as e:
+        print(f"Error during up-to-10 least-used method renaming: {str(e)} ; {str(new_variable_names)}")
+        return java_code
+
+def renaming_least_used_variable_in_60_percent_methods(java_code, new_variable_names):
+    """
+    Renames the least used local variable in 1% of the methods (randomly selected, at least 1) in the given Java code.
     Only variables declared in method bodies or as parameters are considered.
     """
-    import javalang
-    import re
     from collections import Counter
-    import random
-    import traceback
+
+    # Defensive: filter new_variable_names to only valid strings
+    if not new_variable_names or not isinstance(new_variable_names, list):
+        return java_code
+    new_variable_names = [n for n in new_variable_names if isinstance(n, str) and n is not None]
+    if not new_variable_names:
+        return java_code
 
     try:
         tree = javalang.parse.parse(java_code)
@@ -144,8 +310,8 @@ def renaming_variable_in_60_percent_methods(java_code, new_variable_names):
         if not method_nodes:
             return java_code  # No methods to process
 
-        # Randomly select 60% of the methods
-        num_to_select = max(1, int(len(method_nodes) * 0.6))
+        # Randomly select 1% of the methods (at least 1)
+        num_to_select = max(1, int(len(method_nodes) * 1))
         selected_methods = set(random.sample(method_nodes, num_to_select))
 
         # Split code into lines for easier manipulation
@@ -179,40 +345,44 @@ def renaming_variable_in_60_percent_methods(java_code, new_variable_names):
             method_code = '\n'.join(code_lines[method_start:method_end+1])
             if not method_code or not isinstance(method_code, str):
                 continue  # Defensive: skip if method_code is None or empty
-            # Rename variable in this method only
-            changed_method_code = renaming_variable(method_code, new_variable_names)
+            # Wrap method code in a dummy class for parsing
+            wrapped_method_code = f'public class DummyClass {{\n{method_code}\n}}'
+            try:
+                # Rename least-used variable in this method only
+                changed_method_code = renaming_least_used_variable(wrapped_method_code, new_variable_names)
+                # Extract code back out of dummy class
+                match = re.search(r'public class DummyClass \{(.*)\}', changed_method_code, re.DOTALL)
+                if match:
+                    changed_method_code = match.group(1).strip()
+            except Exception as e:
+                print(f"Skipping method due to parse error: {str(e)}\nProblematic method code:\n{method_code}")
+                continue
             # Replace in code_lines
             code_lines = code_lines[:method_start] + changed_method_code.splitlines() + code_lines[method_end+1:]
         # Reconstruct code
         return '\n'.join(code_lines)
     except Exception as e:
-        print(f"Error during 60% method renaming: {str(e)} ; {str(new_variable_names)}")
-        traceback.print_exc()
+        print(f"Error during 1% least-used method renaming: {str(e)} ; {str(new_variable_names)}")
+        #traceback.print_exc()
         return java_code
 
 def variableRenaming_perturbation(java_code, idx, new_variable_names, perturb_cat):
     count_kotlin = 0
-    indented_code = "\n    ".join(java_code.splitlines())  # Adds 4 spaces of indentation to each line inside the class
-
-    java_code = f"""
+    # Do NOT add extra indentation, just use the original code
+    java_code_wrapped = f"""
 public class WrapperClass {{
-    {indented_code}
+{java_code}
 }}
     """
-    #print(java_code)
     if not is_kotlin_code(java_code):
-        changed_code = renaming_variable_in_60_percent_methods(java_code, new_variable_names)
-        #print(changed_code)
-        # Remove the wrapper class
-        # Use a regular expression to remove the wrapper class
-        # Match "public class WrapperClass {", everything in between, and the closing "}" of the class.
-        pattern = r'public class WrapperClass \{\n(.*\n*)\}'
+        changed_code = renaming_least_used_variable_in_60_percent_methods(java_code_wrapped, new_variable_names)
+        # Remove the wrapper class and preserve original indentation
+        pattern = r'public class WrapperClass \{\n(.*)\n\}'
         match = re.search(pattern, changed_code, re.DOTALL)
         if match:
-            # Extract only the content inside the wrapper class
-            changed_code = match.group(1).strip()
+            changed_code = match.group(1).rstrip("\n")
     else:
-        changed_code = indented_code # not modifying kotlin code for some time being
+        changed_code = java_code  # not modifying kotlin code for now
         count_kotlin += 1
     return changed_code
 
@@ -910,7 +1080,8 @@ def variableRenaming_insertion(X_test, y_test, perturb_cats=None, num_perturbati
                 variable_name_list = ["sleep", "await", "future", "unit", "poll", "connection", "wait",  "is", "service", "thread", "future", "prepare", "run", "events", "test", "uri", "servlet", "workflow", "duration", "point", "now", "point", "mapper", "worker", "block", "ms", "yield", "iio", "abc", "ppo", "xyz", "ylk", "oow", "lksm", "wer", "qwe", "rek", "llinePath", "wqr", "mlk", "sst", "qwa", "dfg", "llq", "aas", "zza", "bba", "dda", "ssa", "wwp", "ggf", "lt", "le", "lw", "lx", "lc", "sleep1", "wait1", "thread1", "thread2", "run3"] 
             else:
                 #Least Impact tokens
-                variable_name_list = ["snapshot", "query", "ttl","jar", "me", "control", "greeter", "validator", "read", "run1", "capture", "dispatch", "acked", "sex", "ums", "ums", "cursor", "message", "ledger", "ops", "operator", "spy", "report", "crud", "health", "task", "ms", "that", "t", "region", "ppo", "tomcat", "ylk", "oow", "lksm", "wer", "qwe", "rek", "llinePath", "wqr", "mlk", "sst", "qwa", "dfg", "llq", "aas", "zza", "bba", "dda", "ssa", "wwp", "ggf", "lt", "le", "lw", "lx", "lc"]
+                #variable_name_list = ["snapshot", "query", "ttl","jar", "me", "control", "greeter", "validator", "read", "run1", "capture", "dispatch", "acked", "sex", "ums", "ums", "cursor", "message", "ledger", "ops", "operator", "spy", "report", "crud", "health", "task", "ms", "that", "t", "region", "ppo", "tomcat", "ylk", "oow", "lksm", "wer", "qwe", "rek", "llinePath", "wqr", "mlk", "sst", "qwa", "dfg", "llq", "aas", "zza", "bba", "dda", "ssa", "wwp", "ggf", "lt", "le", "lw", "lx", "lc"]
+                variable_name_list = ["upgrade", "meta"]
             updated_code = variableRenaming_perturbation(test_code, idx, variable_name_list, perturb_cat)
             #last_closing_brace_idx = test_code.rfind('}')
             #updated_code = test_code[:last_closing_brace_idx] + code_to_add +"\n" +test_code[last_closing_brace_idx:]
@@ -920,7 +1091,8 @@ def variableRenaming_insertion(X_test, y_test, perturb_cats=None, num_perturbati
                 variable_name_list = ["Duration", "concurrenct", "wait", "automic", "latch", "interrupted", "schedule", "sleep", "duration", "bolt", "manager", "atomic", "distributed", "write", "robust", "matcher", "choke", "stub", "hello","semaphore", "iio", "abc", "ppo", "xyz", "ylk", "oow", "lksm", "wer", "qwe", "rek", "llinePath", "wqr", "mlk", "sst", "qa", "qw", "qr", "qt", "qo", "qk", "qo", "qp", "qm" , "lt", "le", "lw", "lx", "lc"]
             else:
                 #Least Impact tokens
-                variable_name_list = ["runtime", "bulk", "down", "last", "consumer", "operation", "subject", "verify", "worker", "batch", "failed", "stlset", "zkw", "adder", "latch", "corrupt", "raided", "hello","executed", "pool", "grace", "kafka", "xyz", "ylk", "oow", "lksm", "wer", "qwe", "rek", "llinePath", "wqr", "mlk", "sst", "qa", "qw", "qr", "qt", "qo", "qk", "qo", "qp", "qm" , "lt", "le", "lw", "lx", "lc"]
+                #variable_name_list = ["runtime", "bulk", "down", "last", "consumer", "operation", "subject", "verify", "worker", "batch", "failed", "stlset", "zkw", "adder", "latch", "corrupt", "raided", "hello","executed", "pool", "grace", "kafka", "xyz", "ylk", "oow", "lksm", "wer", "qwe", "rek", "llinePath", "wqr", "mlk", "sst", "qa", "qw", "qr", "qt", "qo", "qk", "qo", "qp", "qm" , "lt", "le", "lw", "lx", "lc"]
+                variable_name_list = ["mode", "cluster"]
             updated_code = variableRenaming_perturbation(test_code, idx, variable_name_list, perturb_cat)
             #code_to_add = printStatement_perturbation_with_conc()
             ##updated_code = test_code + "\n" + code_to_add
@@ -932,7 +1104,8 @@ def variableRenaming_insertion(X_test, y_test, perturb_cats=None, num_perturbati
                 variable_name_list = ["time", "timestamp", "millis", "now", "duration", "clock", "seconds", "builder", "min", "month", "snapshot", "service", "offset", "response", "satisfy", "update", "live", "year", "current", "nano", "days", "hours", "yesterday", "absent",  "minutes", "duration2", "timer2", "isInstant", "timestamp", "optional", "handle", "equ", "fn", "iio", "abc", "ppo", "xyz", "ylk", "oow", "lksm", "wer", "qwe", "rek", "llinePath", "wqr", "mlk", "sst",  "date1",  "date2", "date3", "date5", "day2", "day3", "day10", "time", "date1", "date2", "date3", "date4", "date5", "date6", "ppl", "lkw", "qwa", "dfg", "lt", "le", "lw", "lx", "lc"]
             else:
                 #Least Impact tokens
-                variable_name_list = ["checkpoint", "vo", "greater", "etlbatch", "yield", "through", "metadata", "yesterday", "new", "set", "updated", "mtime1", "suffix", "exporter", "start", "modify", "response", "execution", "snapshot", "expected", "pm", "parser", "instant", "delete",  "distributer", "instant2", "instant2",  "optional", "handle", "equ", "fn", "iio", "abc", "ppo", "xyz", "ylk", "oow", "lksm", "wer", "qwe", "rek", "llinePath", "wqr", "mlk", "sst",  "date1",  "date2", "date3", "date5", "day2", "day3", "day10", "time", "date1", "date2", "date3", "date4", "date5", "date6", "ppl", "lkw", "qwa", "dfg", "lt", "le", "lw", "lx", "lc"]
+                #variable_name_list = ["checkpoint", "vo", "greater", "etlbatch", "yield", "through", "metadata", "yesterday", "new", "set", "updated", "mtime1", "suffix", "exporter", "start", "modify", "response", "execution", "snapshot", "expected", "pm", "parser", "instant", "delete",  "distributer", "instant2", "instant2",  "optional", "handle", "equ", "fn", "iio", "abc", "ppo", "xyz", "ylk", "oow", "lksm", "wer", "qwe", "rek", "llinePath", "wqr", "mlk", "sst",  "date1",  "date2", "date3", "date5", "day2", "day3", "day10", "time", "date1", "date2", "date3", "date4", "date5", "date6", "ppl", "lkw", "qwa", "dfg", "lt", "le", "lw", "lx", "lc"]
+                variable_name_list = ["left", "compare"]
             updated_code = variableRenaming_perturbation(test_code, idx, variable_name_list, perturb_cat)
             #code_to_add = printStatement_perturbation_with_time()
             ##updated_code = test_code + "\n" + code_to_add
@@ -944,7 +1117,8 @@ def variableRenaming_insertion(X_test, y_test, perturb_cats=None, num_perturbati
                 variable_name_list = ["set", "sample", "hash", "list", "iterator","map", "dictionary", "hashmap", "hash", "linkedlist", "stack", "array", "iterator", "class", "hash", "parse", "str", "fail", "system", "metadata", "pairs", "event", "iio", "abc", "ppo", "xyz", "ylk", "oow", "lksm", "wer", "qwe", "rek", "llinePath", "wqr", "mlk", "sst", "qwa", "dfg", "llq", "aas", "zza", "bba", "dda", "ssa", "wwp", "ggf" , "qa", "qw", "qr", "qt", "qo", "qk", "qo", "qp", "qm", "lt", "le", "lw", "lx", "lc", "stack", "vector", "enumMap", "hashTable", "treeSet", "set1", "map1", "collection1", "list2", "json2", "dict2"]
             else:
                 #Least Impact tokens
-                variable_name_list = ["utils", "reference", "devs", "add", "c2", "order", "one", "case", "as", "first", "metrics", "this", "hash", "object", "twin", "unirest", "full", "dubbo", "foo", "cc", "iio", "abc", "ppo", "xyz", "ylk", "oow", "lksm", "wer", "qwe", "rek", "llinePath", "wqr", "mlk", "sst", "qwa", "dfg", "llq", "aas", "zza", "bba", "dda", "ssa", "wwp", "ggf" , "qa", "qw", "qr", "qt", "qo", "qk", "qo", "qp", "qm", "lt", "le", "lw", "lx", "lc"]
+                #variable_name_list = ["utils", "reference", "devs", "add", "c2", "order", "one", "case", "as", "first", "metrics", "this", "hash", "object", "twin", "unirest", "full", "dubbo", "foo", "cc", "iio", "abc", "ppo", "xyz", "ylk", "oow", "lksm", "wer", "qwe", "rek", "llinePath", "wqr", "mlk", "sst", "qwa", "dfg", "llq", "aas", "zza", "bba", "dda", "ssa", "wwp", "ggf" , "qa", "qw", "qr", "qt", "qo", "qk", "qo", "qp", "qm", "lt", "le", "lw", "lx", "lc"]
+                variable_name_list = ["value", "parse"]
             updated_code = variableRenaming_perturbation(test_code, idx, variable_name_list, perturb_cat)
             #code_to_add = printStatement_perturbation_with_uc()
             ##updated_code = test_code + "\n" + code_to_add
@@ -956,7 +1130,8 @@ def variableRenaming_insertion(X_test, y_test, perturb_cats=None, num_perturbati
                 variable_name_list = ["name", "file", "path", "create", "lookup", "uri", "store", "context", "item", "system", "object", "dir", "service", "directory", "action", "loopup", "store", "latch", "directory", "filePath", "dirPath", "clusterPath", "staticObj", "ip", "sharedKey", "model", "iio", "abc", "ppo", "xyz", "ylk", "oow", "lksm", "wer", "qwe", "rek", "llinePath", "wqr", "mlk", "sst", "lt", "le", "lw", "lx", "lc"]
             else:
                 #Least Impact tokens   
-                variable_name_list = ["protocol", "signature", "version", "that", "is", "d1", "wildfly", "rejections", "remain", "mode", "mojo", "analyze", "t", "referenceable", "permissions", "exists", "sleep", "empty", "based", "skip", "found", "sentence", "iio", "abc", "ppo", "xyz", "ylk", "oow", "lksm", "wer", "qwe", "rek", "llinePath", "wqr", "mlk", "sst", "lt", "le", "lw", "lx", "lc"]
+                #variable_name_list = ["protocol", "signature", "version", "that", "is", "d1", "wildfly", "rejections", "remain", "mode", "mojo", "analyze", "t", "referenceable", "permissions", "exists", "sleep", "empty", "based", "skip", "found", "sentence", "iio", "abc", "ppo", "xyz", "ylk", "oow", "lksm", "wer", "qwe", "rek", "llinePath", "wqr", "mlk", "sst", "lt", "le", "lw", "lx", "lc"]
+                variable_name_list = ["all", "ubbo"]
             updated_code = variableRenaming_perturbation(test_code, idx, variable_name_list, perturb_cat)
             #code_to_add = printStatement_perturbation_with_od()
             ##updated_code = test_code + "\n" + code_to_add
@@ -968,7 +1143,9 @@ def variableRenaming_insertion(X_test, y_test, perturb_cats=None, num_perturbati
                 variable_name_list = ["equals", "successful", "result", "foo", "trial" , "object", "count", "booleans", "default", "my", "wrapper", "clear", "field", "tor", "serialize", "test", "abc", "xyz", "ppo", "llp", "mkn", "hgh", "oow", "iio", "abc", "ppo", "xyz", "ylk", "oow", "lksm", "wer", "qwe", "rek", "llinePath", "wqr", "mlk", "sst", "trial2", "trail3", "trial4", "trial5", "iiw", "ppl", "lkw", "qwa", "dfg", "llq", "aas", "zza", "bba", "dda", "ssa", "wwp", "ggf", "qa", "qw", "qr", "qt", "qo", "qk", "qo", "qp", "qm", "lk", "lp", "lm", "lh", "lt", "le", "lw", "lx", "lc", "zx", "zc", "zv", "zb", "zn", "zm"]
             else:
                 #Least Impact tokens
-                variable_name_list = ["mode", "unit", "only", "constant", "i" , "res", "set", "from", "generator", "return", "sharing", "remove", "disable", "res", "remove", "until", "abc", "xyz", "ppo", "llp", "mkn", "hgh", "oow", "iio", "abc", "ppo", "xyz", "ylk", "oow", "lksm", "wer", "qwe", "rek", "llinePath", "wqr", "mlk", "sst", "trial2", "trail3", "trial4", "trial5", "iiw", "ppl", "lkw", "qwa", "dfg", "llq", "aas", "zza", "bba", "dda", "ssa", "wwp", "ggf", "qa", "qw", "qr", "qt", "qo", "qk", "qo", "qp", "qm", "lk", "lp", "lm", "lh", "lt", "le", "lw", "lx", "lc", "zx", "zc", "zv", "zb", "zn", "zm"]
+                #variable_name_list = ["mode", "unit", "only", "constant", "i" , "res", "set", "from", "generator", "return", "sharing", "remove", "disable", "res", "remove", "until", "abc", "xyz", "ppo", "llp", "mkn", "hgh", "oow", "iio", "abc", "ppo", "xyz", "ylk", "oow", "lksm", "wer", "qwe", "rek", "llinePath", "wqr", "mlk", "sst", "trial2", "trail3", "trial4", "trial5", "iiw", "ppl", "lkw", "qwa", "dfg", "llq", "aas", "zza", "bba", "dda", "ssa", "wwp", "ggf", "qa", "qw", "qr", "qt", "qo", "qk", "qo", "qp", "qm", "lk", "lp", "lm", "lh", "lt", "le", "lw", "lx", "lc", "zx", "zc", "zv", "zb", "zn", "zm"]
+                variable_name_list = ["izard", "course", "violation"]
+                #variable_name_list = []
 #{"sleep", ""}
             updated_code = variableRenaming_perturbation(test_code, idx, variable_name_list, perturb_cat)
             #code_to_add = printStatement_perturbation_with_nonflaky()
@@ -989,6 +1166,7 @@ def variableRenaming_insertion(X_test, y_test, perturb_cats=None, num_perturbati
     #    print(f"perturb_cat {cat}: {perturb_cat_counts[cat]}")
     #X_test_df['full_code'] = X_test
     count_perturb_type("variableRenaming", perturb_cat_counts, num_perturbation)
+    print("X_test after variableRenaming_insertion:", X_test.head())
     return X_test
 
 
