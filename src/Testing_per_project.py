@@ -429,36 +429,51 @@ def run_experiment(dataset_path, model_weights_path, calculate_attribution, data
             #Y_test_df.columns = ['label']
         
             X_test, y_test, X_train, y_train, X_valid, y_valid = converting_df_to_series(X_train_df, Y_train_df, X_valid_df, Y_valid_df, X_test_df, Y_test_df)
-
             if "-" in perturbation:
                 X_test_df = combination_of_perturbation(X_test, y_test, X_test_df, perturbation) #permutation_count)
 
             #=============================Adversarial Attack in the test data========================
             #Most or Least
             if perturbation == "deadcode_perturbation":
-                X_test_df['full_code'] = deadcode_insertion(X_test, y_test, feature_types="Most") 
+                print("**** deadcode_perturbation ***")
+                X_test_df['full_code'] = deadcode_insertion(X_test, y_test, feature_types="Least_Imp") 
                 #perturbation = "deadcode_perturbation"
 
             elif perturbation == "printStatement_perturbation":
-                X_test_df['full_code'] = printStatement_insertion(X_test, y_test, feature_types="Most")
+                X_test_df['full_code'] = printStatement_insertion(X_test, y_test, feature_types="Least_Imp")
                 #perturbation = "printStatement_perturbation"
 
             elif perturbation == "variableDeclare_perturbation":
-                X_test_df['full_code'] = variableRenaming_insertion(X_test, y_test, feature_types="Most")
+                #X_test_df['full_code'] = variableRenaming_insertion(X_test, y_test, feature_types="Least_Imp")
+                #print("I AM HERE")
+                print("Before variableRenaming_insertion")
+                print(X_test.head())
+                perturbed_code = variableRenaming_insertion(X_test, y_test, feature_types="Least_Imp")
+                print("After variableRenaming_insertion")
+                print(perturbed_code.head())
+                X_test_df['full_code'] = perturbed_code
+
                 #perturbation = "variableDeclare_perturbation"
 
             elif perturbation == "multiLine_comment_perturbation":
-                X_test_df['full_code'] = multi_comment_insertion(X_test, y_test, feature_types="Most")
+                X_test_df['full_code'] = multi_comment_insertion(X_test, y_test, feature_types="Least_Imp")
                 #perturbation = "multiLine_comment_perturbation"
                 #print("perturbation **")
                 #exit()
 
             elif perturbation == "singleLine_comment_perturbation":
-                X_test_df['full_code'] = single_comment_insertion(X_test, y_test, feature_types="Most")
+                X_test_df['full_code'] = single_comment_insertion(X_test, y_test, feature_types="Least_Imp")
                 #perturbation = "singleLine_comment_perturbation"
 
             new_file_path = data_name+'/X_test_project_group'+str(project_group)+perturb+'_Most_important_features.csv'
+            print('new_file_path=',new_file_path)
             X_test_df.to_csv(new_file_path, index=False)
+
+            # After perturbation, update X_test to use the perturbed code for prediction
+            #X_test = X_test_df['full_code']
+            print("Perturbed X_test shape:", X_test.head(10))
+            #exit()
+            #print(new_file_path)
             #print('X_train=', str(len(X_train)), ',y_train=',str(len(y_train)))
             #boosting_noisy_data_for_train(X_train, y_train, project_group)
             #exit()
@@ -584,12 +599,12 @@ def run_experiment(dataset_path, model_weights_path, calculate_attribution, data
                 all_predictions.append(prediction_df_to_save)
 
             if calculate_attribution: 
-                print(f"Saving to: {where_data_comes}-result/Result_with_tokens.csv")
+                print(f"Saving to: {where_data_comes}-result/Finetuned_Result_with_tokens.csv")
                 #print("Data being saved:")
                 #print(prediction_df_to_save)
             
                 if not prediction_df_to_save.empty:
-                    prediction_df_to_save.to_csv(where_data_comes+"-result/"+"Result_with_tokens.csv", mode="a", index=False)
+                    prediction_df_to_save.to_csv(where_data_comes+"-result/"+"Finetuned_Result_with_tokens.csv", mode="a", index=False)
                     print('Successfully saved!')
                 else:
                     print("Nothing to save! DataFrame is empty.")
@@ -649,7 +664,7 @@ def run_experiment(dataset_path, model_weights_path, calculate_attribution, data
         if all_predictions:
             final_predictions_df = pd.concat(all_predictions, ignore_index=True)
         
-            save_path = f"{where_data_comes}-result/Result_with_tokens.csv"
+            save_path = f"{where_data_comes}-result/Finetuned_Result_with_tokens.csv"
             final_predictions_df.to_csv(save_path, index=False)
             
             print(f"Successfully saved all predictions to: {save_path}")

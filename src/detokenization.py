@@ -8,7 +8,7 @@ import numpy as np
 
 def is_special_character(token):
     # This function checks if the token is made up only of punctuation or is one of the special tokens
-    special_tokens = {'<s>', '</s>', '@', 'Ċ', '=', '()', '.', ';', ',', 'test', 'Test', 'public', 'void', 'private', 'Token', 'not', 'even', 'for', 'To', 'Of', 'With',  'is', 'String', 'int', 'Epoch', 'Assert', 'Id', 'assert', 'At', 'Is', 'ases', 'If', 'Epoch', 'Override', 'And', 'then', 'try', 'throws'}
+    special_tokens = {'<s>', '</s>', '@', 'Ċ', '=', '()', '.', ';', ',', 'test', 'Test', 'public', 'void', 'private', 'Token', 'not', 'even', 'for', 'To', 'Of', 'With',  'is', 'String', 'int', 'Epoch', 'Assert', 'Id', 'assert', 'At', 'Is', 'ases', 'If', 'Epoch', 'Override', 'And', 'then', 'try', 'throws', 'Integer', 'Person', 'Assert', 'Assert', 'ĊĊ'}
     def is_number(s):
         try:
             float(s)
