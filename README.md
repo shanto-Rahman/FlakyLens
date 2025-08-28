@@ -1,4 +1,5 @@
-# Understanding and Improving Flaky Test Classification Artifact
+# Understanding and Improving Flaky Test Classification <img padding="10" align="right" src="https://www.acm.org/binaries/content/gallery/acm/publications/artifact-review-v1_1-badges/artifacts_evaluated_functional_v1_1.png" alt="ACM Artifacts Evaluated - functional v1.1" width="60" height="60"/> <img padding="10" align="left" src="https://www.acm.org/binaries/content/gallery/acm/publications/artifact-review-v1_1-badges/artifacts_available_v1_1.png" alt="ACM Artifacts Available v1.1" width="60" height="60"/>
+
 
 # Purpose
 This README accompanies the artifact for the paper "Understanding and Improving Flaky Test Classification." This work introduces a new dataset that combines flaky and non-flaky tests, resulting in a more realistic distribution of test categories. The paper also presents a classification approach using fine-tuned models to predict the category of each test.
